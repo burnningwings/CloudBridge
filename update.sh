@@ -18,3 +18,5 @@ then
 fi
 
 cp target/CloudBridge-1.0-SNAPSHOT.jar $deploy_dir
+
+chmod u+x bin/start.sh && chmod u+x bin/stop.sh

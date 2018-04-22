@@ -2,6 +2,8 @@
 
 current_dir=`dirname "$0"`
 
+cd $current_dir
+
 git checkout .
 
 git pull origin master

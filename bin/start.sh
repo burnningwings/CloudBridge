@@ -10,5 +10,5 @@ nohup ssh mu01 portforward :9992 cu03:9992 >/dev/null 2>&1 &
 
 echo "start to listen on mc.ccnl.scut.edu.cn:9992"
 
-java -jar CloudBridge-1.0-SNAPSHOT.jar --spring.config.location=$deploy_dir/config/application-prod.properties -Dlog4j.configuration=$deploy_dir/config/log4j.properties
+java -jar CloudBridge-1.0-SNAPSHOT.jar --spring.config.location=classpath:$deploy_dir/config/application-prod.properties -Dlog4j.configuration=$deploy_dir/config/log4j.properties --spring.profes.active=prod
 

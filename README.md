@@ -1,4 +1,5 @@
 # CloudBridge
+---
 
 ## 概述
 
@@ -13,10 +14,17 @@
 
 ## 部署方法
 
-### start
+- 更新 & 打包程序
+```shell
+chmod u+x update.sh && ./update.sh
+```
 
+- 启动
+```shell
 chmod u+x bin/start.sh && bin/start.sh
+```
 
-### stop
-
+- 停止
+```shell
 chmod u+x bin/stop.sh && bin/stop.sh
+```

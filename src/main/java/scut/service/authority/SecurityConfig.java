@@ -28,7 +28,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/assets/**/**","/assets/**/**/**").permitAll()
                 .antMatchers("/images/**").permitAll()
                 .antMatchers("/css/**").permitAll()
-                .anyRequest().authenticated()
+                .anyRequest()
+                .authenticated()
                 .and()
             //开启cookie保存用户数据
             .rememberMe()
@@ -46,7 +47,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .clearAuthentication(true)
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                 .logoutSuccessUrl("/login")
-                .permitAll();;
+                .permitAll();
     }
 
     @Bean

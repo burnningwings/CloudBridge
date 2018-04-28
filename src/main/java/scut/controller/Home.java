@@ -30,4 +30,12 @@ public class Home {
         model.addAttribute(Constants.CURRENT_USER, currentUser);
         return "test";
     }
+
+    @RequestMapping("/watch-box")
+    public String watchBox(Model model) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
+        model.addAttribute(Constants.CURRENT_USER, currentUser);
+        return "watch-box";
+    }
 }

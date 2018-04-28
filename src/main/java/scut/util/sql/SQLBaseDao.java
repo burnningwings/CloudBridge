@@ -60,22 +60,7 @@ public class SQLBaseDao {
      * @return
      * @throws SQLException
      */
-    public int insert(String sql, Object... params) throws SQLException {
-        Connection connection = dataSource.getConnection();
-        int ret = -1;
-        try {
-            if (params == null) {
-                ret = runner.update(connection, sql);
-            } else {
-                ret = runner.update(connection, sql, params);
-            }
-        } finally {
-            DbUtils.close(connection);
-        }
-        return ret;
-    }
-
-    public int batchExecute(String sql, Object... params) throws SQLException {
+    public int Execute(String sql, Object... params) throws SQLException {
         Connection connection = dataSource.getConnection();
         int ret = -1;
         try {

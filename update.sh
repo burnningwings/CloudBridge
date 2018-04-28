@@ -5,11 +5,11 @@ current_dir=`dirname "$0"`
 cd $current_dir
 
 if [ ! -n "$1" ] ;then
-    echo "请输入分支名称作为参数，如master."
-    exit(0)
+    echo "请输入分支名称作为参数,如master."
+    exit 0
 fi
 
- git checkout $1 && git clean -xdf
+git checkout $1 &&  git checkout . && git clean -xdf
 
 git pull origin $1
 

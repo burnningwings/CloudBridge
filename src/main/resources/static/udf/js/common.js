@@ -90,3 +90,59 @@ function webRequest(url,requestType,async,data,callback){
     }
     return response;
 }
+
+var sensor_metadata_map = {
+    "sin_sensor_info":{
+        "name": "正弦传感器",
+        "data_schema": {
+            "CLSJ":"float",
+            "CLYB":"float",
+            "CLWD":"float",
+            "DZ":"float",
+            "XZYB":"float"
+        }
+    },
+    "fiber_sensor_info":{
+        "name": "光纤应变传感器",
+        "data_schema": {
+            "CLSJ":"float",
+            "CLBC":"float",
+            "YB":"float"
+        }
+    },
+    "gps_sensor_info":{
+        "name": "GPS传感器",
+        "data_schema": {
+            "CLSJ":"float",
+            "WXZBX":"float",
+            "QLZBX":"float",
+            "WXWYX":"float",
+            "QLWYX":"float",
+            "WXZBY":"float",
+            "QLZBY":"float",
+            "WXWYY":"float",
+            "QLWYY":"float",
+            "WXZBZ":"float",
+            "QLZBZ":"float",
+            "WXWYZ":"float",
+            "QLWZ":"float",
+        }
+    },
+    "acce_sensor_info":{
+        "name": "加速度传感器",
+        "data_schema": {
+            "CLSJ":"float",
+            "DY":"float",
+            "JSD":"float"
+        }
+    },
+    "cable_sensor_info":{
+        "name": "索力传感器",
+        "data_schema": {
+            "CLSJ":"float",
+            "DY":"float",
+            "JSD":"float",
+            "SL":"float"
+        }
+    }
+}

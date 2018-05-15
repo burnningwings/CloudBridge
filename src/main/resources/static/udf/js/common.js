@@ -1,5 +1,5 @@
-function setToken(token){
-    $.cookie("token",token)
+function setToken(token) {
+    $.cookie("token", token)
 }
 
 // 短暂提示框
@@ -14,7 +14,7 @@ function showTransientDialog(content) {
 }
 
 // 警告对话框，点击确定则只需callback
-function showAlertDialog(content,ok_callback) {
+function showAlertDialog(content, ok_callback) {
     var d = dialog({
         title: "警告",
         content: content,
@@ -23,20 +23,20 @@ function showAlertDialog(content,ok_callback) {
             return ok_callback();
         },
         cancelValue: '取消',
-        cancel: function() {
+        cancel: function () {
         }
     });
     d.show();
 }
 
 // HTTP request
-function webRequest(url,requestType,async,data,callback){
+function webRequest(url, requestType, async, data, callback) {
     var response = null;
     var d = null;
-    if(requestType=="POST"){
+    if (requestType == "POST") {
         var token = $("meta[name='_csrf']").attr("content");
         var header = $("meta[name='_csrf_header']").attr("content");
-        $(document).ajaxSend(function(e, xhr, options) {
+        $(document).ajaxSend(function (e, xhr, options) {
             xhr.setRequestHeader(header, token);
         });
         $.ajax({
@@ -49,20 +49,20 @@ function webRequest(url,requestType,async,data,callback){
             beforeSend: function () {
                 var content = '' +
                     ' <img alt="loadding" src="/assets/img/loading.gif" /> \
-                    '
+                    ';
                 d = dialog({
                     content: content
                 });
                 d.showModal();
             },
             success: function (message) {
-                if(callback){
+                if (callback) {
                     callback(message);
-                }else{
+                } else {
                     response = message;
                 }
             },
-            complete:function () {
+            complete: function () {
                 if (d != null) {
                     d.close().remove();
                 }
@@ -74,19 +74,40 @@ function webRequest(url,requestType,async,data,callback){
         });
     } else {
         $.ajaxSettings.async = async;
-        $.getJSON(url, data, function(message){
-            if(callback){
+        $.getJSON(url, data, function (message) {
+            if (callback) {
                 callback(message);
-            }else{
+            } else {
                 response = message;
             }
-        }).done(function() {
+        }).done(function () {
 
-        }).fail(function() {
-            alert( "请求失败！" );
-        }).always(function() {
+        }).fail(function () {
+            alert("请求失败！");
+        }).always(function () {
 
         });
     }
     return response;
+}
+
+//模态弹窗
+function showModalDialog(title, custom_content, ok_callback, width, height) {
+    var d = dialog({
+        title: title,
+        content: custom_content,
+        okValue: '确定',
+        ok: function () {
+            return ok_callback();
+        },
+        cancelValue: '取消',
+        cancel: function () {
+        }
+    });
+    d.width(width | 605).height(height | 300).showModal();
+    $(".ui-dialog-content").mCustomScrollbar({
+        axis: "y",
+        advanced: {autoExpandHorizontalScroll: true},
+        theme: "minimal-dark"
+    });
 }

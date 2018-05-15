@@ -1,13 +1,13 @@
 package scut.util.sql;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.List;
 
 /**
@@ -94,5 +94,48 @@ public class SQLBaseDao {
             DbUtils.close(connection);
         }
         return rows;
+    }
+
+
+    //查询数据
+    public JSONArray queryData(String sql, String[] fields) {
+        JSONArray result = new JSONArray();
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = dataSource.getConnection();
+            stmt = conn.prepareStatement(sql);
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                JSONObject item = new JSONObject();
+                for (String filed : fields) {
+                    item.put(filed, rs.getObject(filed) != null ? rs.getObject(filed) : "");
+                }
+                result.add(item);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                DbUtils.close(rs);
+                DbUtils.close(stmt);
+                DbUtils.close(conn);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
+    }
+
+    //更新数据 包括新增、修改、删除
+    public int updateData(String sql) {
+        int ret = -1;
+        try {
+            ret = Execute(sql);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return ret;
     }
 }

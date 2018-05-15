@@ -1,5 +1,5 @@
-function setToken(token) {
-    $.cookie("token", token)
+function setToken(token){
+    $.cookie("token",token)
 }
 
 // 短暂提示框
@@ -14,7 +14,7 @@ function showTransientDialog(content) {
 }
 
 // 警告对话框，点击确定则只需callback
-function showAlertDialog(content, ok_callback) {
+function showAlertDialog(content,ok_callback) {
     var d = dialog({
         title: "警告",
         content: content,
@@ -23,20 +23,20 @@ function showAlertDialog(content, ok_callback) {
             return ok_callback();
         },
         cancelValue: '取消',
-        cancel: function () {
+        cancel: function() {
         }
     });
     d.show();
 }
 
 // HTTP request
-function webRequest(url, requestType, async, data, callback) {
+function webRequest(url,requestType,async,data,callback){
     var response = null;
     var d = null;
-    if (requestType == "POST") {
+    if(requestType=="POST"){
         var token = $("meta[name='_csrf']").attr("content");
         var header = $("meta[name='_csrf_header']").attr("content");
-        $(document).ajaxSend(function (e, xhr, options) {
+        $(document).ajaxSend(function(e, xhr, options) {
             xhr.setRequestHeader(header, token);
         });
         $.ajax({
@@ -49,20 +49,20 @@ function webRequest(url, requestType, async, data, callback) {
             beforeSend: function () {
                 var content = '' +
                     ' <img alt="loadding" src="/assets/img/loading.gif" /> \
-                    ';
+                    '
                 d = dialog({
                     content: content
                 });
                 d.showModal();
             },
             success: function (message) {
-                if (callback) {
+                if(callback){
                     callback(message);
-                } else {
+                }else{
                     response = message;
                 }
             },
-            complete: function () {
+            complete:function () {
                 if (d != null) {
                     d.close().remove();
                 }
@@ -74,17 +74,17 @@ function webRequest(url, requestType, async, data, callback) {
         });
     } else {
         $.ajaxSettings.async = async;
-        $.getJSON(url, data, function (message) {
-            if (callback) {
+        $.getJSON(url, data, function(message){
+            if(callback){
                 callback(message);
-            } else {
+            }else{
                 response = message;
             }
-        }).done(function () {
+        }).done(function() {
 
-        }).fail(function () {
-            alert("请求失败！");
-        }).always(function () {
+        }).fail(function() {
+            alert( "请求失败！" );
+        }).always(function() {
 
         });
     }
@@ -110,4 +110,60 @@ function showModalDialog(title, custom_content, ok_callback, width, height) {
         advanced: {autoExpandHorizontalScroll: true},
         theme: "minimal-dark"
     });
+}
+
+var sensor_metadata_map = {
+    "sin_sensor_info":{
+        "name": "正弦传感器",
+        "data_schema": {
+            "CLSJ":"float",
+            "CLYB":"float",
+            "CLWD":"float",
+            "DZ":"float",
+            "XZYB":"float"
+        }
+    },
+    "fiber_sensor_info":{
+        "name": "光纤应变传感器",
+        "data_schema": {
+            "CLSJ":"float",
+            "CLBC":"float",
+            "YB":"float"
+        }
+    },
+    "gps_sensor_info":{
+        "name": "GPS传感器",
+        "data_schema": {
+            "CLSJ":"float",
+            "WXZBX":"float",
+            "QLZBX":"float",
+            "WXWYX":"float",
+            "QLWYX":"float",
+            "WXZBY":"float",
+            "QLZBY":"float",
+            "WXWYY":"float",
+            "QLWYY":"float",
+            "WXZBZ":"float",
+            "QLZBZ":"float",
+            "WXWYZ":"float",
+            "QLWZ":"float",
+        }
+    },
+    "acce_sensor_info":{
+        "name": "加速度传感器",
+        "data_schema": {
+            "CLSJ":"float",
+            "DY":"float",
+            "JSD":"float"
+        }
+    },
+    "cable_sensor_info":{
+        "name": "索力传感器",
+        "data_schema": {
+            "CLSJ":"float",
+            "DY":"float",
+            "JSD":"float",
+            "SL":"float"
+        }
+    }
 }

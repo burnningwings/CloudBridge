@@ -23,11 +23,12 @@
                             <li th:class="${three_7}"><a href="layouts-tabs.html">数据导入</a></li>
                         </ul>
                     </li>
-                    <li class="cm-submenu">
+                    <li class="cm-submenu" th:classappend="${four_1=='active' or four_2=='active'}? pre-open : ''">
                         <a class="sf-profile-group">用户管理<span class="caret"></span></a>
                         <ul>
-                            <li th:class="${four_1}"><a href="ico-sf.html">用户管理</a></li>
-                            <li th:class="${four_2}"><a href="ico-md.html">角色管理</a></li>
+                            <!--<li th:class="${four_1}"><a href="ico-sf.html">用户管理</a></li>-->
+                            <li th:class="${four_1}"><a href="user-manager">用户管理</a></li>
+                            <li th:class="${four_2}"><a href="role-manager">角色管理</a></li>
                         </ul>
                     </li>
                     <li class="cm-submenu">

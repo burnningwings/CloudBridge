@@ -38,4 +38,21 @@ public class Home {
         model.addAttribute(Constants.CURRENT_USER, currentUser);
         return "watch-box";
     }
+
+    @RequestMapping("/user-manager")
+    public String userManager(Model model) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
+        model.addAttribute(Constants.CURRENT_USER, currentUser);
+        return "user-manager";
+    }
+
+    @RequestMapping("/role-manager")
+    public String roleManager(Model model) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
+        model.addAttribute(Constants.CURRENT_USER, currentUser);
+        return "role-manager";
+    }
+
 }

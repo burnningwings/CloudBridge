@@ -14,6 +14,7 @@ function updateBoxGrid(bridge_name){
                 contentType: "application/json; charset=utf-8"
             },
             parameterMap: function (options, operation) {
+
                 if (operation == "read") {
                     var parameter = {
                         page: options.page,

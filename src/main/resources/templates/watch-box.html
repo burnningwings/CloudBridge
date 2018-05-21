@@ -25,7 +25,7 @@
     </head>
     <body class="cm-no-transition cm-1-navbar">
 
-        <div id="cm-menu" th:include="base/menu::menu (one,two,three_1,three_2,three_3,active,three_5,three_6,three_7,four_1,four_2,five_1,five_2,five_3,six_1,six_2)"></div>
+        <div id="cm-menu" th:include="base/menu::menu (one,two_1,active,three_1,three_2,four_1,four_2,four_3,four_4,five_1,five_2,six_1,six_2,six_3,seven_1,seven_2)"></div>
 
         <header id="cm-header">
             <nav class="cm-navbar cm-navbar-primary">
@@ -33,7 +33,7 @@
                 <div class="cm-flex">
                     <div class="cm-breadcrumb-container">
                         <ol class="breadcrumb">
-                            <li><a href="#">桥梁监测管理</a></li>
+                            <li><a href="#">桥梁管理</a></li>
                             <li class="active">控制箱信息</li>
                         </ol>
                     </div>
@@ -102,8 +102,7 @@
                         </h3>
                     </div>
                     <div class="panel-body">
-                        <select class="selectpicker" id="dropdownMenu1" onchange="selectBridgeOnchange(this)"></select>
-
+                        <select class="selectpicker" id="bridge_menu" onchange="selectBridgeOnchange(this)"></select>
                         <br>
                         <br>
                         <div id="watch-box-grid"></div>

@@ -26,7 +26,7 @@
 
 
 <body class="cm-no-transition cm-1-navbar">
-    <div id="cm-menu" th:include="base/menu::menu (one,two,three_1,three_2,three_3,three_4,three_5,three_6,three_7,active,four_2,five_1,five_2,five_3,six_1,six_2)"></div>
+    <div id="cm-menu" th:include="base/menu::menu (one,two_1,two_2,three_1,three_2,four_1,four_2,four_3,four_4,active,five_2,six_1,six_2,six_3,seven_1,seven_2)"></div>
 
     <header id="cm-header">
         <nav class="cm-navbar cm-navbar-primary">
@@ -106,9 +106,7 @@
                 <div class="panel-body">
                     <div class = "input-group">
                         <select class="selectpicker" id="dropdownMenu_selectusertype"  >
-                            <!--下拉列表只要改变了就进入onchange函数，函数里判断，如果等于全部，就进入更新函数，否则退出
-                                 查找按钮触发也进入更新函数；更新函数新判断下拉列表的值，如果等于全部，则直接返回所有结果
-                                 如果等于其余值，结合查找内容返回-->
+
                             <option value = "all">全部</option>
                             <option value = "id">按账号</option>
                             <option value = "name">按姓名</option>

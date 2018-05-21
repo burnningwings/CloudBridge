@@ -3,15 +3,11 @@ package scut.controller;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.dbutils.ResultSetHandler;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import scut.base.HttpResponse;
-import scut.service.authority.CurrentUser;
 import scut.util.Constants;
 import scut.util.sql.SQLBaseDao;
 import scut.util.sql.SQLDaoFactory;
@@ -37,21 +33,15 @@ public class WatchBox {
 
     /**
      * 异步翻页
-     * @param model
      * @param page
      * @param pageSize 切换为All时需强制为null，因此必须为Integer
      * @param bridgeName
      * @return
      */
     @RequestMapping(value = "/watch-box/list", method = RequestMethod.GET, produces = "application/json")
-    public JSONObject watchBoxList(Model model, int page, Integer pageSize, String bridgeName) {
-        // 渲染模板
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
-        model.addAttribute(Constants.CURRENT_USER, currentUser);
-
+    public JSONObject tableList(int page, Integer pageSize, String bridgeName) {
         // 获取数据
-        String whereStr = "";
+        String whereStr = " ";
         if(!bridgeName.equals("全部")){
             whereStr = "where bridge_name='" + bridgeName + "'";
         }
@@ -64,6 +54,7 @@ public class WatchBox {
                 ,whereStr, pageSize,(page-1)*pageSize);
         String[] fields = new String[]{"name","box_number","box_type_name","description","node",
                                         "port_id","bridge_name","box_id","bridge_id","type_id"};
+        // 获取翻页数据
         JSONArray data = new JSONArray();
         try {
             baseDao.querySingleObject(sql,new ResultSetHandler<String>(){
@@ -82,15 +73,34 @@ public class WatchBox {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
+        // 获取总数
+        sql = String.format(
+                "select count(*) as count " +
+                        "from watch_box as w " +
+                        "left join bridge_info as b on w.bridge_id = b.bridge_id " +
+                        "left join watch_box_type as w_t on w.type_id = w_t.type_id " +
+                        "%s"
+                ,whereStr);
         JSONObject response = new JSONObject();
+        try {
+            baseDao.querySingleObject(sql,new ResultSetHandler<String>(){
+                @Override
+                public String handle(ResultSet rs) throws SQLException {
+                    if(rs.next()){
+                        response.put("total",rs.getString("count"));
+                    }
+                    return null;
+                }
+            });
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         response.put("data",data);
-        response.put("total",data.size());
         return response;
     }
 
-    @RequestMapping(value = "/bridge/list", method = RequestMethod.GET, produces = "application/json")
-    public JSONObject BridgeList() {
+    @RequestMapping(value = "/watch-box/dropdown", method = RequestMethod.GET, produces = "application/json")
+    public JSONObject dropDownList() {
         HttpResponse response = new HttpResponse();
         JSONObject data = new JSONObject();
         String sql = "select bridge_id,bridge_name from bridge_info";
@@ -112,7 +122,7 @@ public class WatchBox {
     }
 
     @RequestMapping(value = "/watch-box/info", method = RequestMethod.GET, produces = "application/json")
-    public JSONObject CreateWatchBoxInfo(String watch_box_id) {
+    public JSONObject createWatchBoxInfo(String watch_box_id) {
         HttpResponse response = new HttpResponse();
         JSONObject data = new JSONObject();
         // 桥梁信息
@@ -179,7 +189,7 @@ public class WatchBox {
     }
 
     @RequestMapping(value = "/watch-box/create-or-update", method = RequestMethod.POST, produces = "application/json")
-    public JSONObject CreateWatchBox(@RequestBody Map<String,Object> reqMsg) {
+    public JSONObject createWatchBox(@RequestBody Map<String,Object> reqMsg) {
         HttpResponse response = new HttpResponse();
         String operation_type = reqMsg.get("operation_type").toString();
         Object box_id = reqMsg.get("box_id");
@@ -282,7 +292,7 @@ public class WatchBox {
     }
 
     @RequestMapping(value = "/watch-box/delete", method = RequestMethod.POST, produces = "application/json")
-    public JSONObject DeleteWatchBox(@RequestBody Map<String,Object> reqMsg) {
+    public JSONObject deleteWatchBox(@RequestBody Map<String,Object> reqMsg) {
         HttpResponse response = new HttpResponse();
         ArrayList<String> watch_box_checked_list = (ArrayList<String>)reqMsg.get("watch_box_checked_list");
         JSONObject data = new JSONObject();
@@ -300,5 +310,29 @@ public class WatchBox {
         }
         response.setData(data);
         return response.getHttpResponse();
+    }
+
+    /**
+     * 获取监测箱简单列表
+     *
+     * @param bridgeId
+     * @return
+     */
+    @RequestMapping(value = "/watch-box/simple-list", method = RequestMethod.GET, produces = "application/json")
+    public JSONObject watchBoxSimpleList(Integer bridgeId) {
+        JSONObject response = new JSONObject();
+        if (bridgeId != null) {
+            String sql = String.format("SELECT\n" +
+                    "	wb.box_id AS watch_box_id,\n" +
+                    "	wb.`name` AS watch_box_name\n" +
+                    "FROM\n" +
+                    "	watch_box AS wb\n" +
+                    "WHERE\n" +
+                    "	wb.bridge_id = %s", bridgeId);
+            String[] fields = new String[]{"watch_box_id", "watch_box_name"};
+            JSONArray data = baseDao.queryData(sql, fields);
+            response.put("data", data);
+        }
+        return response;
     }
 }

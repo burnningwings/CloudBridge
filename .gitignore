@@ -25,7 +25,10 @@ nbdist/
 
 ### Others ###
 logs/
+/.idea/
 
 ### extjs ###
 src/main/resources/static/build
 src/main/resources/static/sass
+
+/.gitignore

@@ -43,7 +43,7 @@ function updateBoxGrid(bridge_name){
         pageable: {
             // pageSizes: true,
             pageSizes: [10,25,50,100],
-            buttonCount: 5,
+            buttonCount: 1, // 限制其不能点击对应页
             messages: {
                 display: "{0} - {1} 共 {2} 条数据",
                 empty: "没有数据",
@@ -345,7 +345,7 @@ function showWatchBoxDialog(title,operation_type,watch_box_id,bridge_id,watch_bo
             }
             var response = webRequest(url,"POST",false,params)
             if(response!=null && response.status==0){
-                updateBoxGrid($("#dropdownMenu1").val());
+                updateBoxGrid($("#bridge_menu").val());
                 showTransientDialog("操作成功！");
                 return true;
             }else{
@@ -359,7 +359,7 @@ function showWatchBoxDialog(title,operation_type,watch_box_id,bridge_id,watch_bo
 
 // 其它初始化
 $(function () {
-    var url = "/bridge/list";
+    var url = "/watch-box/dropdown";
     var response = webRequest(url,"GET",false,{})
     var options = "<option>全部</option>";
     if(response!=null && response.status==0){
@@ -368,8 +368,8 @@ $(function () {
             options = options + "<option>" + key + "</option>";
         }
     }
-    $("#dropdownMenu1").append(options);
-    $("#dropdownMenu1").on('shown.bs.select',function(e){
+    $("#bridge_menu").append(options);
+    $("#bridge_menu").on('shown.bs.select',function(e){
         // console.log('展开');
     })
 
@@ -381,7 +381,7 @@ $(function () {
     // 删除测控箱事件绑定
     $("#delete_box").click(function() {
         function callback(){
-            var grid = $("#watch-box-grid").data("kendoGrid");
+            // var grid = $("#watch-box-grid").data("kendoGrid");
             var watch_box_checked_list = [];
             $("#watch-box-grid").find("input:checked").each(function(){
                 var box_id = this.value;
@@ -396,7 +396,7 @@ $(function () {
             }
             var response = webRequest(url,"POST",false,params)
             if(response!=null && response.status==0){
-                updateBoxGrid($("#dropdownMenu1").val());
+                updateBoxGrid($("#bridge_menu").val());
                 showTransientDialog("删除测控箱成功！");
             }else{
                 showTransientDialog(response.msg);
@@ -409,6 +409,6 @@ $(function () {
 
 // 表格初始化
 $(function () {
-    updateBoxGrid($("#dropdownMenu1").val());
+    updateBoxGrid($("#bridge_menu").val());
 });
 

@@ -194,7 +194,22 @@ public class RoleManager {
         }
         data.put("privilegelist",privilege);
 
-
+        String usedprivilegeSql = String.format("select privilegeid,connectionid from roleprivilege where roleid = %s", roleid);
+        JSONObject usedprivilege = new JSONObject();
+        try {
+            baseDao.querySingleObject(usedprivilegeSql, new ResultSetHandler<String>() {
+                @Override
+                public String handle(ResultSet rs) throws SQLException {
+                    while (rs.next()) {
+                        usedprivilege.put(rs.getString("privilegeid"), rs.getString("connectionid"));
+                    }
+                    return null;
+                }
+            });
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        data.put("usedprivilege", usedprivilege);
 
         String roleselectSql = String.format("select roleid,rolename from role_info where roleid = %s",roleid);
         JSONObject roleinfo = new JSONObject();

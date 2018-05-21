@@ -99,7 +99,7 @@ function showRoleUpdateDialog(title,roleid) {
         var used ;
         for(var key in data["privilegelist"]){
             used = false;
-            for( ukey in data["usedprivilege"]){
+            for( var ukey in data["usedprivilege"]){
                 if(key == ukey){
                     privilege_option = privilege_option + "<input type='checkbox' name='uitem' checked='true' value='"+key+"'/> "+data["privilegelist"][key]+"<br/>";
                     used = true;
@@ -111,7 +111,7 @@ function showRoleUpdateDialog(title,roleid) {
             }
         }
         rolename = data["roleinfo"][roleid];
-      //  console.log(rolename);
+        console.log(privilege_option);
 
     }
 

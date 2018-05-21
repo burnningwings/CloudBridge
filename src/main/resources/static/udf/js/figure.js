@@ -181,25 +181,26 @@ function showTimeLineChart(figure_id,time_array,series_data,single){
                     readOnly: true,
                     // lang: ['数据视图', '关闭'],
                     optionToContent: function (opt) {
-                        if(single){
-                            let series = opt.series; //折线图数据
+                        let table_series = null;
+                        if(single || opt.series.length==1){
+                            table_series = opt.series; //折线图数据
                         }else{
-                            showTransientDialog("仅支持显示一种指标.");
-                            let series = [opt.series[0]]; //折线图数据
+                            showTransientDialog("当前仅支持显示一种传感器.");
+                            table_series = [opt.series[0]]; //折线图数据
                         }
-                        let axisData = time_array[opt.series[0].name]; //坐标数据
+                        let axisData = time_array[table_series[0].name]; //坐标数据
                         let tdHeads = '<td  style="padding: 0 10px">时间</td>'; //表头
                         let tdBodys = ''; //数据
-                        series.forEach(function (item) {
+                        table_series.forEach(function (item) {
                             //组装表头
                             tdHeads += `<td style="padding: 0 10px">${item.name}</td>`;
                         });
                         let table = `<table border="1" style="margin-left:20px;border-collapse:collapse;font-size:14px;text-align:center"><tbody><tr>${tdHeads} </tr>`;
                         for (let i = 0, l = axisData.length; i < l; i++) {
                             // i表示同一条线
-                            for (let j = 0; j < series.length; j++) {
+                            for (let j = 0; j < table_series.length; j++) {
                                 //组装表
-                                tdBodys += `<td>${series[j].data[i]["value"][1]}</td>`;
+                                tdBodys += `<td>${table_series[j].data[i]["value"][1]}</td>`;
                             }
                             // 时间
                             table += `<tr><td style="padding: 0 10px">${axisData[i].format('yyyy-MM-dd HH:mm:ss.SS')}</td>${tdBodys}</tr>`;

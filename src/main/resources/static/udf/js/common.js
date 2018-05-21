@@ -104,7 +104,9 @@ function showModalDialog(title, custom_content, ok_callback, width, height) {
         cancel: function () {
         }
     });
-    d.width(width | 605).height(height | 300).showModal();
+    if(width==null || width=="") width = 605;
+    if(height==null || height=="") height = 300;
+    d.width(width).height(height).showModal();
     $(".ui-dialog-content").mCustomScrollbar({
         axis: "y",
         advanced: {autoExpandHorizontalScroll: true},
@@ -113,8 +115,8 @@ function showModalDialog(title, custom_content, ok_callback, width, height) {
 }
 
 var sensor_metadata_map = {
-    "sin_sensor_info":{
-        "name": "正弦传感器",
+    "正弦传感器":{
+        "name": "sin_sensor_info",
         "data_schema": {
             "CLSJ":"float",
             "CLYB":"float",
@@ -123,16 +125,16 @@ var sensor_metadata_map = {
             "XZYB":"float"
         }
     },
-    "fiber_sensor_info":{
-        "name": "光纤应变传感器",
+    "光纤应变传感器":{
+        "name": "fiber_sensor_info",
         "data_schema": {
             "CLSJ":"float",
             "CLBC":"float",
             "YB":"float"
         }
     },
-    "gps_sensor_info":{
-        "name": "GPS传感器",
+    "GPS传感器":{
+        "name": "gps_sensor_info",
         "data_schema": {
             "CLSJ":"float",
             "WXZBX":"float",
@@ -149,16 +151,16 @@ var sensor_metadata_map = {
             "QLWZ":"float",
         }
     },
-    "acce_sensor_info":{
-        "name": "加速度传感器",
+    "加速度传感器":{
+        "name": "acce_sensor_info",
         "data_schema": {
             "CLSJ":"float",
             "DY":"float",
             "JSD":"float"
         }
     },
-    "cable_sensor_info":{
-        "name": "索力传感器",
+    "索力传感器":{
+        "name": "cable_sensor_info",
         "data_schema": {
             "CLSJ":"float",
             "DY":"float",

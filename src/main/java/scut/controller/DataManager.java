@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.hadoop.hbase.client.Table;
+import org.apache.log4j.Logger;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -35,6 +36,7 @@ import java.util.Set;
 @RestController
 public class DataManager {
 
+    public static Logger logger = Logger.getLogger(DataManager.class);
     int maxActive = 100;
     String druid_mysql_url = String.format(Constants.MYSQL_FORMAT,Constants.MYSQL_URL,Constants.MYSQL_USERNAME,Constants.MYSQL_PASSWORD) + "|" + maxActive;
     SQLBaseDao baseDao = SQLDaoFactory.getSQLDaoInstance(druid_mysql_url);
@@ -86,7 +88,7 @@ public class DataManager {
                 out.close();
                 // 2. 上传到HBase
                 String execStr = Constants.UPLOAD_DATA_BIN_SH + " " + sensor_id + " " + fileName;
-                System.out.println(execStr);
+                logger.debug(execStr);
                 Executor executor = new CommandLineExecutor(execStr);
                 Scheduler.getInstance().runExecutor(executor);
                 data.put("url","http://192.168.0.100:8088/cluster/scheduler");
@@ -206,17 +208,19 @@ public class DataManager {
                         true,
                         dataSchema.keySet(),
                         otherInfo);
-                if(data.size() > pageSize){
-                    JSONObject lastItem = (JSONObject) data.get(data.size()-1);
-                    nextRowKey = lastItem.get("CLSJ").toString();
-                    data.remove(lastItem);
-                    total = skip + data.size() + 1;
-                }else{
-                    // 翻到最后一页
-                    total = skip + data.size();
+                if(data.size()>0){
+                    if(data.size() > pageSize){
+                        JSONObject lastItem = (JSONObject) data.get(data.size()-1);
+                        nextRowKey = lastItem.get("CLSJ").toString();
+                        data.remove(lastItem);
+                        total = skip + data.size() + 1;
+                    }else{
+                        // 翻到最后一页
+                        total = skip + data.size();
+                    }
+                    JSONObject firstItem = (JSONObject)data.get(0);
+                    currentRowKey = firstItem.get("CLSJ").toString();
                 }
-                JSONObject firstItem = (JSONObject)data.get(0);
-                currentRowKey = firstItem.get("CLSJ").toString();
                 if(hbaseTable != null){
                     try {
                         hbaseTable.close();

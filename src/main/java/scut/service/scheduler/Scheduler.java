@@ -1,5 +1,6 @@
 package scut.service.scheduler;
 
+import org.apache.log4j.Logger;
 import scut.service.scheduler.executor.Executor;
 
 import java.util.concurrent.Callable;
@@ -10,6 +11,7 @@ import java.util.concurrent.FutureTask;
  */
 public class Scheduler {
 
+    public static Logger logger = Logger.getLogger(Scheduler.class);
     private static Scheduler instance = null;
 
     public static Scheduler getInstance() {
@@ -31,7 +33,7 @@ public class Scheduler {
             public Integer call() throws Exception {
                 int retVal = executor.execute();
                 // TODO:消息通知对应用户
-                System.out.println("retVal: " + retVal);
+                logger.debug("retVal: " + retVal);
                 return retVal;
             }
         };

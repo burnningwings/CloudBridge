@@ -489,7 +489,7 @@ function updateGrid(bridge_id,box_id,sensor_info){
                         rowKey: row_key,
                         page: options.page,
                         pageSize: options.pageSize,
-                        sensorInfo: sensor_info
+                        sensorInfo: $("#sensor_menu").val()
                     };
                     return parameter;
                 }
@@ -680,7 +680,7 @@ $(function () {
 
     // begin
     //初始化表格
-    updateGrid($("#bridge_menu").val(),$("#watch_box_menu").val(),$("#sensor_menu").val());
+    // updateGrid($("#bridge_menu").val(),$("#watch_box_menu").val(),$("#sensor_menu").val());
     // end
 
     $('#bridge_menu').change(function(){

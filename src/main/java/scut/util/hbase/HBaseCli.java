@@ -25,7 +25,11 @@ public class HBaseCli {
     private static HBaseCli instance = null;
     private Configuration conf = null;
     private HBaseCli(){
-        conf = HBaseConfiguration.create();
+        this.conf = HBaseConfiguration.create();
+        this.conf.set("hbase.zookeeper.quorum","cu01,cu02,cu03,cu04,cu05,cu06");
+        this.conf.set("hbase.zookeeper.property.clientPort","2181");
+        this.conf.set("hbase.master", "mu01:60000");
+        this.conf.set("mapreduce.output.fileoutputformat.outputdir", "/tmp");
     };
 
     public static HBaseCli getInstance() {
@@ -39,25 +43,9 @@ public class HBaseCli {
         return instance;
     }
 
-    public Table getHBaseTable(String name){
-        if (name==null) return null;
-        this.conf.set("hbase.zookeeper.quorum","cu01,cu02,cu03,cu04,cu05,cu06");
-        this.conf.set("hbase.zookeeper.property.clientPort","2181");
-        this.conf.set("hbase.master", "mu01:60000");
-        this.conf.set("mapreduce.output.fileoutputformat.outputdir", "/tmp");
-        try {
-            Connection connection = ConnectionFactory.createConnection(conf);
-            LOG.info(String.format("与HBase表%s建立连接",name));
-            return connection.getTable(TableName.valueOf(name));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     /**
      * 查询特定范围内的数据
-     * @param table
+     * @param tableName
      * @param startRowKey
      * @param endRowKey
      * @param columnArray
@@ -65,7 +53,7 @@ public class HBaseCli {
      * @param sample 采样个数
      * @return
      */
-    public JSONArray query(Table table,String startRowKey,String endRowKey,JSONArray columnArray,int limit, int sample){
+    public JSONArray query(String tableName,String startRowKey,String endRowKey,JSONArray columnArray,int limit, int sample){
         JSONArray data = new JSONArray();
         Scan scan = new Scan();
         if(sample<=0){
@@ -86,7 +74,12 @@ public class HBaseCli {
                 scan.setStopRow(endRowKey.getBytes());
             }
             // 开始查询
+            Connection connection = null;
+            Table table = null;
             try {
+                connection = ConnectionFactory.createConnection(conf);
+                LOG.info(String.format("与HBase表%s建立连接",tableName));
+                table = connection.getTable(TableName.valueOf(tableName));
                 ResultScanner result  = table.getScanner(scan);
                 for (Result r : result) {
                     JSONObject rowObj = new JSONObject();
@@ -102,6 +95,22 @@ public class HBaseCli {
             } catch (IOException e) {
                 System.out.println("数据表" + table.getName() + "不存在！");
 //                e.printStackTrace();
+            } finally {
+                if(table!=null) {
+                    try {
+                        table.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if(connection!=null) {
+                    try {
+                        connection.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                LOG.info(String.format("断开与HBase的连接"));
             }
         }else{
             // 采样
@@ -112,7 +121,7 @@ public class HBaseCli {
 
     /**
      * 翻页功能
-     * @param table
+     * @param tableName
      * @param pageSize
      * @param next
      * @param rowKey
@@ -121,7 +130,7 @@ public class HBaseCli {
      * @param otherInfo
      * @return
      */
-    public JSONArray getPage(Table table, int pageSize, boolean next, String rowKey, boolean reversed, Set<String> columns, Map<String,String> otherInfo){
+    public JSONArray getPage(String tableName, int pageSize, boolean next, String rowKey, boolean reversed, Set<String> columns, Map<String,String> otherInfo){
         // 增加下一行
         int nowPageSize = pageSize + 1;
         FilterList filterList = new FilterList(FilterList.Operator.MUST_PASS_ALL);
@@ -134,11 +143,16 @@ public class HBaseCli {
         scan.setMaxResultSize(nowPageSize);
         scan.setStartRow(rowKey.getBytes());
         if(!next){
-            scan.setReversed(true);
+            scan.setReversed(false);
         }
 
         JSONArray data = new JSONArray();
+        Connection connection = null;
+        Table table = null;
         try {
+            connection = ConnectionFactory.createConnection(conf);
+            LOG.info(String.format("与HBase表%s建立连接",tableName));
+            table = connection.getTable(TableName.valueOf(tableName));
             ResultScanner result  = table.getScanner(scan);
             for (Result r : result) {
                 JSONObject rowObj = new JSONObject();
@@ -158,6 +172,22 @@ public class HBaseCli {
             e.printStackTrace();
         } catch (Exception e){
             e.printStackTrace();
+        }  finally {
+            if(table!=null) {
+                try {
+                    table.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(connection!=null) {
+                try {
+                    connection.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            LOG.info(String.format("断开与HBase的连接"));
         }
         return data;
     }

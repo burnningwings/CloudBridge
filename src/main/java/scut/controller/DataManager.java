@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.dbutils.ResultSetHandler;
-import org.apache.hadoop.hbase.client.Table;
 import org.apache.log4j.Logger;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -195,13 +194,12 @@ public class DataManager {
             if(dataSchema!=null){
                 dataSchema.remove("CLSJ");
                 // 基于hbase的分页
-                Table hbaseTable = HBaseCli.getInstance().getHBaseTable(hbaseTableName);
                 // 增加每一行的额外信息
                 Map<String,String> otherInfo = new HashMap<>();
                 otherInfo.put("sensor_id",sensorId);
                 otherInfo.put("sensor_number",sensorInfoArray[1]);
                 data = HBaseCli.getInstance().getPage(
-                        hbaseTable,
+                        hbaseTableName,
                         pageSize,
                         next,
                         rowKey,
@@ -209,6 +207,11 @@ public class DataManager {
                         dataSchema.keySet(),
                         otherInfo);
                 if(data.size()>0){
+                    System.out.println("next:" + next);
+                    System.out.println("1:" + rowKey);
+                    System.out.println("2:" + data.size());
+                    System.out.println("3:"  + pageSize);
+                    System.out.println("4:"  + skip);
                     if(data.size() > pageSize){
                         JSONObject lastItem = (JSONObject) data.get(data.size()-1);
                         nextRowKey = lastItem.get("CLSJ").toString();
@@ -220,13 +223,6 @@ public class DataManager {
                     }
                     JSONObject firstItem = (JSONObject)data.get(0);
                     currentRowKey = firstItem.get("CLSJ").toString();
-                }
-                if(hbaseTable != null){
-                    try {
-                        hbaseTable.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
                 }
             }
         }
@@ -269,12 +265,10 @@ public class DataManager {
                     System.out.println(columnArray);
                 }
                 String hbaseTableName = "CloudBridge:" + sensorId;
-                Table hbaseTable = HBaseCli.getInstance().getHBaseTable(hbaseTableName);
                 int sample = -1;
-                JSONArray rangeData = HBaseCli.getInstance().query(hbaseTable,startRowKey,endRowKey,columnArray,limit,sample);
+                JSONArray rangeData = HBaseCli.getInstance().query(hbaseTableName,startRowKey,endRowKey,columnArray,limit,sample);
                 data.put(sensorId.toString(),rangeData);
             }
-            System.out.println(data);
         }
         response.setData(data);
         return response.getHttpResponse();

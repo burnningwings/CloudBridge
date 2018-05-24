@@ -12,6 +12,9 @@
         <link rel="stylesheet" type="text/css" href="assets/css/font-awesome.min.css">
         <!-- 下拉菜单 -->
         <link rel="stylesheet" type="text/css" href="ext/bootstrap-select-1.12.4/css/bootstrap-select.min.css">
+        <!-- 支持同步和异步分页 -->
+        <link href="assets/css/kendo.common.min.css" rel="stylesheet" type="text/css" />
+        <link href="assets/css/kendo.default.min.css" rel="stylesheet" type="text/css" />
         <!-- 滚动条 -->
         <link rel="stylesheet" type="text/css" href="ext/mCustomScrollbar-3.0.9/css/jquery.mCustomScrollbar.css">
         <!-- 对话框 -->
@@ -109,6 +112,8 @@
                     <div class="panel-body" style="padding:0 20px 20px 20px">
                         <h4 class="control-label">从本地选择传感器数据（csv格式，小于50MB）：</h4>
                         <input id="f_upload" name="f_upload" type="file" class="file file-loading" data-preview-file-type="text"/>
+                        <br>
+                        <div id="message-grid"></div>
                     </div>
                 </div>
             </div>
@@ -128,6 +133,9 @@
         <script src="ext/bootstrap-select-1.12.4/js/i18n/defaults-zh_CN.min.js"></script>
         <!-- 对话框 -->
         <script src="ext/artDialog-6.0.4/js/dialog-plus-min.js"></script>
+        <!-- table相关 -->
+        <script src="assets/js/kendo.web.min.js"></script>
+        <script src="udf/js/common.js"></script>
         <!-- 滚动条 -->
         <script src="ext/mCustomScrollbar-3.0.9/js/jquery.mCustomScrollbar.concat.min.js"></script>
         <!-- bootstrap脚本必须放在jquery-ui之后，否则某些操作会冲突 -->

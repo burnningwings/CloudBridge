@@ -114,6 +114,31 @@ function showModalDialog(title, custom_content, ok_callback, width, height) {
     });
 }
 
+//模态弹窗-拥有水平滚动条
+function showMessageDialog(title, custom_content, ok_callback, width, height) {
+    if(width==null || width=="") width = 605;
+    if(height==null || height=="") height = 300;
+    var d = dialog({
+        title: title,
+        content: custom_content,
+        width: width,
+        height: height,
+        okValue: '确定',
+        ok: function () {
+            return ok_callback();
+        },
+        cancelValue: '取消',
+        cancel: function () {
+        }
+    });
+    $(".ui-dialog-content").mCustomScrollbar({
+        axis: "yx",
+        advanced: {autoExpandHorizontalScroll: true},
+        theme: "minimal-dark"
+    });
+    d.showModal();
+}
+
 var sensor_metadata_map = {
     "正弦传感器":{
         "name": "sin_sensor_info",

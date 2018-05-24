@@ -2,6 +2,7 @@ package scut.service.scheduler;
 
 import org.apache.log4j.Logger;
 import scut.service.scheduler.executor.Executor;
+import scut.util.Constants;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
@@ -31,10 +32,15 @@ public class Scheduler {
     public void runExecutor(Executor executor){
         Callable<Integer> callable = new Callable<Integer>() {
             public Integer call() throws Exception {
-                int retVal = executor.execute();
-                // TODO:消息通知对应用户
-                logger.debug("retVal: " + retVal);
-                return retVal;
+                String key = executor.getKey();
+                LogEntity logEntity = executor.execute();
+                if(logEntity.getExitVal() == 0)
+                    Message.getInstance().update(key,null,null,Constants.FINISHED,null,logEntity.toString());
+                else
+                    Message.getInstance().update(key,null,null,Constants.FAILED,null,logEntity.toString());
+                logger.debug("exitVal: " + logEntity.getExitVal());
+                logger.debug(logEntity.toString());
+                return logEntity.getExitVal();
             }
         };
         FutureTask<Integer> future = new FutureTask<Integer>(callable);

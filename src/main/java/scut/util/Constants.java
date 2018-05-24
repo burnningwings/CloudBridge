@@ -20,4 +20,10 @@ public class Constants {
 
     // 上传数据程序路径
     public static String UPLOAD_DATA_BIN_SH = null;
+
+    // 消息状态
+    public final static String READY = "READY";
+    public final static String RUNNING = "RUNNING";
+    public final static String FINISHED = "FINISHED";
+    public final static String FAILED = "FAILED";
 }

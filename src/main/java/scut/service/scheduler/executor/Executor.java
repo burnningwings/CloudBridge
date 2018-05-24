@@ -1,8 +1,12 @@
 package scut.service.scheduler.executor;
 
+import scut.service.scheduler.LogEntity;
+
 /**
  * Created by Carrod on 2018/5/21.
  */
 public interface Executor {
-    int execute() throws Exception;
+    String getKey();
+    String getStatus();
+    LogEntity execute();
 }

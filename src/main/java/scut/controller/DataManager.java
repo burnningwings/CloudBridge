@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import scut.base.HttpResponse;
+import scut.service.scheduler.Message;
 import scut.service.scheduler.Scheduler;
 import scut.service.scheduler.executor.CommandLineExecutor;
 import scut.service.scheduler.executor.Executor;
@@ -64,8 +65,93 @@ public class DataManager {
         return dataSchema;
     }
 
+    // 可应用于各类消息通知
+    @RequestMapping(value = "/message/log", method = RequestMethod.GET, produces = "application/json")
+    public JSONObject getMessageStatus(String id){
+        HttpResponse response = new HttpResponse();
+        JSONObject data = Message.getInstance().getInfo(id,new String[]{"error_log"});
+        response.setData(data);
+        return response.getHttpResponse();
+    }
+
+    // 重新提交
+    @RequestMapping(value = "/upload-data/replay", method = RequestMethod.GET, produces = "application/json")
+    public JSONObject replay(String id){
+        HttpResponse response = new HttpResponse();
+        JSONObject data = Message.getInstance().getInfo(id,new String[]{"param"});
+        String param = data.getString("param");
+        logger.debug(param);
+        if(param==null || param.equals("")){
+            response.setStatus(HttpResponse.FAIL_STATUS);
+            response.setMsg("内部数据格式错误！");
+        }else{
+            Map execMap = new JsonParser().parse(param);
+            Object execObj = execMap.getOrDefault("exec_str",null);
+            if(execObj==null) {
+                response.setStatus(HttpResponse.FAIL_STATUS);
+                response.setMsg("内部数据格式错误！");
+            }
+            else{
+                logger.debug(execObj.toString());
+                Executor executor = new CommandLineExecutor(id,execObj.toString());
+                Message.getInstance().update(id,null,null,Constants.READY,param,null);
+                Scheduler.getInstance().runExecutor(executor);
+                data.put("url","http://192.168.0.100:8088/cluster/scheduler");
+                // 前端获取该key，可监听上传情况
+                data.put("id",id);
+            }
+        }
+        response.setData(data);
+        return response.getHttpResponse();
+    }
+
+    @RequestMapping(value = "/upload-data/message/list", method = RequestMethod.GET, produces = "application/json")
+    public JSONObject getMessagePage(int page, Integer pageSize){
+        String sql = String.format("select * from message order by last_update desc limit %s offset %s", pageSize,(page-1)*pageSize);
+        String[] fields = new String[]{"id","source","target","status","last_update","error_log"};
+        JSONArray data = new JSONArray();
+        try {
+            baseDao.querySingleObject(sql,new ResultSetHandler<String>(){
+                @Override
+                public String handle(ResultSet rs) throws SQLException {
+                    while(rs.next()){
+                        JSONObject item = new JSONObject();
+                        for(String filed: fields) {
+                            Object value = rs.getObject(filed);
+                            if(value==null){
+                                value = "";
+                            }
+                            item.put(filed, value.toString());
+                        }
+                        data.add(item);
+                    }
+                    return null;
+                }
+            });
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        sql = "select count(*) as count from message";
+        JSONObject response = new JSONObject();
+        try {
+            baseDao.querySingleObject(sql,new ResultSetHandler<String>(){
+                @Override
+                public String handle(ResultSet rs) throws SQLException {
+                    if(rs.next()){
+                        response.put("total",rs.getString("count"));
+                    }
+                    return null;
+                }
+            });
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        response.put("data",data);
+        return response;
+    }
+
     @RequestMapping(value = "/upload-data/upload", method = RequestMethod.POST)
-    public JSONObject upload(@RequestParam("f_upload") MultipartFile file, String sensor_id) {
+    public JSONObject upload(@RequestParam("f_upload") MultipartFile file, String sensor_id, String sensor_number) {
         HttpResponse response = new HttpResponse();
         JSONObject data = new JSONObject();
         if (!file.isEmpty() && sensor_id!=null && !sensor_id.equalsIgnoreCase("null")
@@ -77,8 +163,9 @@ public class DataManager {
                     targetFile.mkdirs();
                 }
                 // 待上传文件完整路径
-                String md5 = DigestUtils.md5Hex(file.getInputStream());
-                String fileName = Constants.SENSOR_DATA_ROOT_DIR + "/" + md5 + "-" + file.getOriginalFilename();
+                String md5 = DigestUtils.md5Hex(file.getInputStream() + sensor_id);
+                String originFileName = file.getOriginalFilename();
+                String fileName = Constants.SENSOR_DATA_ROOT_DIR + "/" + md5 + "-" + originFileName;
                 // 1. 写到本地
                 BufferedOutputStream out = new BufferedOutputStream(
                         new FileOutputStream(new File( fileName)));
@@ -88,9 +175,14 @@ public class DataManager {
                 // 2. 上传到HBase
                 String execStr = Constants.UPLOAD_DATA_BIN_SH + " " + sensor_id + " " + fileName;
                 logger.debug(execStr);
-                Executor executor = new CommandLineExecutor(execStr);
+                Executor executor = new CommandLineExecutor(md5,execStr);
+                JSONObject param = new JSONObject();
+                param.put("exec_str",execStr);
+                Message.getInstance().update(md5,originFileName,sensor_number,Constants.READY,param.toJSONString(),null);
                 Scheduler.getInstance().runExecutor(executor);
                 data.put("url","http://192.168.0.100:8088/cluster/scheduler");
+                // 前端获取该key，可监听上传情况
+                data.put("id",md5);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
                 response.setStatus(HttpResponse.FAIL_STATUS);

@@ -59,9 +59,122 @@ function updateDropdownMenu(response){
     return sensor_info;
 }
 
+function updateMessageGrid(){
+    var dataSource = new kendo.data.DataSource({
+        transport: {
+            read: {
+                type: "get",
+                url: "/upload-data/message/list",
+                dataType: "json",
+                contentType: "application/json; charset=utf-8"
+            },
+            parameterMap: function (options, operation) {
+
+                if (operation == "read") {
+                    var parameter = {
+                        page: options.page,
+                        pageSize: options.pageSize
+                    };
+                    return parameter;
+                }
+            }
+        },
+        batch: true,
+        pageSize: 10,
+        schema: {
+            data: function (d) {
+                return d.data;
+            },
+            total: function (d) {
+                return d.total;
+            }
+        },
+        serverPaging: true
+    });
+
+    $("#message-grid").kendoGrid({
+        dataSource: dataSource,
+        pageable: {
+            // pageSizes: true,
+            pageSizes: [5,10,20],
+            buttonCount: 1, // 限制其不能点击对应页
+            messages: {
+                display: "{0} - {1} 共 {2} 条数据",
+                empty: "没有数据",
+                page: "页",
+                of: "/ {0}",
+                itemsPerPage: "条每页",
+                first: "第一页",
+                previous: "前一页",
+                next: "下一页",
+                last: "最后一页",
+                refresh: "刷新"
+            }
+        },
+        columns: [
+            {
+                field: "id",
+                title: "ID",
+                width: "280px",
+                headerAttributes:{ style:"text-align:center"},
+                attributes:{ class:"text-center" }
+            }, {
+                field: "source",
+                title: "原文件名称",
+                headerAttributes:{ style:"text-align:center"},
+                attributes:{ class:"text-center" }
+            }, {
+                field: "target",
+                title: "传感器编号",
+                headerAttributes:{ style:"text-align:center"},
+                attributes:{ class:"text-center" }
+            }, {
+                field: "status",
+                title: "上传状态",
+                headerAttributes:{ style:"text-align:center"},
+                attributes:{ class:"text-center" }
+            },{
+                field: "last_update",
+                title: "最近更新时间",
+                headerAttributes:{ style:"text-align:center"},
+                attributes:{ class:"text-center" }
+            }, {
+                title: "操作",
+                template: '<button class="btn btn-primary" title="重新上传" type="button" onclick="reUpload(\'#: id #\')"/><i class="fa fa-fw fa-repeat"></i></button>&nbsp;<button class="btn btn-success" type="button" onclick="browseUploadLog(\'#: id #\')"/>查看日志</button>',
+                headerAttributes:{ style:"text-align:center"},
+                attributes:{ class:"text-center" }
+            }
+        ]
+    });
+}
+
+function reUpload(id){
+    function callback(){
+        var response = webRequest("/upload-data/replay","GET",false,{"id":id});
+        console.log(response)
+        if(response!=null && response.status==0){
+            updateMessageGrid();
+            showModalDialog("提示", "<div style='text-align:center;'>文件正在上传...</div>",function(){},120,40);
+        }else{
+            showTransientDialog(response.msg);
+        }
+    }
+    showAlertDialog("确定重新上传？",callback);
+}
+
+function browseUploadLog(id){
+    var response = webRequest("/message/log","GET",false,{"id":id});
+    console.log(response)
+    if(response!=null && response.status==0){
+        // 替换所有换行符
+        showMessageDialog("日志", response.data["error_log"].replace(/\n/g,"<br>"), function(){},400,100);
+    }else{
+        showTransientDialog(response.msg);
+    }
+}
+
 // 其它初始化
 $(function () {
-
     var url = "/query-data/dropdown";
     var response = webRequest(url,"GET",false,{"bridge_id":"all"})
     var data = updateDropdownMenu(response);
@@ -116,6 +229,7 @@ $(function () {
     $("#f_upload").fileinput({
         allowedFileExtensions: ['csv'],
         uploadUrl: "upload-data/upload",
+        language: 'zh',
         uploadAsync: true,
         showUpload: true,
         maxFileCount: 1,
@@ -125,7 +239,8 @@ $(function () {
         maxPreviewFileSize: 1,
         uploadExtraData: function() {
             return {
-                "sensor_id": $("#sensor_menu").val()
+                "sensor_id": $("#sensor_menu").val(),
+                "sensor_number": $("#sensor_menu option:selected").text()
             };
         }
     }).on("fileuploaded", function (event, data, previewId, index) {
@@ -134,15 +249,17 @@ $(function () {
         if(response.status!=0){
             showTransientDialog(response.msg);
         }else{
-            function ok_callback(){
-                window.open(response.data["url"]);
-            }
-            showModalDialog("提示", "<div style='text-align:center;'>文件正在上传！<br>查看上传情况？</div>", ok_callback,100,40)
+            updateMessageGrid();
+            showModalDialog("提示", "<div style='text-align:center;'>文件正在上传...</div>",function(){},120,40);
         }
     }).on('fileuploaderror', function(event, data, msg) {
         var response = data.response;
         console.log(data)
-        showTransientDialog("仅支持csv且单文件大小不超过50MB！");
+        var msg = "仅支持csv且单文件大小不超过50MB！";
+        if(response!=null && response.msg!="") msg = response.msg;
+        showTransientDialog(msg);
     });
+    // 获取消息列表
+    updateMessageGrid();
 });
 

@@ -102,6 +102,14 @@ public class Home {
         return "query-data";
     }
 
+    @RequestMapping("/upload-data")
+    public String uploadData(Model model) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
+        model.addAttribute(Constants.CURRENT_USER, currentUser);
+        return "upload-data";
+    }
+
     @RequestMapping("/sensor")
     public String sensor(Model model, Integer bridgeId, Integer sectionId, Integer watchPointId, Integer watchBoxId) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

@@ -39,6 +39,8 @@ public class CloudBridge implements EnvironmentAware {
             Constants.MYSQL_URL = env.getProperty("spring.datasource.url").toString();
             Constants.MYSQL_USERNAME = env.getProperty("spring.datasource.username").toString();
             Constants.MYSQL_PASSWORD = env.getProperty("spring.datasource.password").toString();
+            Constants.SENSOR_DATA_ROOT_DIR = env.getProperty("sensor.data.dir").toString();
+            Constants.UPLOAD_DATA_BIN_SH = env.getProperty("upload.bin.sh").toString();
         }catch (Exception e){
             logger.debug("当前MYSQL未配置.");
         }

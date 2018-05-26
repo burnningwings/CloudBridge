@@ -15,15 +15,15 @@ public class Constants {
     public final static String CURRENT_USER = "CurrentUser";
     public final static String ACCESS_TOKEN = "token";
 
-//    public final static Map<String, String> sensorMap = new HashMap<String, String>();
-//    static {
-//        sensorMap.put("加速度传感器", "acce_sensor_info");
-//        sensorMap.put("索力传感器", "cable_sensor_info");
-//        sensorMap.put("光纤传感器", "fiber_sensor_info");
-//        sensorMap.put("GPS传感器", "gps_sensor_info");
-//        sensorMap.put("正弦传感器", "sin_sensor_info");
-//    };
+    // 传感器数据保存根目录
+    public static String SENSOR_DATA_ROOT_DIR = null;
 
-    public final static String[] sensorArray = new String[]{
-            "acce_sensor_info","cable_sensor_info","fiber_sensor_info","gps_sensor_info","sin_sensor_info"};
+    // 上传数据程序路径
+    public static String UPLOAD_DATA_BIN_SH = null;
+
+    // 消息状态
+    public final static String READY = "READY";
+    public final static String RUNNING = "RUNNING";
+    public final static String FINISHED = "FINISHED";
+    public final static String FAILED = "FAILED";
 }

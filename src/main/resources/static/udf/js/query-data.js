@@ -1,15 +1,14 @@
 
 var sensor_map = {
-    "acce_sensor_info": [
+    "加速度传感器": [
         {
-            template:'<input type="checkbox" class="checkbox" name=sensordata-"#: sensor_info #" value="#: sensor_info #" />',
+            template:'<input type="checkbox" class="checkbox" name=sensordata-"#: sensor_id #" value="#: sensor_id #" />',
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         },
         {
-            // field: "CGQBH",
             title: "传感器编号",
-            template: '<a href="javascript: void(0);" onclick="sensorFigure(\'#: table_name #\',\'#: CGQBH #\')"/>#: CGQBH #</button>',
+            template: '<a href="javascript: void(0);" onclick="sensorFigure(\'#: sensor_id #\',\'#: sensor_number #\')"/>#: sensor_number #</button>',
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         }, {
@@ -29,20 +28,20 @@ var sensor_map = {
             attributes:{ class:"text-center" }
         }, {
             title: "修改",
-            template: "<button class='btn btn-success' type='button' id='modify-#: sensor_info #' onclick='modifySensorData()'/>修改</button>",
+            template: "<button class='btn btn-success' type='button' id='modify-#: sensor_id #' onclick='modifySensorData()'/>修改</button>",
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         }
     ],
-    "cable_sensor_info":[
+    "索力传感器":[
         {
-            template:'<input type="checkbox" class="checkbox" name=sensordata-"#: sensor_info #" value="#: sensor_info #" />',
+            template:'<input type="checkbox" class="checkbox" name=sensordata-"#: sensor_id #" value="#: sensor_id #" />',
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         },
         {
-            field: "CGQBH",
             title: "传感器编号",
+            template: '<a href="javascript: void(0);" onclick="sensorFigure(\'#: sensor_id #\',\'#: sensor_number #\')"/>#: sensor_number #</button>',
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         }, {
@@ -67,20 +66,20 @@ var sensor_map = {
             attributes:{ class:"text-center" }
         }, {
             title: "修改",
-            template: "<button class='btn btn-success' type='button' id='modify-#: sensor_info #' onclick='modifySensorData()'/>修改</button>",
+            template: "<button class='btn btn-success' type='button' id='modify-#: sensor_id #' onclick='modifySensorData()'/>修改</button>",
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         }
     ],
-    "fiber_sensor_info":[
+    "光纤传感器":[
         {
             template:'<input type="checkbox" class="checkbox" name=sensordata-"#: sensor_info #" value="#: sensor_info #" />',
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         },
         {
-            field: "CGQBH",
             title: "传感器编号",
+            template: '<a href="javascript: void(0);" onclick="sensorFigure(\'#: sensor_id #\',\'#: sensor_number #\')"/>#: sensor_number #</button>',
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         }, {
@@ -100,20 +99,20 @@ var sensor_map = {
             attributes:{ class:"text-center" }
         }, {
             title: "修改",
-            template: "<button class='btn btn-success' type='button' id='modify-#: sensor_info #' onclick='modifySensorData()'/>修改</button>",
+            template: "<button class='btn btn-success' type='button' id='modify-#: sensor_id #' onclick='modifySensorData()'/>修改</button>",
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         }
     ],
-    "gps_sensor_info":[
+    "GPS传感器":[
         {
             template:'<input type="checkbox" class="checkbox" name=sensordata-"#: sensor_info #" value="#: sensor_info #" />',
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         },
         {
-            field: "CGQBH",
             title: "传感器编号",
+            template: '<a href="javascript: void(0);" onclick="sensorFigure(\'#: sensor_id #\',\'#: sensor_number #\')"/>#: sensor_number #</button>',
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         }, {
@@ -183,20 +182,20 @@ var sensor_map = {
             attributes:{ class:"text-center" }
         }, {
             title: "修改",
-            template: "<button class='btn btn-success' type='button' id='modify-#: sensor_info #' onclick='modifySensorData()'/>修改</button>",
+            template: "<button class='btn btn-success' type='button' id='modify-#: sensor_id #' onclick='modifySensorData()'/>修改</button>",
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         }
     ],
-    "sin_sensor_info":[
+    "正弦传感器":[
         {
             template:'<input type="checkbox" class="checkbox" name=sensordata-"#: sensor_info #" value="#: sensor_info #" />',
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         },
         {
-            field: "CGQBH",
             title: "传感器编号",
+            template: '<a href="javascript: void(0);" onclick="sensorFigure(\'#: sensor_id #\',\'#: sensor_number #\')"/>#: sensor_number #</button>',
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         }, {
@@ -226,14 +225,14 @@ var sensor_map = {
             attributes:{ class:"text-center" }
         }, {
             title: "修改",
-            template: "<button class='btn btn-success' type='button' id='modify-#: sensor_info #' onclick='modifySensorData()'/>修改</button>",
+            template: "<button class='btn btn-success' type='button' id='modify-#: sensor_id #' onclick='modifySensorData()'/>修改</button>",
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         }
     ]
 }
 
-function getAndshowSensorFigure(figure_id,CGQBH_array,current_dialog,params,single){
+function getAndshowSensorFigure(figure_id,sensor_id_array,sensor_number_array,current_dialog,params,single){
     function successCallback(message) {
         console.log(message)
         current_dialog.button('reset').dequeue();
@@ -245,13 +244,14 @@ function getAndshowSensorFigure(figure_id,CGQBH_array,current_dialog,params,sing
         }
         var xAxis_data = {};
         var series_data = {};
-        for(var index in CGQBH_array){
-            var CGQBH = CGQBH_array[index];
+        for(var index in sensor_id_array){
+            var sensor_id = sensor_id_array[index];
+            var sensor_number = sensor_number_array[index];
             // 对于每一个传感器
-            var data = message["data"][CGQBH];
+            var data = message["data"][sensor_id];
             if (data.length <= 0) {
                 $("#" + figure_id).html("<img style='margin-top:120px;' src='assets/img/warning.png'/>");
-                showTransientDialog("传感器" + CGQBH + "当前时间区间不存在数据！");
+                showTransientDialog("传感器" + sensor_number + "对应时间区间数据不存在！");
                 continue;
             }
             // 开始展示
@@ -259,9 +259,9 @@ function getAndshowSensorFigure(figure_id,CGQBH_array,current_dialog,params,sing
             var current_legend_array = []
             Object.keys(data[0]).forEach(function(key){
                 if(key!="CLSJ") {
-                    series_data[CGQBH + "-" + key] = [];
-                    xAxis_data[CGQBH + "-" + key] = [];
-                    current_legend_array.push(CGQBH + "-" + key);
+                    series_data[sensor_number + "-" + key] = [];
+                    xAxis_data[sensor_number + "-" + key] = [];
+                    current_legend_array.push(sensor_number + "-" + key);
                 }
             });
             for(var i in data){
@@ -292,8 +292,8 @@ function getAndshowSensorFigure(figure_id,CGQBH_array,current_dialog,params,sing
     webRequest(url,"GET",true,params,successCallback)
 }
 
-function sensorFigure(table_name,CGQBH){
-    var title = "传感器-" + table_name + "-" + CGQBH;
+function sensorFigure(sensor_id,sensor_number){
+    var title = "传感器-" + sensor_number;
     var data_format_str = 'yyyy-MM-dd HH:mm:ss';
     var current_time = new Date().format(data_format_str);
     var content = ' \
@@ -377,8 +377,7 @@ function sensorFigure(table_name,CGQBH){
             // 根据选择条件获取查询条件
             var query_condition = getQueryCondition("","",latest_time)
             var params = {
-                "tableName": table_name,
-                "CGQBHList": JSON.stringify([CGQBH]),
+                "sensorList": JSON.stringify([sensor_id]),
                 "columnList": JSON.stringify([]),
                 "startRowKey": query_condition["startRowKey"],
                 "endRowKey": query_condition["endRowKey"],
@@ -388,7 +387,7 @@ function sensorFigure(table_name,CGQBH){
             // params["endRowKey"] = "2018050222001010";
             // 返回后调用
             var current_dialog = $(this);
-            getAndshowSensorFigure(figure_id,[CGQBH],current_dialog,params,true);
+            getAndshowSensorFigure(figure_id,[sensor_id],[sensor_number],current_dialog,params,true);
         });
     });
 
@@ -404,8 +403,7 @@ function sensorFigure(table_name,CGQBH){
 
             var end_row_key = new Date().format('yyyyMMddHHmmssSS');
             var params = {
-                "tableName": table_name,
-                "CGQBHList": JSON.stringify([CGQBH]),
+                "sensorList": JSON.stringify([sensor_id]),
                 "columnList": JSON.stringify([]),
                 "startRowKey": "",
                 "endRowKey": end_row_key,
@@ -413,7 +411,7 @@ function sensorFigure(table_name,CGQBH){
             }
             // 返回后调用
             var current_dialog = $(this);
-            getAndshowSensorFigure(figure_id,[CGQBH],current_dialog,params,true);
+            getAndshowSensorFigure(figure_id,[sensor_id],[sensor_number],current_dialog,params,true);
         });
     });
 
@@ -434,8 +432,7 @@ function sensorFigure(table_name,CGQBH){
             // 根据选择条件获取查询条件
             var end_row_key = new Date().format('yyyyMMddHHmmssSS');
             var params = {
-                "tableName": table_name,
-                "CGQBHList": JSON.stringify([CGQBH]),
+                "sensorList": JSON.stringify([sensor_id]),
                 "columnList": JSON.stringify([]),
                 "startRowKey": new Date(begin_time).format('yyyyMMddHHmmssSS'),
                 "endRowKey": new Date(end_time).format('yyyyMMddHHmmssSS'),
@@ -443,7 +440,7 @@ function sensorFigure(table_name,CGQBH){
             }
             // 返回后调用
             var current_dialog = $(this);
-            getAndshowSensorFigure(figure_id,[CGQBH],current_dialog,params,true);
+            getAndshowSensorFigure(figure_id,[sensor_id],[sensor_number],current_dialog,params,true);
         });
     });
 }
@@ -453,12 +450,13 @@ var current_row_key = "";
 var row_key = "";
 var skip = 0;
 
-function updateGrid(bridge_id,box_id,sensor_id){
+function updateGrid(bridge_id,box_id,sensor_info){
     // 根据传感器类型初始化列表项
-    console.log(bridge_id,box_id,sensor_id)
-    if(sensor_id==null || sensor_id=="") return;
-    var sensor_info_list = sensor_id.split(" - ");
-    var table_columns = sensor_map[sensor_info_list[1]];
+    console.log(bridge_id,box_id,sensor_info)
+    if(sensor_info==null || sensor_info=="") return;
+    var sensor_info_list = sensor_info.split(" - ");
+    console.log(sensor_info)
+    var table_columns = sensor_map[sensor_info_list[2]];
     var dataSource = new kendo.data.DataSource({
         transport: {
             read: {
@@ -491,16 +489,20 @@ function updateGrid(bridge_id,box_id,sensor_id){
                         rowKey: row_key,
                         page: options.page,
                         pageSize: options.pageSize,
-                        sensorInfo: sensor_id
+                        sensorInfo: $("#sensor_menu").val()
                     };
                     return parameter;
                 }
             }
         },
-        requestEnd: function(e) {
+        requestStart: function(e) {
+            // kendo.ui.progress($("#query_data_grid"), true);
+            // kendo.ui.progress($("#query_data_grid"), false);
+        },
+        requestEnd: function () {
             setTimeout(function(){
-                 $("a.k-pager-last").addClass("k-state-disabled");
-             }, 100);
+                $("a.k-pager-last").addClass("k-state-disabled");
+            }, 100);
         },
         change: function(e) {
             $("a.k-pager-last").addClass("k-state-disabled");
@@ -595,7 +597,7 @@ function updateDropdownMenu1(response){
     if(watch_box_selected && !(watch_box_selected.match(/^\s*$/))){
         var sensor_info = data["bridge_detail"][watch_box_selected]["sensor"];
         for(var key in sensor_info){
-            sensor_options = sensor_options + "<option value='" + sensor_info[key] + "'>" + sensor_info[key] + "</option>";
+            sensor_options = sensor_options + "<option value='" + (key + " - " + sensor_info[key]) + "'>" + sensor_info[key] + "</option>";
         }
     }
     $("#sensor_menu").append(sensor_options);
@@ -620,23 +622,23 @@ function updateDropdownMenu2(response){
             bridge_options = bridge_options + "<option value='" + key + "'>" + data["bridge"][key] + "</option>";
         }
         for(var key in data["bridge_detail"]){
-            var sensor_list = data["bridge_detail"][key]["sensor"];
-            for(var index in sensor_list){
-                var sensor_name = sensor_list[index];
+            var sensor_dict = data["bridge_detail"][key]["sensor"];
+            for(var sensor_id in sensor_dict){
+                var sensor_name = sensor_dict[sensor_id];
                 var sensor_name_list = sensor_name.split(" - ");
-                var sensor_id = sensor_name_list[0];
+                var sensor_number = sensor_name_list[0];
                 var sensor_type = sensor_name_list[1];
                 if(sensor_info.hasOwnProperty(sensor_type)){
-                    sensor_info[sensor_type].push(sensor_id);
+                    sensor_info[sensor_type].push([sensor_id,sensor_number]);
                 }else{
-                    sensor_info[sensor_type] = [sensor_id];
+                    sensor_info[sensor_type] = [[sensor_id,sensor_number]];
                 }
             }
         }
         // key为传感器类型
         console.log(sensor_info)
         for(var key in sensor_info){
-            sensor_type_options = sensor_type_options + "<option value='" + key + "'>" + sensor_metadata_map[key]["name"] + "</option>";
+            sensor_type_options = sensor_type_options + "<option value='" + key + "'>" + key + "</option>";
         }
     }
 
@@ -655,13 +657,13 @@ function updateDropdownMenu2(response){
         }
         var sensor_list = sensor_info[sensor_type_selected];
         for(var key in sensor_list){
-            sensor_options = sensor_options + "<option value='" + sensor_list[key] + "'>" + sensor_list[key] + "</option>";
+            sensor_options = sensor_options + "<option value='" + sensor_list[key][0] + "'>" + sensor_list[key][1] + "</option>";
         }
     }
     $("#query_metric_menu").append(metric_options);
     $("#query_group_sensor_menu").append(sensor_options);
-    if(sensor_list.length){
-        $("#query_group_sensor_menu").selectpicker('val', sensor_list[0]);
+    if(sensor_list && sensor_list.length){
+        $("#query_group_sensor_menu").selectpicker('val', sensor_list[0][0]);
     }
     $('.selectpicker').selectpicker('refresh');
     console.log(sensor_info)
@@ -678,14 +680,14 @@ $(function () {
 
     // begin
     //初始化表格
-    updateGrid($("#bridge_menu").val(),$("#watch_box_menu").val(),$("#sensor_menu").val());
+    // updateGrid($("#bridge_menu").val(),$("#watch_box_menu").val(),$("#sensor_menu").val());
     // end
 
     $('#bridge_menu').change(function(){
         var id = $(this).children('option:selected').val();
         var url = "/query-data/dropdown";
         var response = webRequest(url,"GET",false,{"bridge_id":id})
-        data1 = updateDropdownMenu(response);
+        data1 = updateDropdownMenu1(response);
     })
 
     $('#watch_box_menu').change(function(){
@@ -693,7 +695,7 @@ $(function () {
         var sensor_info = data1["bridge_detail"][id]["sensor"];
         var sensor_options = "";
         for(var key in sensor_info){
-            sensor_options = sensor_options + "<option value='" + sensor_info[key] + "'>" + sensor_info[key] + "</option>";
+            sensor_options = sensor_options + "<option value='" + (key + " - " + sensor_info[key]) + "'>" + sensor_info[key] + "</option>";
         }
         $("#sensor_menu").empty();
         $("#sensor_menu").append(sensor_options);
@@ -701,15 +703,18 @@ $(function () {
     })
 
     // 点击查询
-    $("#query_grid_btn").click(function() {
-        var bridge_id = $("#bridge_menu").val();
-        var box_id = $("#watch_box_menu").val();
-        var CGQBH = $("#sensor_menu").val();
-        if(!bridge_id || !box_id || !CGQBH || bridge_id.match(/^\s*$/) || box_id.match(/^\s*$/) || CGQBH.match(/^\s*$/)){
-            showTransientDialog("没有符合条件的查询！");
-        }else{
-            updateGrid(bridge_id,box_id,CGQBH);
-        }
+    $("#query_grid_btn").click(function(){
+        $(this).button('loading').delay(1000).queue(function() {
+            var bridge_id = $("#bridge_menu").val();
+            var box_id = $("#watch_box_menu").val();
+            var sensor_info = $("#sensor_menu").val();
+            if(!bridge_id || !box_id || !sensor_info || bridge_id.match(/^\s*$/) || box_id.match(/^\s*$/) || sensor_info.match(/^\s*$/)){
+                showTransientDialog("没有符合条件的查询！");
+            }else{
+                updateGrid(bridge_id,box_id,sensor_info);
+            }
+            $(this).button('reset').dequeue();
+        });
     });
     // end
 
@@ -742,14 +747,20 @@ $(function () {
         var metric_options = ""
         var sensor_options = "";
         for(var key in sensor_metadata_map[sensor_type_selected]["data_schema"]){
+            if(key=="CLSJ") continue;
             metric_options = metric_options + "<option value='" + key + "'>" + key + "</option>";
         }
         var sensor_list = data2[sensor_type_selected];
         for(var key in sensor_list){
-            sensor_options = sensor_options + "<option value='" + sensor_list[key] + "'>" + sensor_list[key] + "</option>";
+            sensor_options = sensor_options + "<option value='" + sensor_list[key][0] + "'>" + sensor_list[key][1] + "</option>";
         }
+        $("#query_metric_menu").empty();
+        $("#query_group_sensor_menu").empty();
         $("#query_metric_menu").append(metric_options);
         $("#query_group_sensor_menu").append(sensor_options);
+        if(sensor_list.length){
+            $("#query_group_sensor_menu").selectpicker('val', sensor_list[0][0]);
+        }
         $('.selectpicker').selectpicker('refresh');
     })
 
@@ -757,9 +768,14 @@ $(function () {
     $("#query_latest_time_btn").click(function(){
         var sensor_type = $("#query_sensor_type_menu").val();
         var metric = $("#query_metric_menu").val();
-        var group_sensor = $("#query_group_sensor_menu").val();
-        console.log(sensor_type,metric,group_sensor)
-        if(!sensor_type || !metric || !group_sensor || sensor_type.match(/^\s*$/) || metric.match(/^\s*$/) || group_sensor.length<=0){
+        var sensor_id_array = [];
+        var sensor_number_array = [];
+        $("#query_group_sensor_menu option:selected").each(function() {
+            sensor_id_array.push($(this).val());
+            sensor_number_array.push($(this).text());
+        });
+        console.log(sensor_id_array,sensor_number_array)
+        if(!sensor_type || !metric || !sensor_id_array || sensor_type.match(/^\s*$/) || metric.match(/^\s*$/) || sensor_id_array.length<=0){
             showTransientDialog("没有符合条件的查询！");
         }else{
             var figure_id = "query_latest_time_figure";
@@ -771,8 +787,7 @@ $(function () {
                 // 根据选择条件获取查询条件
                 var query_condition = getQueryCondition("","",latest_time)
                 var params = {
-                    "tableName": sensor_type,
-                    "CGQBHList": JSON.stringify(group_sensor),
+                    "sensorList": JSON.stringify(sensor_id_array),
                     "columnList": JSON.stringify([metric]),
                     "startRowKey": query_condition["startRowKey"],
                     "endRowKey": query_condition["endRowKey"],
@@ -780,7 +795,7 @@ $(function () {
                 }
                 // 返回后调用
                 var current_dialog = $(this);
-                getAndshowSensorFigure(figure_id,group_sensor,current_dialog,params,false);
+                getAndshowSensorFigure(figure_id,sensor_id_array,sensor_number_array,current_dialog,params,false);
             });
         }
     });
@@ -789,9 +804,15 @@ $(function () {
     $("#query_latest_item_btn").click(function(){
         var sensor_type = $("#query_sensor_type_menu").val();
         var metric = $("#query_metric_menu").val();
-        var group_sensor = $("#query_group_sensor_menu").val();
-        console.log(sensor_type,metric,group_sensor)
-        if(!sensor_type || !metric || !group_sensor || sensor_type.match(/^\s*$/) || metric.match(/^\s*$/) || group_sensor.length<=0){
+        var sensor_id_array = [];
+        var sensor_number_array = [];
+        $("#query_group_sensor_menu option:selected").each(function() {
+            sensor_id_array.push($(this).val());
+            sensor_number_array.push($(this).text());
+        });
+        console.log(sensor_id_array,sensor_number_array)
+        console.log(sensor_type,metric)
+        if(!sensor_type || !metric || !sensor_id_array || sensor_type.match(/^\s*$/) || metric.match(/^\s*$/) || sensor_id_array.length<=0){
             showTransientDialog("没有符合条件的查询！");
         }else{
             var figure_id = "query_latest_item_figure";
@@ -804,8 +825,7 @@ $(function () {
 
                 var end_row_key = new Date().format('yyyyMMddHHmmssSS');
                 var params = {
-                    "tableName": sensor_type,
-                    "CGQBHList": JSON.stringify(group_sensor),
+                    "sensorList": JSON.stringify(sensor_id_array),
                     "columnList": JSON.stringify([metric]),
                     "startRowKey": "",
                     "endRowKey": end_row_key,
@@ -813,7 +833,7 @@ $(function () {
                 }
                 // 返回后调用
                 var current_dialog = $(this);
-                getAndshowSensorFigure(figure_id,group_sensor,current_dialog,params,false);
+                getAndshowSensorFigure(figure_id,sensor_id_array,sensor_number_array,current_dialog,params,false);
             });
         }
     });
@@ -821,9 +841,15 @@ $(function () {
     $("#query_latest_udf_btn").click(function(){
         var sensor_type = $("#query_sensor_type_menu").val();
         var metric = $("#query_metric_menu").val();
-        var group_sensor = $("#query_group_sensor_menu").val();
-        console.log(sensor_type,metric,group_sensor)
-        if(!sensor_type || !metric || !group_sensor || sensor_type.match(/^\s*$/) || metric.match(/^\s*$/) || group_sensor.length<=0){
+        var sensor_id_array = [];
+        var sensor_number_array = [];
+        $("#query_group_sensor_menu option:selected").each(function() {
+            sensor_id_array.push($(this).val());
+            sensor_number_array.push($(this).text());
+        });
+        console.log(sensor_id_array,sensor_number_array)
+        console.log(sensor_type,metric)
+        if(!sensor_type || !metric || !sensor_id_array || sensor_type.match(/^\s*$/) || metric.match(/^\s*$/) || sensor_id_array.length<=0){
             showTransientDialog("没有符合条件的查询！");
         }else{
             var figure_id = "query_latest_udf_figure";
@@ -842,8 +868,7 @@ $(function () {
                 // 根据选择条件获取查询条件
                 var end_row_key = new Date().format('yyyyMMddHHmmssSS');
                 var params = {
-                    "tableName": sensor_type,
-                    "CGQBHList": JSON.stringify(group_sensor),
+                    "sensorList": JSON.stringify(sensor_id_array),
                     "columnList": JSON.stringify([metric]),
                     "startRowKey": new Date(begin_time).format('yyyyMMddHHmmssSS'),
                     "endRowKey": new Date(end_time).format('yyyyMMddHHmmssSS'),
@@ -851,7 +876,7 @@ $(function () {
                 }
                 // 返回后调用
                 var current_dialog = $(this);
-                getAndshowSensorFigure(figure_id,group_sensor,current_dialog,params,false);
+                getAndshowSensorFigure(figure_id,sensor_id_array,sensor_number_array,current_dialog,params,false);
             });
         }
     });

@@ -1,9 +1,12 @@
 package scut.controller;
 
+import com.sun.org.apache.xpath.internal.operations.Mod;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import scut.service.authority.CurrentUser;
 import scut.util.Constants;
@@ -76,12 +79,19 @@ public class Home {
         return "user-manager";
     }
 
+    
     @RequestMapping("/role-manager")
     public String roleManager(Model model) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
         model.addAttribute(Constants.CURRENT_USER, currentUser);
         return "role-manager";
+    }
+
+    @RequestMapping("/403")
+    public String failedView(){
+
+        return "failedView";
     }
 
     @RequestMapping("/query-data")

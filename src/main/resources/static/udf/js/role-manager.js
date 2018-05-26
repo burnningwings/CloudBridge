@@ -62,17 +62,17 @@ function updateRoleGrid(){
                 headerAttributes:{ style:"text-align:center"},
                 attributes:{ class:"text-center" }
             }, {
-                field: "roleid",
+                field: "roledescription",
                 title: "描述",
                 headerAttributes:{ style:"text-align:center"},
                 attributes:{ class:"text-center" }
 
             }, {
-                title: "修改",
-                template: "<button class='btn btn-success' type='button' id='modify-#: roleid #' onclick='modifyRolePrivilege(\"#: roleid #\")'/>修改</button>",
-                headerAttributes:{ style:"text-align:center"},
-                attributes:{ class:"text-center" }
-            }, {
+    //            title: "修改",
+    //            template: "<button class='btn btn-success' type='button' id='modify-#: roleid #' onclick='modifyRolePrivilege(\"#: roleid #\")'/>修改</button>",
+    //            headerAttributes:{ style:"text-align:center"},
+    //           attributes:{ class:"text-center" }
+    //        }, {
                 title: "已授权用户",
                 template: "<a href='javascript:searchUser(\"#: roleid #\")' />查看</a>",
                 headerAttributes:{ style:"text-align:center"},
@@ -332,18 +332,18 @@ function searchUser(roleid){
                 attributes:{ class:"text-center" }
             },
             {
-                field: "accountid",
-                title: "账号",
+                field: "username",
+                title: "用户名",
                 headerAttributes:{ style:"text-align:center"},
                 attributes:{ class:"text-center" }
             }, {
-                field: "username",
-                title: "姓名",
+                field: "truename",
+                title: "真实姓名",
                 headerAttributes:{ style:"text-align:center"},
                 attributes:{ class:"text-center" }
             }, {
                 field: "department",
-                title: "单位",
+                title: "部门",
                 headerAttributes:{ style:"text-align:center"},
                 attributes:{ class:"text-center" }
             }, {

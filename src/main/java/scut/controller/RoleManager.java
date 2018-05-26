@@ -3,6 +3,7 @@ package scut.controller;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.dbutils.ResultSetHandler;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.ui.Model;
@@ -28,6 +29,7 @@ import java.util.Map;
  * Created by xiaoah on 2018/5/17.
  */
 
+
 @RestController
 public class RoleManager {
 
@@ -43,6 +45,7 @@ public class RoleManager {
      * @param pageSize 切换为All时需强制为null，因此必须为Integer
      * @return
      */
+
     @RequestMapping(value = "/role-manager/list", method = RequestMethod.GET, produces = "application/json")
     public JSONObject watchBoxList(Model model, int page, Integer pageSize, String bridgeName) {
         // 渲染模板
@@ -53,8 +56,8 @@ public class RoleManager {
         // 获取数据
 
         String sql = String.format(
-                "select roleid,rolename from role_info limit %s offset %s " , pageSize,(page-1)*pageSize);
-        String[] fields = new String[]{"roleid","rolename"};
+                "select id as roleid,name as rolename, description as roledescription from sys_role limit %s offset %s " , pageSize,(page-1)*pageSize);
+        String[] fields = new String[]{"roleid","rolename","roledescription"};
         JSONArray data = new JSONArray();
         try {
             baseDao.querySingleObject(sql,new ResultSetHandler<String>(){
@@ -103,6 +106,7 @@ public class RoleManager {
         response.setData(data);
         return response.getHttpResponse();
     }
+
 
     @RequestMapping(value = "/role-manager/create-role", method = RequestMethod.POST, produces = "application/json")
     public JSONObject CreateRole(@RequestBody Map<String,Object> reqMsg){
@@ -313,9 +317,9 @@ public class RoleManager {
 
         // 获取数据
 
-        String sql = String.format("select u.userid,u.accountid,u.username,u.department,u.duty from user_info as u,"+
-                            "userrole as ur where ur.roleid=%s and ur.userid = u.userid limit %s offset %s",roleid,pageSize,(page-1)*pageSize);
-        String[] fields = new String[]{"userid","accountid","username","department","duty"};
+        String sql = String.format("select u.id as userid,u.username,u.truename,u.department,u.duty from sys_user as u,"+
+                            "sys_user_roles as ur where ur.roles_id=%s and ur.sys_user_id = u.id limit %s offset %s",roleid,pageSize,(page-1)*pageSize);
+        String[] fields = new String[]{"userid","username","truename","department","duty"};
         JSONArray data = new JSONArray();
         try {
             baseDao.querySingleObject(sql,new ResultSetHandler<String>(){

@@ -3,6 +3,7 @@ package scut.controller;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.dbutils.ResultSetHandler;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.ui.Model;
@@ -54,11 +55,11 @@ public class UserManager {
         String whereStr = "";
         if (!selectUserType.equals("all")) {
             switch (selectUserType) {
-                case "id":
-                    whereStr = "where accountid='" + selectUserContent + "'";
-                    break;
-                case "name":
+                case "username":
                     whereStr = "where username='" + selectUserContent + "'";
+                    break;
+                case "truename":
+                    whereStr = "where truename='" + selectUserContent + "'";
                     break;
                 case "department":
                     whereStr = "where department='" + selectUserContent + "'";
@@ -68,9 +69,9 @@ public class UserManager {
             }
             //whereStr = "where bridge_name='" + bridgeName + "'";
         }
-        String sql = String.format("select userid,accountid,username,department,duty " +
-                "from user_info %s limit %s offset %s", whereStr, pageSize, (page - 1) * pageSize);
-        String[] fields = new String[]{"userid", "accountid", "username", "department", "duty"};
+        String sql = String.format("select id as userid,username,truename,department,duty " +
+                "from sys_user %s limit %s offset %s", whereStr, pageSize, (page - 1) * pageSize);
+        String[] fields = new String[]{"userid", "username", "truename", "department", "duty"};
         JSONArray data = new JSONArray();
         try {
             baseDao.querySingleObject(sql, new ResultSetHandler<String>() {
@@ -96,11 +97,12 @@ public class UserManager {
         return response;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping(value = "/user-manager/role-list", method = RequestMethod.GET, produces = "application/json")
     public JSONObject CreateUserInfo() {
         HttpResponse response = new HttpResponse();
         JSONObject data = new JSONObject();
-        String roleSql = "select roleid,rolename from role_info";
+        String roleSql = "select id as roleid, name as rolename from sys_role";
         JSONObject rolelist = new JSONObject();
         try {
             baseDao.querySingleObject(roleSql, new ResultSetHandler<String>() {
@@ -120,19 +122,20 @@ public class UserManager {
         return response.getHttpResponse();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping(value = "/user-manager/create-user", method = RequestMethod.POST, produces = "application/json")
     public JSONObject CreateUser(@RequestBody Map<String, Object> reqMsg) {
         JSONObject data = new JSONObject();
         HttpResponse response = new HttpResponse();
-        String accountid = reqMsg.get("accountid").toString();
-        String password = reqMsg.get("password").toString();
         String username = reqMsg.get("username").toString();
+        String password = reqMsg.get("password").toString();
+        String truename = reqMsg.get("truename").toString();
         String department = reqMsg.get("department").toString();
         String duty = reqMsg.get("duty").toString();
         List role_select = (ArrayList) reqMsg.get("role_select");
 
-        String createUserSql = String.format("insert into user_info (accountid,username,password,department,duty)" +
-                " values ('%s','%s','%s','%s','%s')", accountid, username, password, department, duty);
+        String createUserSql = String.format("insert into sys_user (username,truename,password,department,duty)" +
+                " values ('%s','%s','%s','%s','%s')", username, truename, password, department, duty);
         int ret = 0;
         try {
             ret = baseDao.Execute(createUserSql);
@@ -147,7 +150,7 @@ public class UserManager {
             return response.getHttpResponse();
         } else {
             //获取刚刚插入的用户id
-            String newroleSql = String.format("select userid from user_info where username = '%s'", username);
+            String newroleSql = String.format("select id as userid from sys_user where username = '%s'", username);
 
             JSONObject newuserid = new JSONObject();
             try {
@@ -171,7 +174,7 @@ public class UserManager {
             List<String> createuserSql = new ArrayList<String>();
             for (Object i : role_select) {
                 int selectrole = Integer.valueOf(i.toString());
-                String sqlrole = String.format("insert into userrole (userid,roleid) values (%s,%s)", userid, selectrole);
+                String sqlrole = String.format("insert into sys_user_roles (sys_user_id,roles_id) values (%s,%s)", userid, selectrole);
                 createuserSql.add(sqlrole);
             }
             int[] ret1 = {0};
@@ -184,7 +187,7 @@ public class UserManager {
                 if (ret1[i] < 1) {
                     response.setStatus(HttpResponse.FAIL_STATUS);
                     response.setCode(HttpResponse.FAIL_CODE);
-                    response.setMsg("修改角色失败");
+                    response.setMsg("创建角色失败");
                 }
             }
             response.setData(data);
@@ -192,12 +195,13 @@ public class UserManager {
         }
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping(value = "/user-manager/updateuserinfo", method = RequestMethod.GET, produces = "application/json")
     public JSONObject UpdateUserInfo(String userid) {
 
         HttpResponse response = new HttpResponse();
         JSONObject data = new JSONObject();
-        String rolelistSql = "select roleid,rolename from role_info";
+        String rolelistSql = "select id as roleid, name as rolename from sys_role";
         JSONObject rolelist = new JSONObject();
         try {
             baseDao.querySingleObject(rolelistSql, new ResultSetHandler<String>() {
@@ -215,14 +219,14 @@ public class UserManager {
         data.put("rolelist", rolelist);
 
 
-        String usedroleSql = String.format("select roleid,connectionid from userrole where userid = %s", userid);
+        String usedroleSql = String.format("select roles_id as roleid, sys_user_id from sys_user_roles where sys_user_id = %s", userid);
         JSONObject usedrole = new JSONObject();
         try {
             baseDao.querySingleObject(usedroleSql, new ResultSetHandler<String>() {
                 @Override
                 public String handle(ResultSet rs) throws SQLException {
                     while (rs.next()) {
-                        usedrole.put(rs.getString("roleid"), rs.getString("connectionid"));
+                        usedrole.put(rs.getString("roleid"), rs.getString("sys_user_id"));
                     }
                     return null;
                 }
@@ -232,8 +236,8 @@ public class UserManager {
         }
         data.put("usedrole", usedrole);
 
-        String userinfoSql = String.format("select accountid,password,username,department,duty from user_info where userid = %s", userid);
-        String[] fields = new String[]{"accountid", "password", "username", "department", "duty"};
+        String userinfoSql = String.format("select username,password,truename,department,duty from sys_user where id = %s", userid);
+        String[] fields = new String[]{"username", "password", "truename", "department", "duty"};
         JSONObject userinfo = new JSONObject();
         try {
             baseDao.querySingleObject(userinfoSql, new ResultSetHandler<String>() {
@@ -256,30 +260,30 @@ public class UserManager {
         return response.getHttpResponse();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping(value = "/user-manager/update-user", method = RequestMethod.POST, produces = "application/json")
     public JSONObject UpdateUser(@RequestBody Map<String, Object> reqMsg) {
 
         JSONObject data = new JSONObject();
         HttpResponse response = new HttpResponse();
         String userid = reqMsg.get("userid").toString();
-        String accoutid = reqMsg.get("accountid").toString();
-        String password = reqMsg.get("password").toString();
         String username = reqMsg.get("username").toString();
+        String password = reqMsg.get("password").toString();
+        String truename = reqMsg.get("truename").toString();
         String department = reqMsg.get("department").toString();
         String duty = reqMsg.get("duty").toString();
         List rolelist = (ArrayList) reqMsg.get("role_list");
 
 
-
         List<String> updateuserSql = new ArrayList<String>();
-        String updateUserInfoSql = String.format("update user_info set accountid='%s', password='%s', username='%s', department='%s', duty='%s' " +
-                "where userid=%s", accoutid, password, username, department, duty, userid);
-        String deleteUserRoleSql = String.format("delete from userrole where userid='%s'", userid);
+        String updateUserInfoSql = String.format("update sys_user set username='%s', password='%s', truename='%s', department='%s', duty='%s' " +
+                "where id=%s", username, password, truename, department, duty, userid);
+        String deleteUserRoleSql = String.format("delete from sys_user_roles where sys_user_id='%s'", userid);
         updateuserSql.add(updateUserInfoSql);
         updateuserSql.add(deleteUserRoleSql);
         for (Object i : rolelist) {
             int role = Integer.valueOf(i.toString());
-            String updateuserroleSql = String.format("insert into userrole (userid,roleid) values ('%s','%s')", userid, role);
+            String updateuserroleSql = String.format("insert into sys_user_roles (sys_user_id,roles_id) values ('%s','%s')", userid, role);
             updateuserSql.add(updateuserroleSql);
         }
         int[] ret = {0};
@@ -302,6 +306,7 @@ public class UserManager {
         return response.getHttpResponse();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping(value = "/user-manager/delete", method = RequestMethod.POST, produces = "application/json")
     public JSONObject DeleteUser(@RequestBody Map<String, Object> reqMsg) {
         HttpResponse response = new HttpResponse();
@@ -309,11 +314,12 @@ public class UserManager {
         JSONObject data = new JSONObject();
 
         int[] ret = {0, 0};
-        String deleteUserSql = String.format("delete from user_info where userid in (%s)", String.join(",", user_checked_list));
-        String deleteConnRoleSql = String.format("delete from userrole where userid in (%s)", String.join(",", user_checked_list));
+        String deleteConnRoleSql = String.format("delete from sys_user_roles where sys_user_id in (%s)", String.join(",", user_checked_list));
+        String deleteUserSql = String.format("delete from sys_user where id in (%s)", String.join(",", user_checked_list));
         List<String> deleteSql = new ArrayList<String>();
+        deleteSql.add(deleteConnRoleSql);            //注意删表顺序，这里两张表有外键约束
         deleteSql.add(deleteUserSql);
-        deleteSql.add(deleteConnRoleSql);
+
 
         try {
             ret = baseDao.batch(deleteSql);
@@ -338,8 +344,8 @@ public class UserManager {
 
         // 获取数据
 
-       String selectroleSql = String.format("select r.roleid,r.rolename from role_info as r,userrole as ur where ur.userid=%s and ur.roleid=r.roleid",userid);
-       String[] fields = new String[]{"roleid","rolename"};
+       String selectroleSql = String.format("select r.id as roleid, r.name as rolename, r.description as roledescription from sys_role as r,sys_user_roles as ur where ur.sys_user_id=%s and ur.roles_id=r.id",userid);
+       String[] fields = new String[]{"roleid","rolename", "roledescription"};
        JSONArray data = new JSONArray();
         try {
             baseDao.querySingleObject(selectroleSql,new ResultSetHandler<String>(){

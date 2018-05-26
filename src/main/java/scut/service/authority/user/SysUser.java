@@ -19,6 +19,13 @@ public class SysUser implements UserDetails {
     private Long id;
     private String username;
     private String password;
+    /**
+     * 增加用户表信息
+     * by xiaoah
+     */
+    private String truename;
+    private String department;
+    private String duty;
 
     @ManyToMany(cascade = {CascadeType.REFRESH},fetch = FetchType.EAGER)
     private List<SysRole> roles;
@@ -38,6 +45,31 @@ public class SysUser implements UserDetails {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public void setTruename(String truename) {
+        this.truename = truename;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
+    }
+
+    public void setDuty(String duty) {
+        this.duty = duty;
+    }
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public String getDuty() {
+        return duty;
+    }
+
+    public String getTruename() {
+        return truename;
+    }
+
 
     public List<SysRole> getRoles() {
         return roles;

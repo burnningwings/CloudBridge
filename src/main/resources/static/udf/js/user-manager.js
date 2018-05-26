@@ -73,18 +73,18 @@ function updateUserGrid(selectusertype,selectusercontent) {
                 attributes:{ class:"text-center" }
             },
             {
-                field: "accountid",
-                title: "账号",
+                field: "username",
+                title: "用户名",
                 headerAttributes:{ style:"text-align:center"},
                 attributes:{ class:"text-center" }
             }, {
-                field: "username",
-                title: "姓名",
+                field: "truename",
+                title: "真实姓名",
                 headerAttributes:{ style:"text-align:center"},
                 attributes:{ class:"text-center" }
             }, {
                 field: "department",
-                title: "单位",
+                title: "部门",
                 headerAttributes:{ style:"text-align:center"},
                 attributes:{ class:"text-center" }
             }, {
@@ -109,9 +109,9 @@ function updateUserGrid(selectusertype,selectusercontent) {
 
 function showUserCreateDialog(title) {
     //获取所有角色
-    var accountid = "";
-    var password = "";
     var username = "";
+    var password = "";
+    var truename = "";
     var department = "";
     var duty = "";
     var role_select = [];
@@ -128,9 +128,9 @@ function showUserCreateDialog(title) {
     }
     var content = '\
          <div class="form-inline-custom">\
-                <label class="col-sm-3 control-label">账号:</label>\
+                <label class="col-sm-3 control-label">用户名:</label>\
                 <div class="col-sm-8"> \
-                    <input type="text" class="form-control" id="c_accountid" placeholder="请输入创建用户的账号" > \
+                    <input type="text" class="form-control" id="c_username" placeholder="请输入用户名" > \
                 </div>\
             <span class="text-danger mt5 fl">*</span>\
         </div> \
@@ -144,16 +144,16 @@ function showUserCreateDialog(title) {
         </div>\
         <br>\
         <div class="form-inline-custom">\
-            <label class="col-sm-3 control-label">姓名:</label>\
+            <label class="col-sm-3 control-label">真实姓名:</label>\
             <div class="col-sm-8">\
-                <input type="text" class="form-control" id="c_username" placeholder="请输入姓名" >\
+                <input type="text" class="form-control" id="c_truename" placeholder="请输入姓名" >\
             </div>\
         </div>\
         <br>\
         <div class="form-inline-custom">\
-            <label class="col-sm-3 control-label">单位:</label>\
+            <label class="col-sm-3 control-label">部门:</label>\
             <div class="col-sm-8">\
-                <input type="text" class="form-control" id="c_department" placeholder="请输入所在单位" >\
+                <input type="text" class="form-control" id="c_department" placeholder="请输入所在部门" >\
             </div>\
         </div>\
         <br/>\
@@ -173,9 +173,9 @@ function showUserCreateDialog(title) {
     ';
 
     function ok_callback() {
-        accountid = $("#c_accountid").val();
-        password = $("#c_password").val();
         username = $("#c_username").val();
+        password = $("#c_password").val();
+        truename = $("#c_truename").val();
         department = $("#c_department").val();
         duty = $("#c_duty").val();
         $('[name=cuitem]:checkbox:checked').each(function () {
@@ -183,8 +183,8 @@ function showUserCreateDialog(title) {
         });
 
 
-        if (!accountid) {
-            showTransientDialog("用户账号不能为空");
+        if (!username) {
+            showTransientDialog("用户名不能为空");
             return false;
         } else if (!password) {
             showTransientDialog("密码不能为空");
@@ -195,9 +195,9 @@ function showUserCreateDialog(title) {
         } else {
             var url = "/user-manager/create-user";
             var params = {
-                "accountid": accountid,
-                "password": password,
                 "username": username,
+                "password": password,
+                "truename": truename,
                 "department": department,
                 "duty": duty,
                 "role_select": role_select
@@ -240,8 +240,8 @@ function modifyUserInfo(userid){
 }
 
 function showUserUpdateDialog(userid,title){
-    var accountid = "";
     var username = "";
+    var truename = "";
     var password = "";
     var department = "";
     var duty = "";
@@ -252,6 +252,7 @@ function showUserUpdateDialog(userid,title){
         "userid" : userid
     };
     var response = webRequest(url,"GET",false,params);
+    console.log(response.status)
     if(response.status == 0) {
         var data = response.data;
         var used;
@@ -268,18 +269,18 @@ function showUserUpdateDialog(userid,title){
                 role_option = role_option + "<input type='checkbox' name='uuitem' value='" + key + "'/> " + data["rolelist"][key] + "<br/>";
             }
         }
-        console.log(role_option);
-        accountid = data["userinfo"]["accountid"];
-        password = data["userinfo"]["password"];
+
         username = data["userinfo"]["username"];
+        password = data["userinfo"]["password"];
+        truename = data["userinfo"]["truename"];
         department = data["userinfo"]["department"];
         duty = data["userinfo"]["duty"];
     }
         var content = '\
          <div class="form-inline-custom">\
-                <label class="col-sm-3 control-label">账号:</label>\
+                <label class="col-sm-3 control-label">用户名:</label>\
                 <div class="col-sm-8"> \
-                    <input type="text" class="form-control" id="u_accountid" value="'+accountid+'" > \
+                    <input type="text" class="form-control" id="u_username" value="'+username+'" > \
                 </div>\
             <span class="text-danger mt5 fl">*</span>\
         </div> \
@@ -293,14 +294,14 @@ function showUserUpdateDialog(userid,title){
         </div>\
         <br>\
         <div class="form-inline-custom">\
-            <label class="col-sm-3 control-label">姓名:</label>\
+            <label class="col-sm-3 control-label">真实姓名:</label>\
             <div class="col-sm-8">\
-                <input type="text" class="form-control" id="u_username" value="'+username+'" >\
+                <input type="text" class="form-control" id="u_truename" value="'+truename+'" >\
             </div>\
         </div>\
         <br>\
         <div class="form-inline-custom">\
-            <label class="col-sm-3 control-label">单位:</label>\
+            <label class="col-sm-3 control-label">部门:</label>\
             <div class="col-sm-8">\
                 <input type="text" class="form-control" id="u_department" value="'+department+'" >\
             </div>\
@@ -322,9 +323,9 @@ function showUserUpdateDialog(userid,title){
         ';
 
     function ok_callback() {
-        accountid = $("#u_accountid").val();
-        password = $("#u_password").val();
         username = $("#u_username").val();
+        password = $("#u_password").val();
+        truename = $("#u_truename").val();
         department = $("#u_department").val();
         duty = $("#u_duty").val();
         var role_list = [];
@@ -333,7 +334,7 @@ function showUserUpdateDialog(userid,title){
             role_list.push($(this).val())
         })
         //console.log("===="+role_list);
-        if(!accountid){
+        if(!username){
             showTransientDialog("用户名不能为空");
             return false;
         }else if(!password){
@@ -346,9 +347,9 @@ function showUserUpdateDialog(userid,title){
             var url = "/user-manager/update-user";
             var params = {
                 "userid" : userid,
-                "accountid" : accountid,
-                "password" : password,
                 "username" : username,
+                "password" : password,
+                "truename" : truename,
                 "department" : department,
                 "duty" : duty,
                 "role_list" : role_list
@@ -484,6 +485,12 @@ function searchRole(userid){
             {
                 field: "rolename",
                 title: "角色名称",
+                headerAttributes:{ style:"text-align:center"},
+                attributes:{ class:"text-center" }
+            },
+            {
+                field: "roledescription",
+                title: "角色描述",
                 headerAttributes:{ style:"text-align:center"},
                 attributes:{ class:"text-center" }
             }

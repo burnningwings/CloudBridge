@@ -40,6 +40,7 @@ public class Home {
         CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
         model.addAttribute(Constants.CURRENT_USER, currentUser);
         return "bridge";
+
     }
 
     @RequestMapping("/section")
@@ -125,5 +126,13 @@ public class Home {
         model.addAttribute("watch_point_id", watchPointId);
         model.addAttribute("watch_box_id", watchBoxId);
         return "sensor";
+    }
+
+    @RequestMapping("/log_bridge")
+    public String log_gridge(Model model) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
+        model.addAttribute(Constants.CURRENT_USER, currentUser);
+        return "log_bridge";
     }
 }

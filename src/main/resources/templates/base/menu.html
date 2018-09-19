@@ -1,5 +1,5 @@
-
-<div th:fragment="menu (one,two_1,two_2,three_1,three_2,four_1,four_2,four_3,four_4,five_1,five_2,six_1,six_2,six_3,seven_1,seven_2)">
+<div th:fragment="menu (one,two_1,two_2,three_1,three_2,four_1,four_2,four_3,four_4,five_1,five_2,six_1,six_2,six_3,seven_1,seven_2)"
+     xmlns:th="http://www.w3.org/1999/xhtml">
     <nav class="cm-navbar cm-navbar-primary">
         <div class="cm-flex"><a href="index.html" class="cm-logo"></a></div>
         <div class="btn btn-primary md-menu-white" data-toggle="cm-menu"></div>
@@ -46,7 +46,7 @@
                         <ul>
                             <li th:class="${six_1}"><a href="ico-sf.html">阈值警告日志</a></li>
                             <li th:class="${six_2}"><a href="ico-md.html">系统操作日志</a></li>
-                            <li th:class="${six_3}"><a href="ico-fa.html">桥梁修改日志</a></li>
+                            <li th:class="${six_3}"><a href="log_bridge.html">桥梁修改日志</a></li>
                         </ul>
                     </li>
                     <li class="cm-submenu" th:classappend="${seven_1=='active' or seven_2=='active'}? pre-open : ''">

@@ -2,12 +2,14 @@ package scut.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.log4j.Logger;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import scut.base.HttpResponse;
 import scut.service.authority.CurrentUser;
+import scut.service.log.LogBase;
 import scut.util.Constants;
 import scut.util.StringUtil;
 
@@ -23,6 +25,7 @@ import java.util.Date;
  */
 @RestController
 public class Bridge {
+    public static org.apache.log4j.Logger logger = Logger.getLogger(Bridge.class);
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     int maxActive = 100;
     String druid_mysql_url = String.format(Constants.MYSQL_FORMAT, Constants.MYSQL_URL, Constants.MYSQL_USERNAME, Constants.MYSQL_PASSWORD) + "|" + maxActive;
@@ -126,6 +129,14 @@ public class Bridge {
         String organization = reqMsg.getString("organization");
         String description = reqMsg.getString("description");
 
+        String old_bridgeName = reqMsg.getString("old_bridge_name");
+        String old_bridgeNumber = reqMsg.getString("old_bridge_number");
+        Integer old_bridgeTypeId = reqMsg.getInteger("old_bridge_type_id");
+        String old_organization = reqMsg.getString("old_organization");
+
+
+        logger.info(reqMsg.toString());
+
         //检查必须参数
         if (operationType == null || StringUtil.isEmpty(bridgeName) || StringUtil.isEmpty(bridgeNumber) || bridgeTypeId == null) {
             response.setStatus(HttpResponse.FAIL_STATUS);
@@ -157,6 +168,14 @@ public class Bridge {
             response.setCode(HttpResponse.FAIL_CODE);
             response.setMsg("操作失败！");
         }
+
+        //桥梁修改日志写进数据库
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String log_bridge_sql = LogBase.log_bridge(userDetails.getUsername(),
+                bridgeName,old_bridgeName,bridgeNumber,old_bridgeNumber,
+                bridgeTypeId,old_bridgeTypeId,organization,old_organization);
+        logger.info(log_bridge_sql);
+        baseDao.updateData(log_bridge_sql);
         return response.getHttpResponse();
     }
 

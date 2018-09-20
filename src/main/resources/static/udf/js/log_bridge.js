@@ -1,5 +1,5 @@
 //更新桥梁修改日志列表
-function updateBridegLogGrid(){
+function updateBridgeLogGrid(){
     var dataSource = new kendo.data.DataSource({
             transport: {
                 read: {
@@ -116,6 +116,28 @@ $(function(){
    });
 });
 
+function searchByBridgeNameGrid()
+{
+
+}
+//$(function () {
+//    //生成桥梁下拉列表
+//    var url = "/bridge/simple-list";
+//    var response = webRequest(url, "GET", false, {});
+//    var options = "<option value='0'>全部桥梁</option>";
+//    if (response != null && response['data']) {
+//        var data = response["data"];
+//        for (var i = 0; i < data.length; i++) {
+//            options += "<option value='" + data[i]['bridge_id'] + "'>" + data[i]['bridge_name'] + "</option>";
+//        }
+//    }
+//    var $dropdownMenu1 = $("#dropdownMenu1");
+//    $dropdownMenu1.append(options);
+//    $dropdownMenu1.val($dropdownMenu1.attr('init-value'));
+//    $dropdownMenu1.on("change", function () {
+//        updateBridgeLogGrid($(this).val());
+//    });
+//}
 //just for test
 function init(){
     var logs=[{"bridge_name":"粤港澳大桥","user_name":"admin","log_time":"2018-09-18 15:26:53","log_info":"test1"},
@@ -178,7 +200,8 @@ function init(){
         });
 }
 
+
 //初始化
 $(function () {
-    updateBridegLogGrid();
+    updateBridgeLogGrid();
 });

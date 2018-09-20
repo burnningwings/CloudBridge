@@ -23,7 +23,7 @@ import java.text.SimpleDateFormat;
 
 @RestController
 public class LogManager {
-    public static Logger logger = Logger.getLogger(DataManager.class);
+    public static Logger logger = Logger.getLogger(LogManager.class);
 
     SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd HH:mm:ss");
     int maxActive = 100;
@@ -35,11 +35,12 @@ public class LogManager {
      * @param model
      * @param page
      * @param pageSize 切换为All时需强制为null，因此必须为Integer
+     * @param bridgeName 桥梁名称或者全部
      * @return
      */
 
     @RequestMapping(value = "/log_bridge/list", method = RequestMethod.GET, produces = "application/json")
-    public JSONObject log_bridgeList(Model model, int page, Integer pageSize) {
+    public JSONObject log_bridgeList(Model model, int page, Integer pageSize,String bridgeName) {
         // 渲染模板
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
@@ -47,16 +48,28 @@ public class LogManager {
 
         JSONObject response = new JSONObject();
         // 获取数据
+        logger.info(page+","+pageSize+","+bridgeName);
+        String sql = "";
+        if (bridgeName.equals("全部"))
+            sql = String.format("select log_id, bridge_name, username, DATE_FORMAT(log_time,\"%%Y-%%m-%%d %%H:%%i:%%s\") as log_time, log_info from log_bridge  limit %s,%s "
+                    ,(page-1)*pageSize, pageSize);
 
         //因为用到stringformat的缘故，需要使用%%对%进行转义，然后datttime也要转成string的形式才能显示
-        String sql = String.format(
-                "select log_id, bridge_name, username, DATE_FORMAT(log_time,\"%%Y-%%m-%%d %%H:%%i:%%s\") as log_time, log_info from log_bridge limit %s,%s " , (page-1)*pageSize, pageSize);
+        else
+            sql = String.format(
+                "select log_id, bridge_name, username, DATE_FORMAT(log_time,\"%%Y-%%m-%%d %%H:%%i:%%s\") as log_time, log_info from log_bridge where bridge_name = '%s' limit %s,%s " ,
+                    bridgeName,(page-1)*pageSize, pageSize);
+
         String[] fields = new String[]{"log_id","bridge_name","username","log_time","log_info"};
         JSONArray data = baseDao.queryData(sql, fields);
 
         response.put("data", data);
+        logger.info(sql);
         logger.info(data.toString());
-        sql = "SELECT COUNT(*) AS total FROM log_bridge";
+        if (!bridgeName.equals("全部"))
+        sql = String.format("SELECT COUNT(*) AS total FROM log_bridge where bridge_name='%s'",bridgeName);
+        else
+            sql = String.format("SELECT COUNT(*) AS total FROM log_bridge",bridgeName);
         fields = new String[]{"total"};
         data = baseDao.queryData(sql, fields);
         response.put("total", data.getJSONObject(0).get("total"));

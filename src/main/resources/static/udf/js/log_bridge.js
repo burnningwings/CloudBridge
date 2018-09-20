@@ -1,5 +1,11 @@
+//桥梁下拉列表点击事件,获取到点击的桥梁名称，重新加载数据
+function selectBridgeOnchange(obj){
+    var bridge_name = obj.value;
+    updateBridgeLogGrid(bridge_name);
+}
+
 //更新桥梁修改日志列表
-function updateBridgeLogGrid(){
+function updateBridgeLogGrid(bridge_name){
     var dataSource = new kendo.data.DataSource({
             transport: {
                 read: {
@@ -12,7 +18,8 @@ function updateBridgeLogGrid(){
                     if (operation == "read") {
                         var parameter = {
                             page: options.page,
-                            pageSize: options.pageSize
+                            pageSize: options.pageSize,
+                            bridgeName: bridge_name
                         };
                         return parameter;
                     }
@@ -80,7 +87,7 @@ function updateBridgeLogGrid(){
                              }]
                         });
 }
-//重新读取并刷新数据
+//删除日志后需要重新读取并刷新数据
 function refreshData() {
     var $bridge_grid = $("#bridge-grid");
     $bridge_grid.data("kendoGrid").dataSource.read();
@@ -114,30 +121,34 @@ $(function(){
            });
        }
    });
+})
+
+//生成桥梁下拉列表，直接定向到watch-box不需要再自己写controller，因为都是一样的需求
+$(function () {
+    var url = "/watch-box/dropdown";
+    var response = webRequest(url,"GET",false,{})
+    var options = "<option>全部</option>";
+    if(response!=null && response.status==0){
+        var data = response.data;
+        for(var key in data){
+            options = options + "<option>" + key + "</option>";
+        }
+    }
+    $("#bridge_menu").append(options);
+    $("#bridge_menu").on('shown.bs.select',function(e){
+         //console.log('展开');
+    });
 });
 
-function searchByBridgeNameGrid()
-{
 
-}
-//$(function () {
-//    //生成桥梁下拉列表
-//    var url = "/bridge/simple-list";
-//    var response = webRequest(url, "GET", false, {});
-//    var options = "<option value='0'>全部桥梁</option>";
-//    if (response != null && response['data']) {
-//        var data = response["data"];
-//        for (var i = 0; i < data.length; i++) {
-//            options += "<option value='" + data[i]['bridge_id'] + "'>" + data[i]['bridge_name'] + "</option>";
-//        }
-//    }
-//    var $dropdownMenu1 = $("#dropdownMenu1");
-//    $dropdownMenu1.append(options);
-//    $dropdownMenu1.val($dropdownMenu1.attr('init-value'));
-//    $dropdownMenu1.on("change", function () {
-//        updateBridgeLogGrid($(this).val());
-//    });
-//}
+//初始化
+$(function () {
+    updateBridgeLogGrid($("#bridge_menu").val());
+    //searchBridgeLogGrid($("#bridge_menu").val());
+});
+
+
+
 //just for test
 function init(){
     var logs=[{"bridge_name":"粤港澳大桥","user_name":"admin","log_time":"2018-09-18 15:26:53","log_info":"test1"},
@@ -199,9 +210,3 @@ function init(){
             ]
         });
 }
-
-
-//初始化
-$(function () {
-    updateBridgeLogGrid();
-});

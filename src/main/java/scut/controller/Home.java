@@ -71,6 +71,22 @@ public class Home {
         return "watch-box";
     }
 
+    @RequestMapping("/overweight-analysis")
+    public String overweightAnalysis(Model model) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
+        model.addAttribute(Constants.CURRENT_USER, currentUser);
+        return "overweight-analysis";
+    }
+
+    @RequestMapping("/damage-detection")
+    public String damageDetection(Model model) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
+        model.addAttribute(Constants.CURRENT_USER, currentUser);
+        return "damage-detection";
+    }
+
     @RequestMapping("/user-manager")
     public String userManager(Model model) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

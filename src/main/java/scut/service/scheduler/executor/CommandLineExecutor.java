@@ -1,6 +1,7 @@
 package scut.service.scheduler.executor;
 
 import org.apache.log4j.Logger;
+import scut.service.scheduler.AnalysisMessage;
 import scut.service.scheduler.LogEntity;
 import scut.service.scheduler.Message;
 import scut.util.Constants;
@@ -45,6 +46,56 @@ public class CommandLineExecutor implements Executor {
             String line = "";
             this.status = Constants.RUNNING;
             Message.getInstance().update(key,null,null,status,null,logEntity.toString());
+            while ((line = br.readLine()) != null) {
+                logEntity.add(line);
+            }
+            int exitVal = process.waitFor();
+            logEntity.setExitVal(exitVal);
+        }catch (IOException e) {
+            e.printStackTrace();
+            logEntity.add(e.toString());
+        }catch (InterruptedException e){
+            e.printStackTrace();
+            logEntity.add(e.toString());
+        }
+        return logEntity;
+    }
+
+    public LogEntity execute_analysis() {
+        LogEntity logEntity = new LogEntity();
+        try{
+            Process process = Runtime.getRuntime().exec(execStr);
+            InputStream stdin = process.getInputStream();
+            InputStreamReader isr = new InputStreamReader(stdin);
+            BufferedReader br = new BufferedReader(isr);
+            String line = "";
+            this.status = Constants.RUNNING;
+            AnalysisMessage.getInstance().update(key,null,null,status,null,logEntity.toString());
+            while ((line = br.readLine()) != null) {
+                logEntity.add(line);
+            }
+            int exitVal = process.waitFor();
+            logEntity.setExitVal(exitVal);
+        }catch (IOException e) {
+            e.printStackTrace();
+            logEntity.add(e.toString());
+        }catch (InterruptedException e){
+            e.printStackTrace();
+            logEntity.add(e.toString());
+        }
+        return logEntity;
+    }
+
+    public LogEntity execute_nolog() {
+        LogEntity logEntity = new LogEntity();
+        try{
+            Process process = Runtime.getRuntime().exec(execStr);
+            InputStream stdin = process.getInputStream();
+            InputStreamReader isr = new InputStreamReader(stdin);
+            BufferedReader br = new BufferedReader(isr);
+            String line = "";
+            this.status = Constants.RUNNING;
+            //AnalysisMessage.getInstance().update(key,null,null,status,null,logEntity.toString());
             while ((line = br.readLine()) != null) {
                 logEntity.add(line);
             }

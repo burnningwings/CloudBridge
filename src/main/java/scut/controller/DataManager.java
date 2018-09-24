@@ -283,6 +283,7 @@ public class DataManager {
             String sensorId = sensorInfoArray[0];
             String hbaseTableName = "CloudBridge:" + sensorId;
             Map<String,Object> dataSchema = getDataSchema(sensorId);
+            System.out.println(dataSchema);
             if(dataSchema!=null){
                 dataSchema.remove("CLSJ");
                 // 基于hbase的分页

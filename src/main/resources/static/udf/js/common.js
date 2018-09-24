@@ -5,12 +5,25 @@ function setToken(token){
 // 短暂提示框
 function showTransientDialog(content) {
     var d = dialog({
-        content: content
+        content: content,
     });
     d.show();
     setTimeout(function () {
         d.close().remove();
     }, 2000);
+}
+
+function showDialog(content) {
+    var d = dialog({
+        content: content,
+        okValue: '确定',
+        ok: function () {
+        }
+    });
+    d.show();
+    // setTimeout(function () {
+    //     d.close().remove();
+    // }, 2000);
 }
 
 // 警告对话框，点击确定则只需callback

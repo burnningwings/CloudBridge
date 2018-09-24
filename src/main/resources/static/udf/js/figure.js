@@ -131,9 +131,11 @@ function showLineChart(figure_id,xAxis_type,xAxis_data,series_data){
 // 画出时间折线图
 // e.g. showLineChart("myid",{"legend1":time_array_1,"legend2":time_array_2},{"legend1":["11","12"],"legend2":["21","22"]})
 function showTimeLineChart(figure_id,time_array,series_data,single){
+    console.log(figure_id, time_array,series_data,single);
     var series = [];
     var legend_data = [];
     for(var key in series_data){
+        console.log(key);
         legend_data.push(key);
         var temp = [];
         for(var index in series_data[key]){
@@ -224,6 +226,70 @@ function showTimeLineChart(figure_id,time_array,series_data,single){
             }
         },
         series: series
+    };
+    var chart = echarts.init(document.getElementById(figure_id));
+    chart.setOption(option);
+}
+
+function showPredictResultChart(figure_id, predict_list, index_list) {
+    console.log('show figure result');
+
+    var option = {
+        title : {
+            text : '预测结果'
+        },
+        tooltip: {},
+        legend: {
+            data : ['损伤位置']
+        },
+        xAxis :{
+            data : index_list,
+            show : false
+            //type : 'value'
+        },
+        yAxis : {
+            type : 'value',
+            min : 0,
+            max : 40,
+            interval : 5
+        },
+        toolbox : {
+            show : true,
+            right : '5% ',
+            feature :{
+                dataView:{
+                    readOnly: true,
+                    optionToContent: function (opt) {
+                        var series = opt.series[0].data;
+                        var index = opt.xAxis[0].data;
+                        var tdHeads = '<td  style="padding: 0 10px">记录编号</td>'
+                                        +'<td  style="padding: 0 10px">预测损伤位置</td>'; //表头
+                        var table = '<table border="1" style="margin-left:20px;border-collapse:collapse;font-size:14px;text-align:center"><tbody><tr>'+tdHeads+'</tr>';
+                        var tdBody = '';
+                        for(var i = 0; i < series.length;i++)
+                        {
+                            table += '<tr><td style="padding: 0 10px">'+index[i]+'</td><td style="padding: 0 10px">'+series[i]+'</td></tr>';
+                        }
+                        table += '</tbody></table>';
+                        return table;
+                    }
+                },
+                saveAsImage: {
+                    pixelRatio:2,
+                    show: true
+                },
+                // magicType: {
+                //     show: true,
+                //     type: ['scatter','line']
+                // },
+            }
+
+        },
+        series : [{
+            name : '损伤位置',
+            type : 'scatter',
+            data : predict_list
+        }]
     };
     var chart = echarts.init(document.getElementById(figure_id));
     chart.setOption(option);

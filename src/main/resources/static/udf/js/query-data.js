@@ -249,6 +249,7 @@ function getAndshowSensorFigure(figure_id,sensor_id_array,sensor_number_array,cu
             var sensor_number = sensor_number_array[index];
             // 对于每一个传感器
             var data = message["data"][sensor_id];
+            console.log(data)
             if (data.length <= 0) {
                 $("#" + figure_id).html("<img style='margin-top:120px;' src='assets/img/warning.png'/>");
                 showTransientDialog("传感器" + sensor_number + "对应时间区间数据不存在！");
@@ -286,6 +287,8 @@ function getAndshowSensorFigure(figure_id,sensor_id_array,sensor_number_array,cu
             }
         }
         if(Object.keys(series_data).length<=0) return;
+        console.log(xAxis_data);
+        console.log(series_data);
         showTimeLineChart(figure_id,xAxis_data,series_data,single);
     }
     var url = "/query-data/figure";
@@ -452,6 +455,7 @@ var skip = 0;
 
 function updateGrid(bridge_id,box_id,sensor_info){
     // 根据传感器类型初始化列表项
+    console.log("updateGrid")
     console.log(bridge_id,box_id,sensor_info)
     if(sensor_info==null || sensor_info=="") return;
     var sensor_info_list = sensor_info.split(" - ");
@@ -466,6 +470,7 @@ function updateGrid(bridge_id,box_id,sensor_info){
                 contentType: "application/json; charset=utf-8"
             },
             parameterMap: function (options, operation) {
+                console.log("operaton:"+operation)
                 if (operation == "read") {
                     var next = true;
                     if(options.skip==0){
@@ -483,6 +488,9 @@ function updateGrid(bridge_id,box_id,sensor_info){
                         next = false;
                     }
                     skip = options.skip;
+                    console.log("next:"+next+" skip:"+skip+" rowKey:"+row_key)
+                    console.log("page:"+options.page+" pageSize:"+options.pageSize)
+                    console.log("sensorInfo:"+$("#sensor_menu").val())
                     var parameter = {
                         next: next,
                         skip: skip,

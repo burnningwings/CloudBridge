@@ -199,8 +199,8 @@ public class UserManager {
     @RequestMapping(value = "/user-manager/updateuserinfo", method = RequestMethod.GET, produces = "application/json")
     public JSONObject UpdateUserInfo(String userid) {
 
-        HttpResponse response = new HttpResponse();
-        JSONObject data = new JSONObject();
+            HttpResponse response = new HttpResponse();
+            JSONObject data = new JSONObject();
         String rolelistSql = "select id as roleid, name as rolename from sys_role";
         JSONObject rolelist = new JSONObject();
         try {

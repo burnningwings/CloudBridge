@@ -41,6 +41,17 @@ public class CloudBridge implements EnvironmentAware {
             Constants.MYSQL_PASSWORD = env.getProperty("spring.datasource.password").toString();
             Constants.SENSOR_DATA_ROOT_DIR = env.getProperty("sensor.data.dir").toString();
             Constants.UPLOAD_DATA_BIN_SH = env.getProperty("upload.bin.sh").toString();
+            Constants.OVERWEIGHT_UPLOAD_TRAIN_FILE_DIR = env.getProperty("overweight.upload.trainfile.dir").toString();
+            Constants.DAMAGE_UPLOAD_TRAIN_FILE_DIR = env.getProperty("damage.upload.trainfile.dir").toString();
+            Constants.OVERWEIGHT_UPLOAD_TEST_FILE_DIR = env.getProperty("overweight.upload.testfile.dir").toString();
+            Constants.DAMAGE_UPLOAD_TEST_FILE_DIR = env.getProperty("damage.upload.testfile.dir").toString();
+            Constants.OVERWEIGHT_UPLOAD_TRAIN_MODEL_DIR = env.getProperty("overweight.upload.trainmodel.dir").toString();
+            Constants.DAMAGE_UPLOAD_TRAIN_MODEL_DIR = env.getProperty("damage.upload.trainmodel.dir").toString();
+            Constants.OVERWEIGHT_SAVE_TRAIN_MODEL_DIR = env.getProperty("overweight.saved.trainmodel.dir").toString();
+            Constants.DAMAGE_SAVE_TRAIN_MODEL_DIR = env.getProperty("damage.saved.trainmodel.dir").toString();
+            Constants.TEST_MODEL_PROGRAM = env.getProperty("model.test.program").toString();
+            Constants.OVERWEIGHT_PREDICT_FILE_DIR = env.getProperty("overweight.predict.output.dir").toString();
+            Constants.DAMAGE_PREDICT_FILE_DIR = env.getProperty("damage.predict.output.dir").toString();
         }catch (Exception e){
             logger.debug("当前MYSQL未配置.");
         }

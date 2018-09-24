@@ -140,26 +140,27 @@ function showBridgeDialog(title, operation_type, bridge_id) {
         var data = response.data;
         if (data["bridge_info"]) {
             var bi = data["bridge_info"][0];
-            bridge_name = bi["bridge_name"];
-            bridge_number = bi["bridge_number"];
-            bridge_type_id = bi["bridge_type_id"];
-            organization = bi["organization"];
-            description = bi["description"]
+            old_bridge_name = bi["bridge_name"];
+            old_bridge_number = bi["bridge_number"];
+            old_bridge_type_id = bi["bridge_type_id"];
+            old_organization = bi["organization"];
+            old_description = bi["description"]
         }
         for (var i = 0; i < data["bridge_type_list"].length; i++) {
             var bt = data["bridge_type_list"][i];
-            if (bt['bridge_type_id'] == bridge_type_id) {
+            if (bt['bridge_type_id'] == old_bridge_type_id) {
                 bridge_type_options += "<option value='" + bt["bridge_type_id"] + "' selected='selected'>" + bt["bridge_type_name"] + "</option>";
             } else {
                 bridge_type_options += "<option value='" + bt["bridge_type_id"] + "'>" + bt["bridge_type_name"] + "</option>";
             }
         }
     }
+    <!--尽管报错，但是不能删去-->
     var content = '\
         <div class="form-inline-custom">\
             <label class="col-sm-3 control-label">桥梁名称:</label>\
             <div class="col-sm-8"> \
-                <input type="text" class="form-control" id="bridge_name" placeholder="请输入桥梁名称" value="' + bridge_name + '"> \
+                <input type="text" class="form-control" id="bridge_name" placeholder="请输入桥梁名称" value="' + old_bridge_name + '"> \
             </div>\
             <span class="text-danger mt5 fl">*</span>\
         </div> \
@@ -167,7 +168,7 @@ function showBridgeDialog(title, operation_type, bridge_id) {
         <div class="form-inline-custom">\
             <label class="col-sm-3 control-label">桥梁编号:</label>\
             <div class="col-sm-8"> \
-                <input type="text" class="form-control" id="bridge_number" placeholder="请输入桥梁编号" value="' + bridge_number + '"> \
+                <input type="text" class="form-control" id="bridge_number" placeholder="请输入桥梁编号" value="' + old_bridge_number + '"> \
             </div>\
             <span class="text-danger mt5 fl">*</span>\
         </div> \
@@ -183,14 +184,14 @@ function showBridgeDialog(title, operation_type, bridge_id) {
         <div class="form-inline-custom">\
             <label class="col-sm-3 control-label">所属单位:</label>\
             <div class="col-sm-8"> \
-                <input type="text" class="form-control" id="organization" placeholder="请输入所属单位" value="' + organization + '"> \
+                <input type="text" class="form-control" id="organization" placeholder="请输入所属单位" value="' + old_organization + '"> \
             </div>\
         </div> \
         <br>\
         <div class="form-inline-custom">\
             <label class="col-sm-3 control-label">说明:</label>\
             <div class="col-sm-8"> \
-                <textarea class="form-control" rows="3" id="description">' + description + '</textarea>\
+                <textarea class="form-control" rows="3" id="description">' + old_description + '</textarea>\
             </div>\
         </div> \
         <br>\
@@ -220,7 +221,12 @@ function showBridgeDialog(title, operation_type, bridge_id) {
                 'bridgeNumber': bridge_number,
                 'bridgeTypeId': bridge_type_id,
                 'organization': organization,
-                'description': description
+                'description': description,
+                'old_bridge_name' : old_bridge_name,
+                'old_bridge_number': old_bridge_number,
+                'old_bridge_type_id':old_bridge_type_id,
+                'old_organization':old_organization,
+                'old_description':old_description
             };
             var response = webRequest(url, 'POST', false, params);
             if (response != null && response.status == 0) {

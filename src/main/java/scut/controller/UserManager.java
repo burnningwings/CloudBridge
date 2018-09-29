@@ -130,12 +130,15 @@ public class UserManager {
         String username = reqMsg.get("username").toString();
         String password = reqMsg.get("password").toString();
         String truename = reqMsg.get("truename").toString();
+        Long organizationId = Long.valueOf(reqMsg.get("organization_id").toString());
         String department = reqMsg.get("department").toString();
         String duty = reqMsg.get("duty").toString();
         List role_select = (ArrayList) reqMsg.get("role_select");
 
-        String createUserSql = String.format("insert into sys_user (username,truename,password,department,duty)" +
-                " values ('%s','%s','%s','%s','%s')", username, truename, password, department, duty);
+        String createUserSql = String.format("insert into sys_user (" +
+                "username,truename,password,department,duty,organization_id)" +
+                " values ('%s','%s','%s','%s','%s',%d)",
+                username, truename, password, department, duty, organizationId);
         int ret = 0;
         try {
             ret = baseDao.Execute(createUserSql);

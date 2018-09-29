@@ -3,20 +3,26 @@ package scut.controller;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.dbutils.ResultSetHandler;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import scut.base.HttpResponse;
+import scut.domain.Organization;
+import scut.service.OrganizationService;
+import scut.service.SysUserService;
 import scut.util.Constants;
 import scut.util.sql.SQLBaseDao;
 import scut.util.sql.SQLDaoFactory;
 
+import javax.annotation.Resource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -31,6 +37,12 @@ public class WatchBox {
     String druid_mysql_url = String.format(Constants.MYSQL_FORMAT,Constants.MYSQL_URL,Constants.MYSQL_USERNAME,Constants.MYSQL_PASSWORD) + "|" + maxActive;
     SQLBaseDao baseDao = SQLDaoFactory.getSQLDaoInstance(druid_mysql_url);
 
+    @Resource
+    SysUserService sysUserService;
+
+    @Resource
+    OrganizationService organizationService;
+
     /**
      * 异步翻页
      * @param page
@@ -40,10 +52,13 @@ public class WatchBox {
      */
     @RequestMapping(value = "/watch-box/list", method = RequestMethod.GET, produces = "application/json")
     public JSONObject tableList(int page, Integer pageSize, String bridgeName) {
+        long userOrganizationId = sysUserService.getUserOrganizationId();
         // 获取数据
-        String whereStr = " ";
+        String whereStr = String.format(" where b.bridge_id in (" +
+                "select bo.bridge_id from bridge_organization bo " +
+                "where bo.organization_id = %d) ", userOrganizationId);
         if(!bridgeName.equals("全部")){
-            whereStr = "where bridge_name='" + bridgeName + "'";
+            whereStr += " and b.bridge_name='" + bridgeName + "'";
         }
         String sql = String.format(
                 "select w.*,b.bridge_name,w_t.name as box_type_name " +
@@ -57,18 +72,15 @@ public class WatchBox {
         // 获取翻页数据
         JSONArray data = new JSONArray();
         try {
-            baseDao.querySingleObject(sql,new ResultSetHandler<String>(){
-                @Override
-                public String handle(ResultSet rs) throws SQLException {
-                    while(rs.next()){
-                        JSONObject item = new JSONObject();
-                        for(String filed: fields) {
-                            item.put(filed, rs.getObject(filed) != null ? rs.getObject(filed) : "");
-                        }
-                        data.add(item);
+            baseDao.querySingleObject(sql, (rs) -> {
+                while(rs.next()){
+                    JSONObject item = new JSONObject();
+                    for(String filed: fields) {
+                        item.put(filed, rs.getObject(filed) != null ? rs.getObject(filed) : "");
                     }
-                    return null;
+                    data.add(item);
                 }
+                return null;
             });
         } catch (SQLException e) {
             e.printStackTrace();
@@ -101,9 +113,13 @@ public class WatchBox {
 
     @RequestMapping(value = "/watch-box/dropdown", method = RequestMethod.GET, produces = "application/json")
     public JSONObject dropDownList() {
+        long userOrganizationId = sysUserService.getUserOrganizationId();
         HttpResponse response = new HttpResponse();
         JSONObject data = new JSONObject();
-        String sql = "select bridge_id,bridge_name from bridge_info";
+        String sql = String.format("select b.bridge_id, b.bridge_name from bridge_info b " +
+                "where b.bridge_id in (" +
+                "select bo.bridge_id from bridge_organization bo " +
+                "where bo.organization_id = %d)", userOrganizationId);
         try {
             baseDao.querySingleObject(sql,new ResultSetHandler<String>(){
                 @Override
@@ -123,10 +139,14 @@ public class WatchBox {
 
     @RequestMapping(value = "/watch-box/info", method = RequestMethod.GET, produces = "application/json")
     public JSONObject createWatchBoxInfo(String watch_box_id) {
+        long userOrganizationId = sysUserService.getUserOrganizationId();
         HttpResponse response = new HttpResponse();
         JSONObject data = new JSONObject();
         // 桥梁信息
-        String bridgeSql = "select bridge_id,bridge_name from bridge_info";
+        String bridgeSql = String.format("select b.bridge_id, b.bridge_name from bridge_info b " +
+                "where b.bridge_id in (" +
+                "select bo.bridge_id from bridge_organization bo " +
+                "where bo.organization_id = %d)", userOrganizationId);
         JSONObject bridge = new JSONObject();
         try {
             baseDao.querySingleObject(bridgeSql,new ResultSetHandler<String>(){
@@ -164,11 +184,13 @@ public class WatchBox {
         // 假如是更新操作
         JSONObject watchBox = new JSONObject();
         if(watch_box_id!=null && !watch_box_id.equals("")){
-            String watchBoxSql = "select * from watch_box where box_id='%s'";
+            String watchBoxSql = String.format("select * from watch_box w where w.box_id='%s' " +
+                    "and w.bridge_id in (select bo.bridge_id from bridge_organization bo " +
+                    "where bo.organization_id = %d)", watch_box_id, userOrganizationId);
             String[] fields = new String[]{"name","description","box_number","node",
                     "port_id","comm_type","comm_address","begin_time","sample_interval","change_time_interval"};
             try {
-                baseDao.querySingleObject(String.format(watchBoxSql,watch_box_id),new ResultSetHandler<String>(){
+                baseDao.querySingleObject(watchBoxSql,new ResultSetHandler<String>(){
                     @Override
                     public String handle(ResultSet rs) throws SQLException {
                         if(rs.next()){
@@ -188,6 +210,8 @@ public class WatchBox {
         return response.getHttpResponse();
     }
 
+
+    @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping(value = "/watch-box/create-or-update", method = RequestMethod.POST, produces = "application/json")
     public JSONObject createWatchBox(@RequestBody Map<String,Object> reqMsg) {
         HttpResponse response = new HttpResponse();
@@ -260,6 +284,16 @@ public class WatchBox {
             return response.getHttpResponse();
         }
 
+        long bridgeDirectOrganizationId = organizationService
+                .getBridgeDirectOrganizationId(Long.parseLong(bridge_id.toString()));
+        if (!sysUserService.getUserOrganizationId().equals(bridgeDirectOrganizationId) &&
+                !sysUserService.userInferiorOrganizationContains(bridgeDirectOrganizationId)) {
+            response.setStatus(HttpResponse.FAIL_STATUS);
+            response.setCode(HttpResponse.FAIL_CODE);
+            response.setMsg("您没有权限新建或修改属于此桥梁的控制箱！");
+            return response.getHttpResponse();
+        }
+
         JSONObject data = new JSONObject();
         String last_update = sdf.format(new Date());
         String executeWatchBoxSqlFormat = "insert into " +
@@ -291,11 +325,30 @@ public class WatchBox {
         return response.getHttpResponse();
     }
 
+
+    @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping(value = "/watch-box/delete", method = RequestMethod.POST, produces = "application/json")
     public JSONObject deleteWatchBox(@RequestBody Map<String,Object> reqMsg) {
         HttpResponse response = new HttpResponse();
         ArrayList<String> watch_box_checked_list = (ArrayList<String>)reqMsg.get("watch_box_checked_list");
         JSONObject data = new JSONObject();
+
+        List<Long> watchBoxIds = new ArrayList<>();
+        for (String id : watch_box_checked_list) {
+            watchBoxIds.add(Long.valueOf(id));
+        }
+        List<Organization> directOrganizations =
+                organizationService.getBridgeDirectOrganizationsByWatchBoxIds(watchBoxIds);
+        for (Organization o : directOrganizations) {
+            if (!sysUserService.getUserOrganizationId().equals(o.getId()) &&
+                    !sysUserService.userInferiorOrganizationContains(o)) {
+                response.setStatus(HttpResponse.FAIL_STATUS);
+                response.setCode(HttpResponse.FAIL_CODE);
+                response.setMsg("删除控制箱失败，请检查要删除的控制箱是否都由您的机构或其下级机构管辖！");
+                return response.getHttpResponse();
+            }
+        }
+
         String deleteWatchBoxSql = "delete from watch_box where box_id in (%s)";
         int ret = 0;
         try {
@@ -320,6 +373,7 @@ public class WatchBox {
      */
     @RequestMapping(value = "/watch-box/simple-list", method = RequestMethod.GET, produces = "application/json")
     public JSONObject watchBoxSimpleList(Integer bridgeId) {
+        long userOrganizationId = sysUserService.getUserOrganizationId();
         JSONObject response = new JSONObject();
         if (bridgeId != null) {
             String sql = String.format("SELECT\n" +
@@ -328,7 +382,15 @@ public class WatchBox {
                     "FROM\n" +
                     "	watch_box AS wb\n" +
                     "WHERE\n" +
-                    "	wb.bridge_id = %s", bridgeId);
+                    "	wb.bridge_id = %s\n" +
+                    "   AND wb.bridge_id IN (\n" +
+                    "      SELECT\n" +
+                    "         bo.bridge_id\n" +
+                    "      FROM\n" +
+                    "         bridge_organization bo\n" +
+                    "      WHERE\n" +
+                    "         bo.organization_id = %d\n" +
+                    "   )", bridgeId, userOrganizationId);
             String[] fields = new String[]{"watch_box_id", "watch_box_name"};
             JSONArray data = baseDao.queryData(sql, fields);
             response.put("data", data);

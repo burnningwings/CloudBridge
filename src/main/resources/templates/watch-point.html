@@ -26,8 +26,8 @@
 <body class="cm-no-transition cm-1-navbar">
 
 <div id="cm-menu"
-     th:include="base/menu::menu (one,active,two_2,three_1,three_2,four_1,four_2,four_3,four_4,five_1,five_2,six_1,six_2,six_3,seven_1,seven_2)"></div>
-<div th:include="base/header"></div>
+     th:replace="base/menu::menu (one,active,two_2,three_1,three_2,four_1,four_2,four_3,four_4,five_1,five_2,six_1,six_2,six_3,seven_1,seven_2)"></div>
+<div th:replace="base/header::header"></div>
 
 <div id="global">
     <div class="container-fluid">
@@ -55,7 +55,7 @@
             </div>
         </div>
     </div>
-    <div th:include="base/footer"></div>
+    <div th:replace="base/footer::footer"></div>
 </div>
 <script src="assets/js/lib/jquery-2.1.3.min.js"></script>
 <script src="assets/js/jquery.mousewheel.min.js"></script>

@@ -2,16 +2,22 @@ package scut.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.sun.org.apache.regexp.internal.RE;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import scut.base.HttpResponse;
+import scut.service.OrganizationService;
+import scut.service.SysUserService;
+import scut.domain.Organization;
 import scut.util.Constants;
 import scut.util.StringUtil;
 import scut.util.sql.SQLBaseDao;
 import scut.util.sql.SQLDaoFactory;
 
+import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by riverluo on 2018/5/10.
@@ -23,6 +29,12 @@ public class Section {
     String druid_mysql_url = String.format(Constants.MYSQL_FORMAT, Constants.MYSQL_URL, Constants.MYSQL_USERNAME, Constants.MYSQL_PASSWORD) + "|" + maxActive;
     SQLBaseDao baseDao = SQLDaoFactory.getSQLDaoInstance(druid_mysql_url);
 
+    @Resource
+    SysUserService sysUserService;
+
+    @Resource
+    OrganizationService organizationService;
+
     /**
      * 截面信息列表
      *
@@ -33,10 +45,20 @@ public class Section {
      */
     @RequestMapping(value = "/section/list", method = RequestMethod.GET, produces = "application/json")
     public JSONObject sectionList(Integer page, Integer pageSize, Integer bridgeId) {
+        long userOrganizationId = sysUserService.getUserOrganizationId();
         JSONObject response = new JSONObject();
-        String whereStr = "";
+        String whereStr = String.format(
+                "WHERE\n" +
+                        "   s.bridge_id IN (\n" +
+                        "      SELECT\n" +
+                        "         bo.bridge_id\n" +
+                        "      FROM\n" +
+                        "         bridge_organization bo\n" +
+                        "      WHERE\n" +
+                        "         bo.organization_id = %d\n" +
+                        "   )\n", userOrganizationId);
         if (bridgeId != null && bridgeId != 0) {
-            whereStr = String.format(" WHERE s.bridge_id = %s", bridgeId);
+            whereStr += String.format(" AND s.bridge_id = %s", bridgeId);
         }
         String sql = String.format("SELECT\n" +
                 "	s.section_id,\n" +
@@ -71,6 +93,7 @@ public class Section {
      */
     @RequestMapping(value = "/section/info", method = RequestMethod.GET, produces = "application/json")
     public JSONObject sectionInfo(Integer sectionId) {
+        long userOrganizationId = sysUserService.getUserOrganizationId();
         HttpResponse response = new HttpResponse();
         JSONObject data = new JSONObject();
         if (sectionId != null) {
@@ -84,17 +107,35 @@ public class Section {
                     "FROM\n" +
                     "	section AS s\n" +
                     "WHERE\n" +
-                    "	s.section_id = %s", sectionId);
+                    "	s.section_id = %s\n" +
+                    "AND\n" +
+                    "   s.bridge_id IN (\n" +
+                    "      SELECT\n" +
+                    "         bo.bridge_id\n" +
+                    "      FROM\n" +
+                    "         bridge_organization bo\n" +
+                    "      WHERE\n" +
+                    "         bo.organization_id = %d\n" +
+                    "   )", sectionId, userOrganizationId);
             String[] fields = new String[]{"section_id", "section_name", "section_number", "position", "description", "bridge_id"};
             JSONArray sectionInfo = baseDao.queryData(sql, fields);
             data.put("section_info", sectionInfo);
         }
 
-        String sql = "SELECT\n" +
+        String sql = String.format("SELECT\n" +
                 "	b.bridge_id,\n" +
                 "	b.bridge_name\n" +
                 "FROM\n" +
-                "	bridge_info AS b";
+                "	bridge_info AS b\n" +
+                "WHERE\n" +
+                "   b.bridge_id IN (\n" +
+                "      SELECT\n" +
+                "         bo.bridge_id\n" +
+                "      FROM\n" +
+                "         bridge_organization bo\n" +
+                "      WHERE\n" +
+                "         bo.organization_id = %d\n" +
+                "   )", userOrganizationId);
         String[] fields = new String[]{"bridge_id", "bridge_name"};
         JSONArray bridgeList = baseDao.queryData(sql, fields);
         data.put("bridge_list", bridgeList);
@@ -109,6 +150,7 @@ public class Section {
      * @param reqMsg
      * @return
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping(value = "/section/create-or-update", method = RequestMethod.POST, produces = "application/json")
     public JSONObject createOrUpdate(@RequestBody JSONObject reqMsg) {
         HttpResponse response = new HttpResponse();
@@ -125,6 +167,15 @@ public class Section {
             response.setStatus(HttpResponse.FAIL_STATUS);
             response.setCode(HttpResponse.FAIL_CODE);
             response.setMsg("参数错误！");
+            return response.getHttpResponse();
+        }
+
+        long bridgeDirectOrganizationId = organizationService.getBridgeDirectOrganizationId(bridgeId.longValue());
+        if (!sysUserService.getUserOrganizationId().equals(bridgeDirectOrganizationId) &&
+                !sysUserService.userInferiorOrganizationContains(bridgeDirectOrganizationId)) {
+            response.setStatus(HttpResponse.FAIL_STATUS);
+            response.setCode(HttpResponse.FAIL_CODE);
+            response.setMsg("您没有权限新建或修改属于此桥梁的截面！");
             return response.getHttpResponse();
         }
 
@@ -160,10 +211,28 @@ public class Section {
      * @param reqMsg
      * @return
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping(value = "/section/delete", method = RequestMethod.POST, produces = "application/json")
     public JSONObject delete(@RequestBody JSONObject reqMsg) {
         HttpResponse response = new HttpResponse();
         String checkedListStr = reqMsg.getString("checkedList");
+
+        List<Long> sectionIds = new ArrayList<>();
+        for (String id : checkedListStr.split(",")) {
+            sectionIds.add(Long.valueOf(id));
+        }
+        List<Organization> directOrganizations =
+                organizationService.getBridgeDirectOrganizationsBySectionIds(sectionIds);
+        for (Organization o : directOrganizations) {
+            if (!sysUserService.getUserOrganizationId().equals(o.getId()) &&
+                    !sysUserService.userInferiorOrganizationContains(o)) {
+                response.setStatus(HttpResponse.FAIL_STATUS);
+                response.setCode(HttpResponse.FAIL_CODE);
+                response.setMsg("删除截面失败，请检查要删除的截面是否都由您的机构或其下级机构管辖！");
+                return response.getHttpResponse();
+            }
+        }
+
         if (checkedListStr != null) {
             String sql = String.format("DELETE FROM section WHERE section_id IN (%s)", checkedListStr);
             int ret = baseDao.updateData(sql);
@@ -180,6 +249,7 @@ public class Section {
 
     @RequestMapping(value = "/section/simple-list", method = RequestMethod.GET, produces = "application/json")
     public JSONObject sectionSimpleList(Integer bridgeId) {
+        long userOrganizationId = sysUserService.getUserOrganizationId();
         JSONObject response = new JSONObject();
         if (bridgeId != null) {
             String sql = String.format("SELECT\n" +
@@ -188,7 +258,16 @@ public class Section {
                     "FROM\n" +
                     "	section AS s\n" +
                     "WHERE\n" +
-                    "	s.bridge_id = %s", bridgeId);
+                    "	s.bridge_id = %s\n" +
+                    "AND\n" +
+                    "   s.bridge_id IN (\n" +
+                    "      SELECT\n" +
+                    "         bo.bridge_id\n" +
+                    "      FROM\n" +
+                    "         bridge_organization bo\n" +
+                    "      WHERE\n" +
+                    "         bo.organization_id = %d\n" +
+                    "   )", bridgeId, userOrganizationId);
             String[] fields = new String[]{"section_id", "section_name"};
             JSONArray data = baseDao.queryData(sql, fields);
             response.put("data", data);

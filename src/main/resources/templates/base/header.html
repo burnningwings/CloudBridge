@@ -1,9 +1,12 @@
-<header id="cm-header">
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<body>
+<header th:fragment="header" id="cm-header">
     <nav class="cm-navbar cm-navbar-primary">
         <div class="btn btn-primary md-menu-white hidden-md hidden-lg" data-toggle="cm-menu"></div>
         <div class="cm-flex">
             <h1></h1>
-            <form id="cm-search" action="index.html" method="get">
+            <form id="cm-search" action="/" method="get">
                 <input type="search" name="q" autocomplete="off" placeholder="Search...">
             </form>
         </div>
@@ -39,23 +42,8 @@
                 </div>
             </div>
         </div>
-        <div class="dropdown pull-right">
-            <button class="btn btn-primary md-account-circle-white" data-toggle="dropdown"></button>
-            <ul class="dropdown-menu">
-                <li class="disabled text-center">
-                    <a style="cursor:default;"><strong>John Smith</strong></a>
-                </li>
-                <li class="divider"></li>
-                <li>
-                    <a href="#"><i class="fa fa-fw fa-user"></i> Profile</a>
-                </li>
-                <li>
-                    <a href="#"><i class="fa fa-fw fa-cog"></i> Settings</a>
-                </li>
-                <li>
-                    <a href="login.html"><i class="fa fa-fw fa-sign-out"></i> Sign out</a>
-                </li>
-            </ul>
-        </div>
+        <div th:replace="base/profile::profile"></div>
     </nav>
 </header>
+</body>
+</html>

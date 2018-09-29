@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import scut.base.HttpResponse;
+import scut.service.SysUserService;
 import scut.service.scheduler.Message;
 import scut.service.scheduler.Scheduler;
 import scut.service.scheduler.executor.CommandLineExecutor;
@@ -22,6 +23,7 @@ import scut.util.parser.JsonParser;
 import scut.util.sql.SQLBaseDao;
 import scut.util.sql.SQLDaoFactory;
 
+import javax.annotation.Resource;
 import java.io.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -40,6 +42,9 @@ public class DataManager {
     int maxActive = 100;
     String druid_mysql_url = String.format(Constants.MYSQL_FORMAT,Constants.MYSQL_URL,Constants.MYSQL_USERNAME,Constants.MYSQL_PASSWORD) + "|" + maxActive;
     SQLBaseDao baseDao = SQLDaoFactory.getSQLDaoInstance(druid_mysql_url);
+
+    @Resource
+    SysUserService sysUserService;
 
     private Map<String,Object> getDataSchema(String sensorId){
         String sql = "select b.data_schema " +
@@ -96,6 +101,7 @@ public class DataManager {
                 Executor executor = new CommandLineExecutor(id,execObj.toString());
                 Message.getInstance().update(id,null,null,Constants.READY,param,null);
                 Scheduler.getInstance().runExecutor(executor);
+                // TODO: potential bug: hard-coded URL
                 data.put("url","http://192.168.0.100:8088/cluster/scheduler");
                 // 前端获取该key，可监听上传情况
                 data.put("id",id);
@@ -202,9 +208,13 @@ public class DataManager {
 
     @RequestMapping(value = "/query-data/dropdown", method = RequestMethod.GET, produces = "application/json")
     public JSONObject dropdownList(String bridge_id) {
+        long userOrganizationId = sysUserService.getUserOrganizationId();
         HttpResponse response = new HttpResponse();
         JSONObject data = new JSONObject();
-        String sql = "select bridge_id,bridge_name from bridge_info";
+        String sql = String.format("select b.bridge_id,b.bridge_name from bridge_info b " +
+                "where b.bridge_id in (" +
+                "select bo.bridge_id from bridge_organization bo " +
+                "where bo.organization_id = %d)", userOrganizationId);
         try {
             baseDao.querySingleObject(sql,new ResultSetHandler<String>(){
                 @Override
@@ -228,7 +238,10 @@ public class DataManager {
                     "from watch_box as a " +
                     "left join sensor_info as b on a.box_id=b.box_id " +
                     "left join sensor_type as c on b.type_id=c.type_id " +
-                    "where a.bridge_id='%s'";
+                    "where a.bridge_id='%s'" +
+                    "and a.bridge_id in (" +
+                    "select bo.bridge_id from bridge_organization bo " +
+                    "where bo.organization_id = " + userOrganizationId + ")";
             try {
                 baseDao.querySingleObject(String.format(sql,data.get("bridge_id")),
                         new ResultSetHandler<String>(){

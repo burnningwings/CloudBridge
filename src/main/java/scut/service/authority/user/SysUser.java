@@ -3,6 +3,7 @@ package scut.service.authority.user;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import scut.domain.Organization;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -27,7 +28,24 @@ public class SysUser implements UserDetails {
     private String department;
     private String duty;
 
-    @ManyToMany(cascade = {CascadeType.REFRESH},fetch = FetchType.EAGER)
+    @ManyToOne
+    @JoinColumn(
+            name = "organization_id",
+            referencedColumnName = "id",
+            foreignKey = @ForeignKey(name = "fk_sys_user_organization_id"))
+    private Organization organization;
+
+    @ManyToMany(cascade = {CascadeType.REFRESH}, fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "sys_user_roles",
+            joinColumns = @JoinColumn(
+                    name = "sys_user_id",
+                    referencedColumnName = "id",
+                    foreignKey = @ForeignKey(name = "fk_sys_user_roles_sys_user_id")),
+            inverseJoinColumns = @JoinColumn(
+                    name = "roles_id",
+                    referencedColumnName = "id",
+                    foreignKey = @ForeignKey(name = "fk_sys_user_roles_roles_id")))
     private List<SysRole> roles;
 
     public Long getId() {
@@ -89,6 +107,14 @@ public class SysUser implements UserDetails {
         return auths;
     }
 
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
+    }
+
     @Override
     public String getPassword() {
         return this.password;
@@ -117,5 +143,25 @@ public class SysUser implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("SysUser: {" + "\n" +
+                        "id: %d" + "\n" +
+                        "username: %s" + "\n" +
+                        "password: %s" + "\n" +
+                        "truename: %s" + "\n" +
+                        "department: %s" + "\n" +
+                        "duty: %s" + "\n" +
+                        "organization: %s" + "\n" +
+                        "}" + "\n",
+                this.id,
+                this.username,
+                this.password,
+                this.truename,
+                this.department,
+                this.duty,
+                this.organization == null ? "null" : this.organization.getName());
     }
 }

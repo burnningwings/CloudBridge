@@ -155,6 +155,17 @@ function showBridgeDialog(title, operation_type, bridge_id) {
             }
         }
     }
+
+    var organization_options = "";
+    var organizations = webRequest('/self-and-inferior-organizations', 'GET', false);
+    organizations.forEach(function (org) {
+        var selected_flag = '';
+        if (org['name'] === organization) {
+            selected_flag = '" selected="selected';
+        }
+        organization_options += '<option value="' + org['id'] + selected_flag + '">' + org['name'] + '</option>';
+    });
+
     var content = '\
         <div class="form-inline-custom">\
             <label class="col-sm-3 control-label">桥梁名称:</label>\
@@ -174,18 +185,18 @@ function showBridgeDialog(title, operation_type, bridge_id) {
         <br>\
         <div class="form-inline-custom">\
             <label class="col-sm-3 control-label">桥梁类型:</label>  \
-            <div class="col-sm-8">  \
-                <select class="form-control" id="bridge_type_sel"">' + bridge_type_options + '</select>  \
-            </div> \
+            <div class="col-sm-8">\
+                <select class="form-control" id="bridge_type_sel">' + bridge_type_options + '</select>  \
+            </div>\
             <span class="text-danger mt5 fl">*</span>\
         </div>\
         <br>\
         <div class="form-inline-custom">\
             <label class="col-sm-3 control-label">所属单位:</label>\
-            <div class="col-sm-8"> \
-                <input type="text" class="form-control" id="organization" placeholder="请输入所属单位" value="' + organization + '"> \
+            <div class="col-sm-8">\
+                <select class="form-control" id="organization_id">' + organization_options + '</select>\
             </div>\
-        </div> \
+        </div>\
         <br>\
         <div class="form-inline-custom">\
             <label class="col-sm-3 control-label">说明:</label>\
@@ -204,11 +215,11 @@ function showBridgeDialog(title, operation_type, bridge_id) {
         var bridge_name = $('#bridge_name').val();
         var bridge_number = $('#bridge_number').val();
         var bridge_type_id = $('#bridge_type_sel').val();
+        var organization_id = $('#organization_id').val();
         //非必须参数
-        var organization = $('#organization').val();
         var description = $('#description').val();
 
-        if (!bridge_name || !bridge_number || !bridge_type_id) {
+        if (!bridge_name || !bridge_number || !bridge_type_id || !organization_id) {
             showTransientDialog("必填项不能为空！");
             return false;
         } else {
@@ -219,7 +230,7 @@ function showBridgeDialog(title, operation_type, bridge_id) {
                 'bridgeName': bridge_name,
                 'bridgeNumber': bridge_number,
                 'bridgeTypeId': bridge_type_id,
-                'organization': organization,
+                'organizationId': organization_id,
                 'description': description
             };
             var response = webRequest(url, 'POST', false, params);

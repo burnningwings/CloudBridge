@@ -1,4 +1,7 @@
-<div class="dropdown pull-right">
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="profile" class="dropdown pull-right">
     <button class="btn btn-primary md-account-circle-white" data-toggle="dropdown"></button>
     <ul class="dropdown-menu">
         <li class="disabled text-center">
@@ -12,7 +15,9 @@
             <a href="#"><i class="fa fa-fw fa-cog"></i> Settings</a>
         </li>
         <li>
-            <a href="logout"><i class="fa fa-fw fa-sign-out"></i> Sign out</a>
+            <a href="/logout"><i class="fa fa-fw fa-sign-out"></i> Sign out</a>
         </li>
     </ul>
 </div>
+</body>
+</html>

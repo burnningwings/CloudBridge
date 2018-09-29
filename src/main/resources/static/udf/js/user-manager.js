@@ -112,6 +112,7 @@ function showUserCreateDialog(title) {
     var username = "";
     var password = "";
     var truename = "";
+    var organization_id = "";
     var department = "";
     var duty = "";
     var role_select = [];
@@ -126,6 +127,13 @@ function showUserCreateDialog(title) {
             role_option = role_option + "<input type='checkbox' name='cuitem' value='" + key + "'/> " + data["rolelist"][key] + "<br/>";
         }
     }
+
+    var organization_option = "";
+    var organizations = webRequest('/self-and-inferior-organizations', 'GET', false);
+    organizations.forEach(function (org) {
+        organization_option += '<option value="' + org['id'] + '">' + org['name'] + '</option>';
+    });
+
     var content = '\
          <div class="form-inline-custom">\
                 <label class="col-sm-3 control-label">用户名:</label>\
@@ -148,6 +156,14 @@ function showUserCreateDialog(title) {
             <div class="col-sm-8">\
                 <input type="text" class="form-control" id="c_truename" placeholder="请输入姓名" >\
             </div>\
+        </div>\
+        <br>\
+        <div class="form-inline-custom">\
+            <label class="col-sm-3 control-label">单位:</label>\
+            <div class="col-sm-8">\
+                <select class="form-control" id="c_organization">' + organization_option + '</select>\
+            </div>\
+            <span class="text-danger mt5 fl">*</span>\
         </div>\
         <br>\
         <div class="form-inline-custom">\
@@ -176,12 +192,14 @@ function showUserCreateDialog(title) {
         username = $("#c_username").val();
         password = $("#c_password").val();
         truename = $("#c_truename").val();
+        organization_id = $("#c_organization").val();
         department = $("#c_department").val();
         duty = $("#c_duty").val();
         $('[name=cuitem]:checkbox:checked').each(function () {
             role_select.push($(this).val())
         });
 
+        console.log("organization id: " + organization_id);
 
         if (!username) {
             showTransientDialog("用户名不能为空");
@@ -192,12 +210,16 @@ function showUserCreateDialog(title) {
         } else if (role_select.length == 0) {
             showTransientDialog("请选择赋予用户的角色");
             return false;
+        } else if (!organization_id) {
+            showTransientDialog("请选择用户所属单位");
+            return false;
         } else {
             var url = "/user-manager/create-user";
             var params = {
                 "username": username,
                 "password": password,
                 "truename": truename,
+                "organization_id": organization_id,
                 "department": department,
                 "duty": duty,
                 "role_select": role_select

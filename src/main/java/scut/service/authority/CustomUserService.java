@@ -7,18 +7,23 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import scut.service.authority.user.SysUser;
 import scut.service.authority.user.SysUserRepository;
 
+import javax.transaction.Transactional;
+
 /**
  * Created by Carrod on 2018/4/21.
  */
 public class CustomUserService implements UserDetailsService {
     @Autowired
     SysUserRepository userRepository;
+
     @Override
+    @Transactional
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
         SysUser user = userRepository.findByUsername(s);
         if (user == null) {
             throw new UsernameNotFoundException("用户名不存在");
         }
+        user.getOrganization().fetchAllInferiorOrganizations();
         System.out.println("username:"+user.getUsername()+";password:"+user.getPassword());
         return user;
     }

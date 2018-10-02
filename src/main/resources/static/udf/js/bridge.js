@@ -130,11 +130,11 @@ function showBridgeDialog(title, operation_type, bridge_id) {
     };
     var response = webRequest(url, "GET", false, params);
     var bridge_type_options = "";
-    var bridge_name = "";
-    var bridge_number = "";
-    var bridge_type_id = "";
-    var organization = "";
-    var description = "";
+    var old_bridge_name = "";
+    var old_bridge_number = "";
+    var old_bridge_type_id = "";
+    var old_organization = "";
+    var old_description = "";
 
     if (response.status == 0) {
         var data = response.data;
@@ -144,7 +144,7 @@ function showBridgeDialog(title, operation_type, bridge_id) {
             old_bridge_number = bi["bridge_number"];
             old_bridge_type_id = bi["bridge_type_id"];
             old_organization = bi["organization"];
-            old_description = bi["description"]
+            old_description = bi["description"];
         }
         for (var i = 0; i < data["bridge_type_list"].length; i++) {
             var bt = data["bridge_type_list"][i];
@@ -156,15 +156,7 @@ function showBridgeDialog(title, operation_type, bridge_id) {
         }
     }
 
-    var organization_options = "";
-    var organizations = webRequest('/self-and-inferior-organizations', 'GET', false);
-    organizations.forEach(function (org) {
-        var selected_flag = '';
-        if (org['name'] === organization) {
-            selected_flag = '" selected="selected';
-        }
-        organization_options += '<option value="' + org['id'] + selected_flag + '">' + org['name'] + '</option>';
-    });
+    var organization_options = getOrganizationOptionsHTML(old_organization);
 
     <!--尽管报错，但是不能删去-->
     var content = '\
@@ -197,6 +189,7 @@ function showBridgeDialog(title, operation_type, bridge_id) {
             <div class="col-sm-8">\
                 <select class="form-control" id="organization_id">' + organization_options + '</select>\
             </div>\
+            <span class="text-danger mt5 fl">*</span>\
         </div> \
         <br>\
         <div class="form-inline-custom">\
@@ -218,7 +211,7 @@ function showBridgeDialog(title, operation_type, bridge_id) {
         var bridge_type_id = $('#bridge_type_sel').val();
         var organization_id = $('#organization_id').val();
         //非必须参数
-        var organization = $('#organization_id').text();
+        var organization = $('#organization_id option:selected').text();
         var description = $('#description').val();
 
         if (!bridge_name || !bridge_number || !bridge_type_id || !organization_id) {
@@ -233,7 +226,7 @@ function showBridgeDialog(title, operation_type, bridge_id) {
                 'bridgeNumber': bridge_number,
                 'bridgeTypeId': bridge_type_id,
                 'organizationId': organization_id,
-                'description': description
+                'description': description,
                 'organization': organization,
                 'old_bridge_name' : old_bridge_name,
                 'old_bridge_number': old_bridge_number,

@@ -1,10 +1,9 @@
 package scut.domain;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -18,9 +17,7 @@ public class Organization {
     private long id;
     private String name;
 
-    // TODO: inferiorOrganizations 需要改回 lazy fetch，否则查询 bridge 的机构时太浪费性能
-    // 但直接在 ManyToMany 处修改启动时会抛异常，需要解决这个问题
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "superior_organization",
             joinColumns = @JoinColumn(
@@ -31,8 +28,15 @@ public class Organization {
                     name = "organization_id",
                     referencedColumnName = "id",
                     foreignKey = @ForeignKey(name = "fk_superior_organization_organization_id")))
-    @LazyCollection(LazyCollectionOption.FALSE)
-    private Set<Organization> inferiorOrganizations;
+//    @LazyCollection(LazyCollectionOption.FALSE)
+    private Set<Organization> directInferiorOrganizations;
+
+    @Transient
+    private Set<Organization> allInferiorOrganizations;
+
+    public Organization() {
+        allInferiorOrganizations = new HashSet<>();
+    }
 
     @JsonView(WithIdAndName.class)
     public long getId() {
@@ -52,12 +56,31 @@ public class Organization {
         this.name = name;
     }
 
-    public Set<Organization> getInferiorOrganizations() {
-        return inferiorOrganizations;
+    public Set<Organization> getAllInferiorOrganizations() {
+        return allInferiorOrganizations;
     }
 
-    public void setInferiorOrganizations(Set<Organization> inferiorOrganizations) {
-        this.inferiorOrganizations = inferiorOrganizations;
+    public void setAllInferiorOrganizations(Set<Organization> allInferiorOrganizations) {
+        this.allInferiorOrganizations = allInferiorOrganizations;
+    }
+
+    public Set<Organization> getDirectInferiorOrganizations() {
+        return directInferiorOrganizations;
+    }
+
+    public void setDirectInferiorOrganizations(Set<Organization> directInferiorOrganizations) {
+        this.directInferiorOrganizations = directInferiorOrganizations;
+    }
+
+    private void fetchAllInferiorOrganizations(Set<Organization> result, Organization currentOrganization) {
+        for (Organization o : currentOrganization.getDirectInferiorOrganizations()) {
+            result.add(o);
+            fetchAllInferiorOrganizations(result, o);
+        }
+    }
+
+    public void fetchAllInferiorOrganizations() {
+        fetchAllInferiorOrganizations(allInferiorOrganizations, this);
     }
 
     @Override
@@ -71,5 +94,13 @@ public class Organization {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Organization{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
     }
 }

@@ -299,7 +299,7 @@ public class WatchPoint {
                     !sysUserService.userInferiorOrganizationContains(o)) {
                 response.setStatus(HttpResponse.FAIL_STATUS);
                 response.setCode(HttpResponse.FAIL_CODE);
-                response.setMsg("删除测点失败，请检查要删除的测点是否都由您的机构或其下级机构管辖！");
+                response.setMsg("删除测点失败，请检查要删除的测点是否都由您的单位或其下级单位管辖！");
                 return response.getHttpResponse();
             }
         }

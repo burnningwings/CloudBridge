@@ -128,11 +128,7 @@ function showUserCreateDialog(title) {
         }
     }
 
-    var organization_option = "";
-    var organizations = webRequest('/self-and-inferior-organizations', 'GET', false);
-    organizations.forEach(function (org) {
-        organization_option += '<option value="' + org['id'] + '">' + org['name'] + '</option>';
-    });
+    var organization_option = getOrganizationOptionsHTML();
 
     var content = '\
          <div class="form-inline-custom">\
@@ -165,7 +161,7 @@ function showUserCreateDialog(title) {
             </div>\
             <span class="text-danger mt5 fl">*</span>\
         </div>\
-        <br>\
+        <br/>\
         <div class="form-inline-custom">\
             <label class="col-sm-3 control-label">部门:</label>\
             <div class="col-sm-8">\
@@ -265,6 +261,8 @@ function showUserUpdateDialog(userid,title){
     var username = "";
     var truename = "";
     var password = "";
+    var organization = "";
+    var organization_id = "";
     var department = "";
     var duty = "";
     var role_option = "";
@@ -295,9 +293,13 @@ function showUserUpdateDialog(userid,title){
         username = data["userinfo"]["username"];
         password = data["userinfo"]["password"];
         truename = data["userinfo"]["truename"];
+        organization = data["userinfo"]["organization"];
         department = data["userinfo"]["department"];
         duty = data["userinfo"]["duty"];
     }
+
+    var organization_option = getOrganizationOptionsHTML(organization);
+
         var content = '\
          <div class="form-inline-custom">\
                 <label class="col-sm-3 control-label">用户名:</label>\
@@ -320,6 +322,14 @@ function showUserUpdateDialog(userid,title){
             <div class="col-sm-8">\
                 <input type="text" class="form-control" id="u_truename" value="'+truename+'" >\
             </div>\
+        </div>\
+        <br>\
+        <div class="form-inline-custom">\
+            <label class="col-sm-3 control-label">单位:</label>\
+            <div class="col-sm-8">\
+                <select class="form-control" id="u_organization">' + organization_option + '</select>\
+            </div>\
+            <span class="text-danger mt5 fl">*</span>\
         </div>\
         <br>\
         <div class="form-inline-custom">\
@@ -348,6 +358,7 @@ function showUserUpdateDialog(userid,title){
         username = $("#u_username").val();
         password = $("#u_password").val();
         truename = $("#u_truename").val();
+        organization_id = $('#u_organization').val();
         department = $("#u_department").val();
         duty = $("#u_duty").val();
         var role_list = [];
@@ -365,6 +376,8 @@ function showUserUpdateDialog(userid,title){
         }else if(role_list.length == 0){
             showTransientDialog("请选择赋予角色的权限");
             return false;
+        }else if(!organization_id) {
+            showTransientDialog("用户所属单位不能为空");
         }else{
             var url = "/user-manager/update-user";
             var params = {
@@ -372,6 +385,7 @@ function showUserUpdateDialog(userid,title){
                 "username" : username,
                 "password" : password,
                 "truename" : truename,
+                "organization_id": organization_id,
                 "department" : department,
                 "duty" : duty,
                 "role_list" : role_list

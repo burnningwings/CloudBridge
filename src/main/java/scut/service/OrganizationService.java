@@ -5,7 +5,6 @@ import scut.domain.Organization;
 import scut.repository.OrganizationRepository;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -15,7 +14,7 @@ public class OrganizationService {
     @Resource
     OrganizationRepository organizationRepository;
 
-    public Set<Long> getOrganizationIds(Set<Organization> organizations) {
+    Set<Long> getOrganizationIds(Set<Organization> organizations) {
         Set<Long> organizationIds = new HashSet<>();
         for (Organization o : organizations) {
             organizationIds.add(o.getId());
@@ -23,29 +22,61 @@ public class OrganizationService {
         return organizationIds;
     }
 
+    public Long getBridgeDirectOrganizationId(long bridgeId) {
+        try {
+            return getBridgeDirectOrganization(bridgeId).getId();
+        } catch (NullPointerException e) {
+            return null;
+        }
+    }
+
+    public Long getBridgeDirectOrganizationIdBySectionId(long sectionId) {
+        try {
+            return getBridgeDirectOrganizationBySectionId(sectionId).getId();
+        } catch (NullPointerException e) {
+            return null;
+        }
+    }
+
+    public Long getBridgeDirectOrganizationIdByWatchBoxId(long watchBoxId) {
+        try {
+            return getBridgeDirectOrganizationByWatchBoxId(watchBoxId).getId();
+        } catch (NullPointerException e) {
+            return null;
+        }
+    }
+
+    public Long getSysUserDirectOrganizationId(long sysUserId) {
+        try {
+            return getSysUserDirectOrganization(sysUserId).getId();
+        } catch (NullPointerException e) {
+            return null;
+        }
+    }
+
+    public String getSysUserDirectOrganizationName(long sysUserId) {
+        try {
+            return getSysUserDirectOrganization(sysUserId).getName();
+        } catch (NullPointerException e) {
+            return "";
+        }
+    }
+
     public Organization getBridgeDirectOrganization(long bridgeId) {
         return organizationRepository.findOrganizationByBridgeId(bridgeId);
     }
 
-    public long getBridgeDirectOrganizationId(long bridgeId) {
-        return getBridgeDirectOrganization(bridgeId).getId();
+    private Organization getBridgeDirectOrganizationBySectionId(long sectionId) {
+        return organizationRepository.findOrganizationBySectionId(sectionId);
     }
 
-//    public Set<Organization> getInferiorOrganizationsOfBridgeDirectOrganization(long bridgeId) {
-//        return getBridgeDirectOrganization(bridgeId).getInferiorOrganizations();
-//    }
-//
-//    public Set<Long> getInferiorOrganizationIdsOfBridgeDirectOrganization(long bridgeId) {
-//        return getOrganizationIds(getInferiorOrganizationsOfBridgeDirectOrganization(bridgeId));
-//    }
+    private Organization getBridgeDirectOrganizationByWatchBoxId(long watchBoxId) {
+        return organizationRepository.findOrganizationByWatchBoxId(watchBoxId);
+    }
 
-//    public Set<Organization> getSuperiorOrganizationsOfBridgeDirectOrganization(long bridgeId) {
-//        return getBridgeDirectOrganization(bridgeId).getSuperiorOrganizations();
-//    }
-
-//    public Set<Long> getSuperiorOrganizationIdsOfBridgeDirectOrganization(long bridgeId) {
-//        return getOrganizationIds(getSuperiorOrganizationsOfBridgeDirectOrganization(bridgeId));
-//    }
+    private Organization getSysUserDirectOrganization(long sysUserId) {
+        return organizationRepository.findOrganizationBySysUserId(sysUserId);
+    }
 
     public List<Organization> getBridgeDirectOrganizationsByBridgeIds(List<Long> bridgeIds) {
         return organizationRepository.findOrganizationsByBridgeIds(bridgeIds);
@@ -61,5 +92,9 @@ public class OrganizationService {
 
     public List<Organization> getBridgeDirectOrganizationsByWatchPointIds(List<Long> watchPointIds) {
         return organizationRepository.findOrganizationsByWatchPointIds(watchPointIds);
+    }
+
+    public List<Organization> getSysUserDirectOrganizationsBySysUserIds(List<Long> sysUserIds) {
+        return organizationRepository.findOrganizationsBySysUserIds(sysUserIds);
     }
 }

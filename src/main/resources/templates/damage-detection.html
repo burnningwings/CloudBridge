@@ -26,73 +26,8 @@
     <link rel="icon" type="image/x-icon" th:href="@{images/favicon.ico}"/>
 </head>
 <body class="cm-no-transition cm-1-navbar">
-    <div id="cm-menu" th:include="base/menu::menu (one,two_1,two_2,three_1,three_2,four_1,active,four_3,four_4,five_1,five_2,six_1,six_2,six_3,seven_1,seven_2)"></div>
-    <header id="cm-header">
-        <nav class="cm-navbar cm-navbar-primary">
-            <div class="btn btn-primary md-menu-white hidden-md hidden-lg" data-toggle="cm-menu"></div>
-            <div class="cm-flex">
-                <div class="cm-breadcrumb-container">
-                    <ol class="breadcrumb">
-                        <li><a href="#">数据分析</a></li>
-                        <li class="active">损伤识别</li>
-                    </ol>
-                </div>
-                <form id="cm-search" action="index.html" method="get">
-                    <input type="search" name="q" autocomplete="off" placeholder="Search...">
-                </form>
-            </div>
-            <div class="pull-right">
-                <div id="cm-search-btn" class="btn btn-primary md-search-white" data-toggle="cm-search"></div>
-            </div>
-            <div class="dropdown pull-right">
-                <button class="btn btn-primary md-notifications-white" data-toggle="dropdown"> <span class="label label-danger">23</span> </button>
-                <div class="popover cm-popover bottom">
-                    <div class="arrow"></div>
-                    <div class="popover-content">
-                        <div class="list-group">
-                            <a href="#" class="list-group-item">
-                                <h4 class="list-group-item-heading text-overflow">
-                                    <i class="fa fa-fw fa-envelope"></i> Nunc volutpat aliquet magna.
-                                </h4>
-                                <p class="list-group-item-text text-overflow">Pellentesque tincidunt mollis scelerisque. Praesent vel blandit quam.</p>
-                            </a>
-                            <a href="#" class="list-group-item">
-                                <h4 class="list-group-item-heading">
-                                    <i class="fa fa-fw fa-envelope"></i> Aliquam orci lectus
-                                </h4>
-                                <p class="list-group-item-text">Donec quis arcu non risus sagittis</p>
-                            </a>
-                            <a href="#" class="list-group-item">
-                                <h4 class="list-group-item-heading">
-                                    <i class="fa fa-fw fa-warning"></i> Holy guacamole !
-                                </h4>
-                                <p class="list-group-item-text">Best check yo self, you're not looking too good.</p>
-                            </a>
-                        </div>
-                        <div style="padding:10px"><a class="btn btn-success btn-block" href="#">Show me more...</a></div>
-                    </div>
-                </div>
-            </div>
-            <div class="dropdown pull-right">
-                <button class="btn btn-primary md-account-circle-white" data-toggle="dropdown"></button>
-                <ul class="dropdown-menu">
-                    <li class="disabled text-center">
-                        <a style="cursor:default;" th:text="${CurrentUser.userName}"><strong></strong></a>
-                    </li>
-                    <li class="divider"></li>
-                    <li>
-                        <a href="#"><i class="fa fa-fw fa-user"></i> Profile</a>
-                    </li>
-                    <li>
-                        <a href="#"><i class="fa fa-fw fa-cog"></i> Settings</a>
-                    </li>
-                    <li>
-                        <a href="logout"><i class="fa fa-fw fa-sign-out"></i> Sign out</a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-    </header>
+    <div id="cm-menu" th:replace="base/menu::menu (one,two_1,two_2,three_1,three_2,four_1,active,four_3,four_4,five_1,five_2,six_1,six_2,six_3,seven_1,seven_2)"></div>
+    <div th:replace="base/header::header"></div>
 
     <div id="global">
         <div class="container-fluid">
@@ -171,7 +106,7 @@
                     </div>
                 </div>
             </div>
-            <div th:include="base/footer"></div>
+            <div th:replace="base/footer::footer"></div>
         </div>
     </div>
 

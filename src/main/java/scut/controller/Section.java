@@ -170,14 +170,14 @@ public class Section {
             return response.getHttpResponse();
         }
 
-        long bridgeDirectOrganizationId = organizationService.getBridgeDirectOrganizationId(bridgeId.longValue());
-        if (!sysUserService.getUserOrganizationId().equals(bridgeDirectOrganizationId) &&
-                !sysUserService.userInferiorOrganizationContains(bridgeDirectOrganizationId)) {
-            response.setStatus(HttpResponse.FAIL_STATUS);
-            response.setCode(HttpResponse.FAIL_CODE);
-            response.setMsg("您没有权限新建或修改属于此桥梁的截面！");
-            return response.getHttpResponse();
-        }
+//        long bridgeDirectOrganizationId = organizationService.getBridgeDirectOrganizationId(bridgeId.longValue());
+//        if (!sysUserService.getUserOrganizationId().equals(bridgeDirectOrganizationId) &&
+//                !sysUserService.userInferiorOrganizationContains(bridgeDirectOrganizationId)) {
+//            response.setStatus(HttpResponse.FAIL_STATUS);
+//            response.setCode(HttpResponse.FAIL_CODE);
+//            response.setMsg("您没有权限新建或修改属于此桥梁的截面！");
+//            return response.getHttpResponse();
+//        }
 
         String curTime = sdf.format(new Date());
         //插入数据语句
@@ -217,21 +217,21 @@ public class Section {
         HttpResponse response = new HttpResponse();
         String checkedListStr = reqMsg.getString("checkedList");
 
-        List<Long> sectionIds = new ArrayList<>();
-        for (String id : checkedListStr.split(",")) {
-            sectionIds.add(Long.valueOf(id));
-        }
-        List<Organization> directOrganizations =
-                organizationService.getBridgeDirectOrganizationsBySectionIds(sectionIds);
-        for (Organization o : directOrganizations) {
-            if (!sysUserService.getUserOrganizationId().equals(o.getId()) &&
-                    !sysUserService.userInferiorOrganizationContains(o)) {
-                response.setStatus(HttpResponse.FAIL_STATUS);
-                response.setCode(HttpResponse.FAIL_CODE);
-                response.setMsg("删除截面失败，请检查要删除的截面是否都由您的机构或其下级机构管辖！");
-                return response.getHttpResponse();
-            }
-        }
+//        List<Long> sectionIds = new ArrayList<>();
+//        for (String id : checkedListStr.split(",")) {
+//            sectionIds.add(Long.valueOf(id));
+//        }
+//        List<Organization> directOrganizations =
+//                organizationService.getBridgeDirectOrganizationsBySectionIds(sectionIds);
+//        for (Organization o : directOrganizations) {
+//            if (!sysUserService.getUserOrganizationId().equals(o.getId()) &&
+//                    !sysUserService.userInferiorOrganizationContains(o)) {
+//                response.setStatus(HttpResponse.FAIL_STATUS);
+//                response.setCode(HttpResponse.FAIL_CODE);
+//                response.setMsg("删除截面失败，请检查要删除的截面是否都由您的单位或其下级单位管辖！");
+//                return response.getHttpResponse();
+//            }
+//        }
 
         if (checkedListStr != null) {
             String sql = String.format("DELETE FROM section WHERE section_id IN (%s)", checkedListStr);

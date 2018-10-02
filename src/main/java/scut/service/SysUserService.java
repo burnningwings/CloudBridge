@@ -6,6 +6,7 @@ import scut.domain.Organization;
 import scut.service.authority.user.SysUser;
 
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.Set;
 
 
@@ -14,8 +15,12 @@ public class SysUserService {
     @Resource
     OrganizationService organizationService;
 
-    public SysUser getSysUser() {
+    private SysUser getSysUser() {
         return (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
+
+    public Long getUserId() {
+        return getSysUser().getId();
     }
 
     public Organization getUserOrganization() {
@@ -27,20 +32,12 @@ public class SysUserService {
     }
 
     public Set<Organization> getUserInferiorOrganizations() {
-        return getUserOrganization().getInferiorOrganizations();
+        return getUserOrganization().getAllInferiorOrganizations();
     }
 
     public Set<Long> getUserInferiorOrganizationIds() {
         return organizationService.getOrganizationIds(getUserInferiorOrganizations());
     }
-
-//    public Set<Organization> getUserSuperiorOrganizations() {
-//        return getUserOrganization().getSuperiorOrganizations();
-//    }
-
-//    public Set<Long> getUserSuperiorOrganizationIds() {
-//        return organizationService.getOrganizationIds(getUserSuperiorOrganizations());
-//    }
 
     public boolean userInferiorOrganizationContains(Long organizationId) {
         return getUserInferiorOrganizationIds().contains(organizationId);
@@ -50,11 +47,23 @@ public class SysUserService {
         return getUserInferiorOrganizations().contains(organization);
     }
 
-//    public boolean userSuperiorOrganizationContains(Long organizationId) {
-//        return getUserSuperiorOrganizationIds().contains(organizationId);
-//    }
-//
-//    public boolean userSuperiorOrganizationContains(Organization organization) {
-//        return getUserSuperiorOrganizations().contains(organization);
-//    }
+    public boolean isUserUnmanageableOrganization(Long organizationId) {
+        return !(getUserOrganizationId().equals(organizationId) ||
+                userInferiorOrganizationContains(organizationId));
+    }
+
+    public boolean isUserUnmanageableOrganizations(List<Organization> organizations) {
+        for (Organization o : organizations) {
+            if (isUserUnmanageableOrganization(o.getId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isUserUnmanageableUser(Long userId) {
+        Long userDirectOrganizationId = organizationService.getSysUserDirectOrganizationId(userId);
+        return !(getUserOrganizationId().equals(userDirectOrganizationId) ||
+                userInferiorOrganizationContains(userDirectOrganizationId));
+    }
 }

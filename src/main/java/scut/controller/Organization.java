@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 import scut.service.SysUserService;
 
 import javax.annotation.Resource;
+import java.util.HashSet;
 import java.util.Set;
 
 @RestController
@@ -17,7 +18,7 @@ public class Organization {
     @JsonView(scut.domain.Organization.WithIdAndName.class)
     public Set<scut.domain.Organization> getSelfAndInferiorOrganizations() {
         Set<scut.domain.Organization> inferiorOrganizations =
-                sysUserService.getUserInferiorOrganizations();
+                new HashSet<>(sysUserService.getUserInferiorOrganizations());
         inferiorOrganizations.add(sysUserService.getUserOrganization());
         return inferiorOrganizations;
     }

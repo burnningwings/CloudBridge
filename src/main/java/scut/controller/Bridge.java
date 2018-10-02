@@ -188,8 +188,10 @@ public class Bridge {
         Integer old_bridgeTypeId = reqMsg.getInteger("old_bridge_type_id");
         String old_organization = reqMsg.getString("old_organization");
 
-
-        logger.info(reqMsg.toString());
+        // TODO: 新增桥梁要不要写日志?
+        if ("update".equals(operationType)) {
+            logger.info(reqMsg.toString());
+        }
 
         //检查必须参数
         if (operationType == null || StringUtil.isEmpty(bridgeName) || StringUtil.isEmpty(bridgeNumber) || bridgeTypeId == null) {
@@ -202,13 +204,6 @@ public class Bridge {
         String curTime = sdf.format(new Date());
 
         Long userOrganizationId = sysUserService.getUserOrganizationId();
-        if (!userOrganizationId.equals(organizationId) &&
-                !sysUserService.userInferiorOrganizationContains(organizationId)) {
-            response.setStatus(HttpResponse.FAIL_STATUS);
-            response.setCode(HttpResponse.FAIL_CODE);
-            response.setMsg("您没有权限新建或修改属于此机构的桥梁！");
-            return response.getHttpResponse();
-        }
 
         List<String> updateSql = new ArrayList<>();
         if ("insert".equals(operationType)) {
@@ -229,7 +224,7 @@ public class Bridge {
             ));
             // executeBatch 不支持 SELECT 语句
             updateSql.add("SET @last_id = last_insert_id()");
-            // 新建的桥梁的直属机构不一定和当前用户的机构相同
+            // 新建的桥梁的直属单位不一定和当前用户的单位相同
             // 因此插入时用的是 organizationId 而不是 userOrganizationId
             updateSql.add(String.format(
                     "INSERT INTO \n" +
@@ -241,7 +236,7 @@ public class Bridge {
                             "VALUES (@last_id, %d, 1)",
                     organizationId
             ));
-            // 此处仅插入了直接上级机构
+            // 此处仅插入了直接上级单位
             updateSql.add(String.format(
                     "INSERT INTO\n" +
                             "    bridge_organization (\n" +
@@ -256,8 +251,8 @@ public class Bridge {
             ));
         }
         // 更新数据语句
-        // 仅允许桥梁的直属机构的上级机构更改“桥梁直属机构”字段
-        // 不允许桥梁的直属机构更改“桥梁直属机构”字段
+        // 仅允许桥梁的直属单位的上级单位更改“桥梁直属单位”字段
+        // 不允许桥梁的直属单位更改“桥梁直属单位”字段
         if ("update".equals(operationType) && bridgeId != null) {
             long bridgeDirectOrganizationId =
                     organizationService.getBridgeDirectOrganization(bridgeId).getId();
@@ -274,8 +269,8 @@ public class Bridge {
                             "    bridge_id = %s",
                     bridgeName, bridgeNumber, bridgeTypeId, description, curTime, bridgeId
             ));
-            // 提交的机构与桥梁所属机构不同，说明需要修改机构
-            // 修改机构要检查目标机构是不是用户所属机构的下级机构
+            // 提交的单位与桥梁所属单位不同，说明需要修改单位
+            // 修改单位要检查目标单位是不是用户所属单位的下级单位
             if (bridgeDirectOrganizationId != organizationId &&
                     sysUserService.userInferiorOrganizationContains(organizationId)) {
                 updateSql.add(String.format(
@@ -296,16 +291,16 @@ public class Bridge {
                                 "    bridge_id = %d AND organization_id = %d",
                         bridgeId, bridgeDirectOrganizationId
                 ));
-                // TODO: 修改机构的组织结构后要修改此处的 SQL
-                // 目标机构：
-                //     - 用户机构
-                //     - 用户下级机构
+                // TODO: 修改单位的组织结构后要修改此处的 SQL
+                // 目标单位：
+                //     - 用户单位
+                //     - 用户下级单位
                 // 操作：
-                //     1. 下级机构修改为用户机构
+                //     1. 下级单位修改为用户单位
                 //         bridge_organization 删除一条 bridgeDirectOrganizationId 记录
-                //     2. 下级机构修改为另一下级机构
+                //     2. 下级单位修改为另一下级单位
                 //         bridge_organization 删除一条 bridgeDirectOrganizationId 记录并增加一条 organizationId 记录
-                //     3. 用户机构修改为下级机构
+                //     3. 用户单位修改为下级单位
                 //         bridge_organization 增加一条 organizationId 记录
 
                 // 覆盖第 1、2 种操作
@@ -361,13 +356,17 @@ public class Bridge {
             }
         }
 
-        //桥梁修改日志写进数据库
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String log_bridge_sql = LogBase.log_bridge(userDetails.getUsername(),
-                bridgeName,old_bridgeName,bridgeNumber,old_bridgeNumber,
-                bridgeTypeId,old_bridgeTypeId,organization,old_organization);
-        logger.info(log_bridge_sql);
-        baseDao.updateData(log_bridge_sql);
+        // TODO: 新增桥梁要不要写日志?
+        // 新增桥梁的时候 NullPointerException 了
+        if ("update".equals(operationType)) {
+            //桥梁修改日志写进数据库
+            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String log_bridge_sql = LogBase.log_bridge(userDetails.getUsername(),
+                    bridgeName, old_bridgeName, bridgeNumber, old_bridgeNumber,
+                    bridgeTypeId, old_bridgeTypeId, organization, old_organization);
+            logger.info(log_bridge_sql);
+            baseDao.updateData(log_bridge_sql);
+        }
         return response.getHttpResponse();
     }
 
@@ -383,23 +382,6 @@ public class Bridge {
         long userOrganizationId = sysUserService.getUserOrganizationId();
         HttpResponse response = new HttpResponse();
         String checkedListStr = reqMsg.getString("checkedList");
-
-        // 仅能删除直属机构为本机构或下级机构的桥梁
-        List<Long> bridgeIds = new ArrayList<>();
-        for (String s : checkedListStr.split(",")) {
-            bridgeIds.add(Long.valueOf(s));
-        }
-        List<Organization> directOrganizations =
-                organizationService.getBridgeDirectOrganizationsByBridgeIds(bridgeIds);
-        for (Organization o : directOrganizations) {
-            if (!sysUserService.getUserOrganizationId().equals(o.getId()) &&
-                    !sysUserService.userInferiorOrganizationContains(o)) {
-                response.setStatus(HttpResponse.FAIL_STATUS);
-                response.setCode(HttpResponse.FAIL_CODE);
-                response.setMsg("删除桥梁失败，请检查要删除的桥梁是否都由您的机构或其下级机构管辖！");
-                return response.getHttpResponse();
-            }
-        }
 
         if (checkedListStr != null) {
             String sql = String.format("DELETE b \n" +

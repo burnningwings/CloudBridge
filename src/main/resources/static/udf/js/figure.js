@@ -294,3 +294,444 @@ function showPredictResultChart(figure_id, predict_list, index_list) {
     var chart = echarts.init(document.getElementById(figure_id));
     chart.setOption(option);
 }
+
+
+function showPredictResultChart_OVERWEIGHT(figure_id, predict_list, index_list) {
+    console.log('show figure result');
+
+    var option = {
+        title : {
+            text : '预测结果'
+        },
+        tooltip: {},
+        legend: {
+            data : ['超重情况']
+        },
+        xAxis :{
+            data : index_list,
+            show : false
+            //type : 'value'
+        },
+        yAxis : {
+            type : 'value',
+            min : 0,
+            max : 1,
+            interval : 1
+        },
+        toolbox : {
+            show : true,
+            right : '5% ',
+            feature :{
+                dataView:{
+                    readOnly: true,
+                    optionToContent: function (opt) {
+                        var series = opt.series[0].data;
+                        var index = opt.xAxis[0].data;
+                        var tdHeads = '<td  style="padding: 0 10px">记录编号</td>'
+                            +'<td  style="padding: 0 10px">预测超重情况</td>'; //表头
+                        var table = '<table border="1" style="margin-left:20px;border-collapse:collapse;font-size:14px;text-align:center"><tbody><tr>'+tdHeads+'</tr>';
+                        var tdBody = '';
+                        for(var i = 0; i < series.length;i++)
+                        {
+                            table += '<tr><td style="padding: 0 10px">'+index[i]+'</td><td style="padding: 0 10px">'+series[i]+'</td></tr>';
+                        }
+                        table += '</tbody></table>';
+                        return table;
+                    }
+                },
+                saveAsImage: {
+                    pixelRatio:2,
+                    show: true
+                },
+                // magicType: {
+                //     show: true,
+                //     type: ['scatter','line']
+                // },
+            }
+
+        },
+        series : [{
+            name : '超重情况',
+            type : 'scatter',
+            data : predict_list
+        }]
+    };
+    var chart = echarts.init(document.getElementById(figure_id));
+    chart.setOption(option);
+}
+
+// function showAnalysisResultChart(figure_id, sensor1, sensor2) {
+//     var option = {
+//         title : {
+//             text : "关联分析"
+//         },
+//         tooltip : {
+//
+//         },
+//         legend : {
+//             data : ['sensor1', 'sensor2']
+//         },
+//         xAxis: {
+//             min : 20,
+//             max : 30
+//         },
+//         yAxis: {
+//
+//         },
+//         series: [
+//             {
+//                 name : 'sensor1',
+//                 type : 'line',
+//                 //data : [[21.3,0.003], [22.3,0.004], [23.3,0.002], [23.4,0.004], [23.0,0.001], [22.8,0.004], [22.2,0.002]]
+//                 data: sensor1
+//             },
+//             {
+//                 name : 'sensor2',
+//                 type : 'line',
+//                // data : [[21.3,0.001], [22.3,0.001], [23.3,0.002], [23.4,0.002], [23.0,0.001], [22.8,0.002], [22.2,0.001]]
+//                 data : sensor2
+//             }
+//             // {
+//             //     name : 'sensor3',
+//             //     type : 'line',
+//             //     data : [[21.3,0.005], [22.3,0.006], [23.3,0.006], [23.4,0.007], [23.0,0.008], [22.8,0.009], [22.2,0.009]]
+//             // }
+//         ]
+//     };
+//     var chart = echarts.init(document.getElementById(figure_id));
+//     chart.setOption(option);
+// }
+
+// function showAnalysisResultChart(figure_id, temp1) {
+//     var num_sensor = Object.keys(temp1).length
+//     console.log(num_sensor);
+//     var sensorlist = [];
+//     var series = [];
+//     for(var key in temp1){
+//
+//         var sensor_id = 'sensor'+key;
+//         sensorlist.push(sensor_id);
+//         series.push({
+//             name : sensor_id,
+//             type : "line",
+//             data : temp1[key]
+//         })
+//
+//     }
+//     console.log(sensorlist);
+//     console.log(series);
+//
+//     var option = {
+//         title : {
+//             text : "关联分析"
+//         },
+//         tooltip : {
+//
+//         },
+//         legend : {
+//             data : sensorlist
+//         },
+//         xAxis: {
+//             min : 'dataMin',
+//             max : 'dataMax'
+//         },
+//         yAxis: {
+//
+//         },
+//         series: series
+//     };
+//     var chart = echarts.init(document.getElementById(figure_id));
+//     chart.setOption(option);
+// }
+
+function showAnalysisResultChart(figure_id, temp1, temp2, analysisresult) {
+
+    var resultlist = analysisresult;
+    var num_sensor = Object.keys(temp1).length
+    console.log(num_sensor);
+    var sensorlist = [];
+    var series = [];
+    var series1 = [];
+    for(var key in temp1){
+
+        var sensor_id = 'sensor'+key;
+        sensorlist.push(sensor_id);
+        series.push({
+            xAxisIndex : 0,
+            yAxisIndex : 0,
+            name : sensor_id,
+            type : "line",
+            data : temp1[key]
+        })
+    }
+    for(var key in temp2){
+
+        var sensor_id = 'sensor'+key;
+        sensorlist.push(sensor_id);
+        series1.push({
+            xAxisIndex : 1,
+            yAxisIndex : 1,
+            name : sensor_id,
+            type : "line",
+            data : temp2[key],
+
+        })
+    }
+    series_merge = series.concat(series1);
+
+
+    console.log(sensorlist);
+    console.log(series);
+
+    var option = {
+        title : [{
+            text : "温度与桥顶传感器变化关系",
+            x : 380,
+            y : 35,
+        },{
+            text : "温度与桥底传感器变化关系",
+            x : 380,
+            y : 310,
+        }
+        ],
+        grid:[
+            { x : '17%', y : '7%', height : '40%', width : '70%'},
+            { x : '17%', y2 : '7%', height : '40%', width : '70%'}
+        ],
+        tooltip : {
+
+        },
+        toolbox : {
+            show : true,
+            right : '5% ',
+            feature :{
+                dataView:{
+                    readOnly: true,
+                    optionToContent: function (opt) {
+                        // var series = opt.series[0].data;
+                        // var index = opt.xAxis[0].data;
+                        var tdHeads = '<td  style="padding: 0 10px">测量温度位置</td>'
+                            +'<td  style="padding: 0 10px">传感器编号</td>'
+                            +'<td  style="padding: 0 10px">k值</td>'
+                            +'<td  style="padding: 0 10px">b值</td>>'; //表头
+                        var table = '<table border="1" style="margin-left:20px;border-collapse:collapse;font-size:14px;text-align:center"><tbody><tr>'+tdHeads+'</tr>';
+                        var tdBody = '';
+                        for(var i = 0; i < resultlist.length;i++)
+                        {
+                            table += '<tr><td style="padding: 0 10px">'+resultlist[i][0]+
+                                '</td><td style="padding: 0 10px">'+resultlist[i][1]+
+                                '</td><td style="padding: 0 10px">'+resultlist[i][2]+
+                                '</td><td style="padding: 0 10px">'+resultlist[i][3]+'</tr>';
+                        }
+                        table += '</tbody></table>';
+                        return table;
+                    }
+                },
+                saveAsImage: {
+                    pixelRatio:2,
+                    show: true
+                },
+
+            }
+
+        },
+        legend : [
+            { data : sensorlist , left : '10%'},
+            { data : sensorlist , left : '10%'}
+        ],
+        xAxis: [
+            {
+                min : 'dataMin',
+                max : 'dataMax',
+                gridIndex : 0
+            },
+            {
+                min : 'dataMin',
+                max : 'dataMax',
+                gridIndex : 1
+            }
+        ],
+        yAxis: [
+            { gridIndex : 0},
+            { gridIndex : 1}
+        ],
+        series: series_merge
+    };
+    var chart = echarts.init(document.getElementById(figure_id));
+    chart.setOption(option);
+}
+
+function  showWaveletResultChart(figure_id, timeList, temperatureList, strainList) {
+    console.log(timeList)
+    console.log(temperatureList)
+    console.log(strainList)
+    // var option = {
+    //     title : {
+    //         text : '小波分析图',
+    //         x: 'center'
+    //     },
+    //     grid : {},
+    //     toolbox : {
+    //         show : true,
+    //         right : '5% ',
+    //         feature :{
+    //             saveAsImage: {
+    //                 pixelRatio:2,
+    //                 show: true
+    //             },
+    //
+    //         }
+    //     },
+    //     tooltip : {
+    //
+    //     },
+    //     legend : {
+    //         data : ['温度', '应变'],
+    //         x : 'left'
+    //     },
+    //     xAxis: {
+    //         min : 'dataMin',
+    //         max : 'dataMax',
+    //     },
+    //     yAxis:[
+    //         {
+    //             name : '温度',
+    //             yAxisIndex : 0,
+    //         },
+    //         {
+    //             name : '应变',
+    //             yAxisIndex : 1
+    //
+    //         }
+    //     ],
+    //     series : [
+    //         {
+    //             name : '温度',
+    //             type : 'line',
+    //             data : [[1,3],[2,2],[3.5,4],[4,3]],
+    //             yAxisIndex : 0
+    //         },
+    //         {
+    //             name : '应变',
+    //             type : 'line',
+    //             data : [[1,23],[2,34],[3.5,67],[4,76]],
+    //             yAxisIndex : 1
+    //         }
+    //     ]
+    // };
+
+        // var option = {
+        //     title : {
+        //         text : '小波分析图',
+        //         x: 'center'
+        //     },
+        //     grid : {},
+        //     toolbox : {
+        //         show : true,
+        //         right : '5% ',
+        //         feature :{
+        //             saveAsImage: {
+        //                 pixelRatio:2,
+        //                 show: true
+        //             },
+        //
+        //         }
+        //     },
+        //     tooltip : {
+        //
+        //     },
+        //     legend : {
+        //         data : ['温度', '应变'],
+        //         x : 'left'
+        //     },
+        //     xAxis: {
+        //         min : 'dataMin',
+        //         max : 'dataMax',
+        //     },
+        //     yAxis:[
+        //         {
+        //             name : '温度',
+        //             yAxisIndex : 0,
+        //         },
+        //         {
+        //             name : '应变',
+        //             yAxisIndex : 1
+        //
+        //         }
+        //     ],
+        //     series : [
+        //         {
+        //             name : '温度',
+        //             type : 'line',
+        //             data : [[1,3],[2,2],[3.5,4],[4,3]],
+        //             yAxisIndex : 0
+        //         },
+        //         {
+        //             name : '应变',
+        //             type : 'line',
+        //             data : [[1,23],[2,34],[3.5,67],[4,76]],
+        //             yAxisIndex : 1
+        //         }
+        //     ]
+        // };
+        var option = {
+            title : {
+                text : '小波分析图',
+                x: 'center'
+            },
+            grid : {},
+            toolbox : {
+                show : true,
+                right : '5% ',
+                feature :{
+                    saveAsImage: {
+                        pixelRatio:2,
+                        show: true
+                    },
+
+                }
+            },
+            tooltip : {
+
+            },
+            legend : {
+                data : ['温度', '应变'],
+                x : 'left'
+            },
+            xAxis: {
+                name : '时间',
+                type : 'category',
+                data : timeList
+            },
+            yAxis:[
+                {
+                    name : '温度',
+                    yAxisIndex : 0,
+                    min : 'dataMin',
+                    max : 'dataMax',
+                },
+                {
+                    name : '应变',
+                    yAxisIndex : 1,
+                    min : 'dataMin',
+                    max : 'dataMax',
+                }
+            ],
+            series : [
+                {
+                    name : '温度',
+                    type : 'line',
+                    data : temperatureList,
+                    yAxisIndex : 0
+                },
+                {
+                    name : '应变',
+                    type : 'line',
+                    data : strainList,
+                    yAxisIndex : 1
+                }
+            ]
+        };
+        var chart = echarts.init(document.getElementById(figure_id));
+        chart.setOption(option);
+}

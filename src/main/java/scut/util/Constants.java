@@ -34,6 +34,10 @@ public class Constants {
     public static String OVERWEIGHT_UPLOAD_TEST_FILE_DIR = null;
     public static String DAMAGE_UPLOAD_TEST_FILE_DIR = null;
 
+    //上传验证文件路径
+    public static String OVERWEIGHT_UPLOAD_EVALUATE_FILE_DIR = null;
+    public static String DAMAGE_UPLOAD_EVALUATE_FILE_DIR = null;
+
     //上传训练模型文件路径
     public static String OVERWEIGHT_UPLOAD_TRAIN_MODEL_DIR = null;
     public static String DAMAGE_UPLOAD_TRAIN_MODEL_DIR = null;
@@ -42,15 +46,34 @@ public class Constants {
     public static String OVERWEIGHT_SAVE_TRAIN_MODEL_DIR = null;
     public static String DAMAGE_SAVE_TRAIN_MODEL_DIR = null;
 
+    //验证模型程序
+    public static String DAMAGE_EVALUATE_MODEL_PROGRAM = null;
+    public static String OVERWEIGHT_EVALUATE_MODEL_PROGRAM = null;
+
     //测试模型程序
     public static String TEST_MODEL_PROGRAM = null;
+
+    //验证模型结果保存路径
+    public static String DAMAGE_EVALUATE_MODEL_RESULT_DIR = null;
+    public static String OVERWEIGHT_EVALUATE_MODEL_RESULT_DIR = null;
 
     //预测文件保存路径
     public static String OVERWEIGHT_PREDICT_FILE_DIR = null;
     public static String DAMAGE_PREDICT_FILE_DIR = null;
 
+    //关联文件保存路径
+    public static String ASSOCIATION_FILE_DIR = null;
 
-    // 消息状态
+    //关联分析结果保存路径
+    public static String ASSOCIATION_ANALYSIS_RESULT_DIR = null;
+
+    //关联分析程序路径
+    public static String ASSOCIATION_ANALYSIS_PROGRAM = null;
+
+    //小波分析文件路径
+    public static String WAVELET_ANALYSIS_FILE = null;
+
+  // 消息状态
     public final static String READY = "READY";
     public final static String RUNNING = "RUNNING";
     public final static String FINISHED = "FINISHED";

@@ -139,11 +139,42 @@
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">
+                        模型验证
+                    </h3>
+                </div>
+                <div class="panel-body" style="padding:0 20px 20px 20px">
+                    <h4 class="control-label " style="display:inline-block">从本地上验证数据（csv格式，小于50MB）：</h4>
+                    <button id="description_evaluate_dataformat" title="数据格式" data-html="true" data-toggle="popover" data-container="body" type="button" class="btn btn-default"><i class="fa fa-fw fa-eye"></i></button>
+                    <input id="evaluatefile_upload" name="evaluatefile_upload" type="file" class="file file-loading" data-preview-file-type="text"/>
+                </div>
+                <div class="panel-body" style="padding: 0 20px 20px 20px">
+                    <select class="selectpicker" id="evaluate_file_selected" data-width="20%">
+                    </select>
+                    &nbsp;&nbsp;
+                    <select class="selectpicker" id="evaluate_model_selected" data-width="20%">
+                        <!--<option value="" disabled selected>请选择已训练模型</option>-->
+                        <!--<option value="bayes">贝叶斯网络</option>-->
+                        <!--<option value="BN">神经网络</option>-->
+                    </select>
+                </div>
+                <div class="panel-body" style="padding: 0 20px 20px 20px">
+                    <!--<div class="row">-->
+                    <button id="evaluate_start" type="button" data-switch-color="success" class="btn btn-l btn-success" style="width:120px;height:40px;font-size:18px">验证模型</button>
+                    <label style="font-weight:normal;font-size:16px;margin-left: 50px">进度条&nbsp;&nbsp;</label>
+                    <progress id="evaluate_process" value="0" max="100"></progress>
+                    <!--<button id="dd_result_damagedetection" type="button" data-switch-color="yellow" class="btn btn-l btn-yellow" style="width:150px;height:40px;font-size:18px; margin-left:350px">预测结果展示</button>-->
+                    <!--<div align="center" id="dd_show_result_figure" height="400" data-width="60%" style="position:relative;margin-top:20px; height:400px;">-->
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
                         超重分析模型预测
                     </h3>
                 </div>
                 <div class="panel-body" style="padding:0 20px 20px 20px">
-                    <h4 class="control-label " style="display:inline-block">从本地上待预测数据（csv格式，小于50MB）：</h4>
+                    <h4 class="control-label " style="display:inline-block">从本地上传待预测数据（csv格式，小于50MB）：</h4>
                     <button id="description_test_dataformat" title="数据格式" data-html="true" data-toggle="popover" data-container="body" type="button" class="btn btn-default"><i class="fa fa-fw fa-eye"></i></button>
                     <input id="testfile_upload" name="testfile_upload" type="file" class="file file-loading" data-preview-file-type="text"/>
                 </div>

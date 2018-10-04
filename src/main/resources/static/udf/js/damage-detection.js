@@ -107,6 +107,36 @@ function updateDropdownListSavedModel(){
     $("#dd_test_model_selected").selectpicker('refresh');
 }
 
+function updateDropdownListEvaluateFile(){
+    $("#dd_evaluate_file_selected").empty();
+    var url = "/damage-detection/dropdown";
+    var response = webRequest(url, "GET", false, {"type" : "evaluatefile"});
+    var options ="<option value=\'\' disabled selected>请选择验证文件</option>"
+    if(response!=null && response.status==0){
+        var data = response.data;
+        for(var key in data){
+            options = options + "<option>" + key + "</option>";
+        }
+    }
+    $("#dd_evaluate_file_selected").append(options);
+    $("#dd_evaluate_file_selected").selectpicker('refresh');
+}
+
+function updateDropdownListEvaluateModel(){
+    $("#dd_evaluate_model_selected").empty();
+    var url = "/damage-detection/dropdown";
+    var response = webRequest(url, "GET", false, {"type" : "savedmodel"});
+    var options ="<option value=\'\' disabled selected>请选择验证模型</option>"
+    if(response!=null && response.status==0){
+        var data = response.data;
+        for(var key in data){
+            options = options + "<option>" + key + "</option>";
+        }
+    }
+    $("#dd_evaluate_model_selected").append(options);
+    $("#dd_evaluate_model_selected").selectpicker('refresh');
+}
+
 //初始化
 $(function () {
     // $("#train_file_selected").selectpicker({
@@ -129,9 +159,11 @@ $(function () {
     // $("#train_file_selected").append(options);
 
     updateDropdownListTrainFile();
-    updateDropdownListTestFile()
+    updateDropdownListTestFile();
     updateDropdownListTrainModel();
     updateDropdownListSavedModel();
+    updateDropdownListEvaluateFile();
+    updateDropdownListEvaluateModel();
 
     //$("#train_file_selected").on('shown.bs.select', updateDropdownListTrainFile());
     // $("#train_file_selected").click(function () {
@@ -153,8 +185,19 @@ $(function () {
         var popoverEl = $("#dd_description_train_dataformat");
         popoverEl.popover("destroy");
         var content = "{<br/>"+
-                        "feature1,feature2,feature3,label<br/>"+
-                        "}";
+            "feature1,feature2,feature3,label<br/>"+
+            "}";
+        popoverEl.attr("data-content", content);
+        popoverEl.popover("show");
+
+    });
+
+    $("#dd_description_evaluate_dataformat").click(function(){
+        var popoverEl = $("#dd_description_evaluate_dataformat");
+        popoverEl.popover("destroy");
+        var content = "{<br/>"+
+            "feature1,feature2,feature3,label<br/>"+
+            "}";
         popoverEl.attr("data-content", content);
         popoverEl.popover("show");
 
@@ -251,6 +294,38 @@ $(function () {
         console(msg);
         showTransientDialog(msg);
     });
+
+    $("#dd_evaluatefile_upload").fileinput({
+        allowedFileExtensions: ['csv'],
+        uploadUrl: "damage-detection/evaluatefileupload",
+        language: 'zh',
+        uploadAsync: true,
+        showUpload: true,
+        maxFileCount: 1,
+        autoReplace: true,
+        showPreview: false,
+        maxFileSize: 512000, // KB,当前限制为50MB
+        maxPreviewFileSize: 1
+    }).on("fileuploaded",function (event, data, previewId, index) {
+        var response = data.response;
+        console.log(response)
+        if(response.status != 0){
+            showTransientDialog(response.msg);
+        }else{
+            showModalDialog("提示", "<div style='text-align:center;'>文件正在上传...</div>",function(){},120,40);
+        }
+        //更新下拉列表
+        updateDropdownListEvaluateFile();
+    }).on('fileuploaderror', function (event, data, msg) {
+        var response = data.response;
+        console.log("data");
+        console.log(data);
+        var msg = "仅支持csv且单文件大小不超过50MB！";
+        if(response!=null && response.msg!="") msg = response.msg;
+        console(msg);
+        showTransientDialog(msg);
+    });
+
 
     $("#dd_testfile_upload").fileinput({
         allowedFileExtensions: ['csv'],
@@ -365,6 +440,7 @@ $(function () {
                 $("#dd_train_start").text("开始训练");
                 $("#dd_train_process").attr("value", "100");
                 updateDropdownListSavedModel();
+                updateDropdownListEvaluateModel()
                 // if (d != null) {
                 //     d.close().remove();
                 // }
@@ -435,6 +511,84 @@ $(function () {
             complete:function () {
                 $("#dd_test_start").text("开始预测");
                 $("#dd_test_process").attr("value", "100");
+
+                // if (d != null) {
+                //     d.close().remove();
+                // }
+            },
+            error: function(response) {
+                //showTransientDialog('调用失败！')
+                alert("提交任务失败");
+            }
+
+        });
+    });
+
+    $("#dd_evaluate_start").click(function () {
+        var evaluate_file = $("#dd_evaluate_file_selected").val();
+        var evaluate_model = $("#dd_evaluate_model_selected").val();
+        //console.log(saved_model);
+        if (evaluate_file == null){
+            showTransientDialog("请选择测试文件");
+            //showDialog("请选择训练文件");
+            return;
+        }
+        if(evaluate_model == null){
+            showTransientDialog("请选择验证模型");
+            //showDialog("请选择训练模型");
+            return;
+        }
+
+        var response = null;
+        var d = null;
+        var token = $("meta[name='_csrf']").attr("content");
+        var header = $("meta[name='_csrf_header']").attr("content");
+        $(document).ajaxSend(function(e, xhr, options) {
+            xhr.setRequestHeader(header, token);
+        });
+        $.ajax({
+            url: "/damage-detection/evaluate",
+            type: "POST",
+            async: true,
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({
+                "evaluatefile" : evaluate_file,
+                "evaluatemodel" : evaluate_model
+            }),
+            dataType: "json",
+            beforeSend: function () {
+                $("#dd_evaluate_start").text('验证中...');
+                $("#dd_evaluate_process").removeAttr("value");
+                // var content = '' +
+                //     ' <img alt="loadding" src="/assets/img/loading.gif" /> \
+                //     '
+                // d = dialog({
+                //     content: content
+                // });
+                // d.showModal();
+            },
+            success: function(response) {
+                var data = response.data;
+                var result = data['result'];
+                if (result == 'success') {
+                    //showTransientDialog('训练完成!')
+                    //showModalDialog("提示", "训练完成")
+                    //showAlertDialog('训练完成')
+                    var p = data['precision'];
+                    var r = data['recall'];
+                    var f1 = data['f1'];
+                    // var p = 0.9;
+                    // var r = 0.9;
+                    // var f1 = 0.9;
+                    var content = "验证完成！<br/> 准确率为"+p+"<br/>召回率为"+r + "</br>f1值为"+f1;
+                    showDialog(content);
+                } else {
+                    showTransientDialog('验证失败！')
+                }
+            },
+            complete:function () {
+                $("#dd_evaluate_start").text("模型验证");
+                $("#dd_evaluate_process").attr("value", "100");
 
                 // if (d != null) {
                 //     d.close().remove();

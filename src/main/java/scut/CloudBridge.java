@@ -43,15 +43,25 @@ public class CloudBridge implements EnvironmentAware {
             Constants.UPLOAD_DATA_BIN_SH = env.getProperty("upload.bin.sh").toString();
             Constants.OVERWEIGHT_UPLOAD_TRAIN_FILE_DIR = env.getProperty("overweight.upload.trainfile.dir").toString();
             Constants.DAMAGE_UPLOAD_TRAIN_FILE_DIR = env.getProperty("damage.upload.trainfile.dir").toString();
+            Constants.OVERWEIGHT_UPLOAD_EVALUATE_FILE_DIR = env.getProperty("overweight.upload.evaluatefile.dir").toString();
+            Constants.DAMAGE_UPLOAD_EVALUATE_FILE_DIR = env.getProperty("damage.upload.evaluatefile.dir").toString();
             Constants.OVERWEIGHT_UPLOAD_TEST_FILE_DIR = env.getProperty("overweight.upload.testfile.dir").toString();
+            Constants.DAMAGE_EVALUATE_MODEL_RESULT_DIR = env.getProperty("damage.evaluate.result.dir").toString();
+            Constants.OVERWEIGHT_EVALUATE_MODEL_RESULT_DIR = env.getProperty("overweight.evaluate.result.dir").toString();
             Constants.DAMAGE_UPLOAD_TEST_FILE_DIR = env.getProperty("damage.upload.testfile.dir").toString();
             Constants.OVERWEIGHT_UPLOAD_TRAIN_MODEL_DIR = env.getProperty("overweight.upload.trainmodel.dir").toString();
             Constants.DAMAGE_UPLOAD_TRAIN_MODEL_DIR = env.getProperty("damage.upload.trainmodel.dir").toString();
             Constants.OVERWEIGHT_SAVE_TRAIN_MODEL_DIR = env.getProperty("overweight.saved.trainmodel.dir").toString();
             Constants.DAMAGE_SAVE_TRAIN_MODEL_DIR = env.getProperty("damage.saved.trainmodel.dir").toString();
             Constants.TEST_MODEL_PROGRAM = env.getProperty("model.test.program").toString();
+            Constants.DAMAGE_EVALUATE_MODEL_PROGRAM = env.getProperty("damage.model.evaluate.program").toString();
+            Constants.OVERWEIGHT_EVALUATE_MODEL_PROGRAM = env.getProperty("overweight.model.evaluate.program").toString();
             Constants.OVERWEIGHT_PREDICT_FILE_DIR = env.getProperty("overweight.predict.output.dir").toString();
             Constants.DAMAGE_PREDICT_FILE_DIR = env.getProperty("damage.predict.output.dir").toString();
+            Constants.ASSOCIATION_FILE_DIR = env.getProperty("association.analysis.dir").toString();
+            Constants.ASSOCIATION_ANALYSIS_RESULT_DIR = env.getProperty("association.analysis.result.dir").toString();
+            Constants.ASSOCIATION_ANALYSIS_PROGRAM = env.getProperty("association.analysis.program").toString();
+            Constants.WAVELET_ANALYSIS_FILE = env.getProperty("wavelet.analysis.file.dir").toString();
         }catch (Exception e){
             logger.debug("当前MYSQL未配置.");
         }

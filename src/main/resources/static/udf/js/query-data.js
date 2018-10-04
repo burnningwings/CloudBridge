@@ -459,7 +459,7 @@ function updateGrid(bridge_id,box_id,sensor_info){
     console.log(bridge_id,box_id,sensor_info)
     if(sensor_info==null || sensor_info=="") return;
     var sensor_info_list = sensor_info.split(" - ");
-    console.log(sensor_info)
+    console.log(sensor_info);
     var table_columns = sensor_map[sensor_info_list[2]];
     var dataSource = new kendo.data.DataSource({
         transport: {
@@ -875,6 +875,7 @@ $(function () {
                 }
                 // 根据选择条件获取查询条件
                 var end_row_key = new Date().format('yyyyMMddHHmmssSS');
+                console.log(new Date(begin_time).format('yyyyMMddHHmmssSS'));
                 var params = {
                     "sensorList": JSON.stringify(sensor_id_array),
                     "columnList": JSON.stringify([metric]),

@@ -88,6 +88,22 @@ public class Home {
         return "damage-detection";
     }
 
+    @RequestMapping("/association-analysis")
+    public String associationAnalysis(Model model) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
+        model.addAttribute(Constants.CURRENT_USER, currentUser);
+        return "association-analysis";
+    }
+
+    @RequestMapping("/wavelet-analysis")
+    public String waveletAnalysis(Model model) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
+        model.addAttribute(Constants.CURRENT_USER, currentUser);
+        return "wavelet-analysis";
+    }
+
     @RequestMapping("/user-manager")
     public String userManager(Model model) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

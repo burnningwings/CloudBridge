@@ -24,7 +24,7 @@ import java.util.ArrayList;
 public class DamageDetection {
     public static Logger logger = Logger.getLogger(OverweightAnalysis.class);
 
-    @RequestMapping(value = "/damage-detection/getPredictResult", method = RequestMethod.GET, produces = "application/json")
+        @RequestMapping(value = "/damage-detection/getPredictResult", method = RequestMethod.GET, produces = "application/json")
     public JSONObject getPredictResult(String testfile, String testmodel){
         HttpResponse response = new HttpResponse();
         JSONObject data = new JSONObject();
@@ -144,6 +144,63 @@ public class DamageDetection {
 
     }
 
+    @RequestMapping(value = "/damage-detection/evaluate", method = RequestMethod.POST, produces = "application/json")
+    public JSONObject evaluate(@RequestBody JSONObject reqMsg){
+        HttpResponse response = new HttpResponse();
+        JSONObject data = new JSONObject();
+
+        String evaluateFile = reqMsg.getString("evaluatefile");
+        String evaluateModel = reqMsg.getString("evaluatemodel");
+
+        System.out.println(evaluateFile);
+        System.out.println(evaluateModel);
+
+        String EVALUATE_FILE = Constants.DAMAGE_UPLOAD_EVALUATE_FILE_DIR + "/" + evaluateFile;
+        String MODEL_EVALUATE_PROGRAM = Constants.DAMAGE_EVALUATE_MODEL_PROGRAM;
+        String EVALUATE_MODEL = Constants.DAMAGE_SAVE_TRAIN_MODEL_DIR + "/" + evaluateModel;
+        //String outputFileName = testFile + "_" + testModel;
+        String outputFileName = evaluateFile.split("\\.")[0] + "_" + evaluateModel.split("\\.")[0] + ".csv";
+        String OUTPUT_FILE = Constants.DAMAGE_EVALUATE_MODEL_RESULT_DIR + "/" + outputFileName;
+
+        String md5 = DigestUtils.md5Hex(evaluateFile + "_" + evaluateModel);
+
+        AnalysisMessage.getInstance().update(md5, evaluateFile, outputFileName, Constants.READY, "EVALUATE", null);
+        String execStr = "D:/os_environment/anaconda/python " + MODEL_EVALUATE_PROGRAM + " " + EVALUATE_FILE + " " + EVALUATE_MODEL + " " + OUTPUT_FILE;
+        //String execStr = "python D:/tmp/a.py";
+        logger.debug(execStr);
+        Executor executor = new CommandLineExecutor(md5, execStr);
+        //Scheduler.getInstance().runExecutor(executor);
+        LogEntity logentity = ((CommandLineExecutor) executor).execute_analysis();
+        if (logentity.getExitVal() == 0){
+            data.put("result", "success");
+            AnalysisMessage.getInstance().update(md5,null,null,Constants.FINISHED,null,logentity.toString());
+            try{
+                BufferedReader br = new BufferedReader(new FileReader(new File(OUTPUT_FILE)));
+                String header = br.readLine();
+                String content = br.readLine();
+                String[] metrics = content.split(",");
+                br.close();
+                data.put("precision", Float.parseFloat(metrics[0]));
+                data.put("recall", Float.parseFloat(metrics[1]));
+                data.put("f1", Float.parseFloat(metrics[2]));
+
+            }catch(FileNotFoundException e){
+                e.printStackTrace();
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+
+        }else{
+            data.put("result", "failed");
+            AnalysisMessage.getInstance().update(md5,null,null,Constants.FAILED,null,logentity.toString());
+        }
+
+        //data.put("result", "completed");
+        response.setData(data);
+        return response.getHttpResponse();
+
+    }
+
     @RequestMapping(value = "/damage-detection/trainfileupload", method = RequestMethod.POST)
     public JSONObject trainFileUpload(@RequestParam("dd_trainfile_upload")MultipartFile file){
         HttpResponse response = new HttpResponse();
@@ -214,6 +271,41 @@ public class DamageDetection {
         return response.getHttpResponse();
     }
 
+    @RequestMapping(value = "/damage-detection/evaluatefileupload", method = RequestMethod.POST)
+    public JSONObject evaluateFileUpload(@RequestParam("dd_evaluatefile_upload")MultipartFile file){
+        HttpResponse response = new HttpResponse();
+        JSONObject data = new JSONObject();
+        if (!file.isEmpty()){
+            try{
+                File targetFile = new File(Constants.DAMAGE_UPLOAD_EVALUATE_FILE_DIR);
+                if(!targetFile.exists()) {
+                    targetFile.mkdirs();
+                }
+                String originFileName = file.getOriginalFilename();
+                String fileName = Constants.DAMAGE_UPLOAD_EVALUATE_FILE_DIR + "/" + originFileName;
+                BufferedOutputStream out = new BufferedOutputStream(
+                        new FileOutputStream(new File( fileName)));
+                out.write(file.getBytes());
+                out.flush();
+                out.close();
+            }catch (FileNotFoundException e){
+                e.printStackTrace();
+                response.setStatus(HttpResponse.FAIL_STATUS);
+                response.setMsg("服务器路径错误！");
+            }catch (IOException e){
+                e.printStackTrace();
+                response.setStatus(HttpResponse.FAIL_STATUS);
+                response.setMsg("文件上传失败！");
+            }
+
+        }else{
+            response.setStatus(HttpResponse.FAIL_STATUS);
+            response.setMsg("相关上传参数错误！");
+        }
+        response.setData(data);
+        return response.getHttpResponse();
+    }
+
     @RequestMapping(value = "/damage-detection/trainmodelupload", method = RequestMethod.POST)
     public JSONObject trainModelUpload(@RequestParam("dd_trainmodel_upload")MultipartFile file){
         HttpResponse response = new HttpResponse();
@@ -259,6 +351,7 @@ public class DamageDetection {
             case "testfile" : targetPath = Constants.DAMAGE_UPLOAD_TEST_FILE_DIR; break;
             case "trainmodel" : targetPath = Constants.DAMAGE_UPLOAD_TRAIN_MODEL_DIR; break;
             case "savedmodel" : targetPath = Constants.DAMAGE_SAVE_TRAIN_MODEL_DIR; break;
+            case "evaluatefile" : targetPath = Constants.DAMAGE_UPLOAD_EVALUATE_FILE_DIR; break;
             default: break;
         }
         File dirFile = new File(targetPath);

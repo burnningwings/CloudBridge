@@ -7,10 +7,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import scut.base.HttpResponse;
+import scut.service.SysUserService;
 import scut.util.Constants;
 import scut.util.sql.SQLBaseDao;
 import scut.util.sql.SQLDaoFactory;
 
+import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
 
 /**
@@ -22,6 +24,9 @@ public class Sensor {
     int maxActive = 100;
     String druid_mysql_url = String.format(Constants.MYSQL_FORMAT, Constants.MYSQL_URL, Constants.MYSQL_USERNAME, Constants.MYSQL_PASSWORD) + "|" + maxActive;
     SQLBaseDao baseDao = SQLDaoFactory.getSQLDaoInstance(druid_mysql_url);
+
+    @Resource
+    SysUserService sysUserService;
 
     /**
      * 传感器信息列表
@@ -36,11 +41,20 @@ public class Sensor {
      */
     @RequestMapping(value = "/sensor/list", method = RequestMethod.GET, produces = "application/json")
     public JSONObject sensorList(Integer page, Integer pageSize, Integer bridgeId, Integer sectionId, Integer watchPointId, Integer watchBoxId) {
+        long userOrganizationId = sysUserService.getUserOrganizationId();
         JSONObject response = new JSONObject();
 
-        String whereStr = "";
+        String whereStr = String.format("WHERE\n" +
+                "   b.bridge_id IN (\n" +
+                "      SELECT\n" +
+                "         bo.bridge_id\n" +
+                "      FROM\n" +
+                "         bridge_organization AS bo\n" +
+                "      WHERE\n" +
+                "         bo.organization_id = %d\n" +
+                "   )", userOrganizationId);
         if (bridgeId != null && bridgeId != 0) {
-            whereStr += String.format(" WHERE b.bridge_id=%s ", bridgeId);
+            whereStr += String.format(" AND b.bridge_id=%s ", bridgeId);
             if (sectionId != null && sectionId != 0) {
                 whereStr += String.format(" AND sec.section_id=%s ", sectionId);
                 if (watchPointId != null && watchPointId != 0) {
@@ -109,6 +123,7 @@ public class Sensor {
      */
     @RequestMapping(value = "/sensor/info", method = RequestMethod.GET, produces = "application/json")
     public JSONObject sensorInfo(Integer sensorId, Integer bridgeId, Integer sectionId) {
+        long userOrganizationId = sysUserService.getUserOrganizationId();
         HttpResponse response = new HttpResponse();
         JSONObject data = new JSONObject();
         Integer sensorTypeId = null;
@@ -129,7 +144,16 @@ public class Sensor {
                     "INNER JOIN watch_point AS wp ON s.point_id = wp.point_id\n" +
                     "INNER JOIN section AS sec ON wp.section_id = sec.section_id\n" +
                     "WHERE\n" +
-                    "	s.sensor_id = %s", sensorId);
+                    "	s.sensor_id = %s\n" +
+                    "AND\n" +
+                    "   sec.bridge_id IN (\n" +
+                    "      SELECT\n" +
+                    "         bo.bridge_id\n" +
+                    "      FROM\n" +
+                    "         bridge_organization AS bo\n" +
+                    "      WHERE\n" +
+                    "         bo.organization_id = %d\n" +
+                    "   )", sensorId, userOrganizationId);
             String[] fields = new String[]{"sensor_id", "sensor_name", "sensor_number", "sensor_position", "sensor_type_id",
                     "watch_point_id", "watch_box_id", "section_id", "bridge_id"};
             JSONArray sensorInfo = baseDao.queryData(sql, fields);
@@ -142,11 +166,20 @@ public class Sensor {
             }
         }
         //查询桥梁列表
-        String sql = "SELECT\n" +
+        String sql = String.format("SELECT\n" +
                 "	b.bridge_id,\n" +
                 "	b.bridge_name\n" +
                 "FROM\n" +
-                "	bridge_info AS b";
+                "	bridge_info AS b\n" +
+                "WHERE\n" +
+                "   b.bridge_id IN (\n" +
+                "      SELECT\n" +
+                "         bo.bridge_id\n" +
+                "      FROM\n" +
+                "         bridge_organization AS bo\n" +
+                "      WHERE\n" +
+                "         bo.organization_id = %d\n" +
+                "   )", userOrganizationId);
         String[] fields = new String[]{"bridge_id", "bridge_name"};
         JSONArray bridgeList = baseDao.queryData(sql, fields);
         data.put("bridge_list", bridgeList);
@@ -160,7 +193,16 @@ public class Sensor {
                 "FROM\n" +
                 "	section AS s\n" +
                 "WHERE\n" +
-                "	s.bridge_id = %s", bridgeId);
+                "	s.bridge_id = %s\n" +
+                "AND\n" +
+                "   s.bridge_id IN (\n" +
+                "      SELECT\n" +
+                "         bo.bridge_id\n" +
+                "      FROM\n" +
+                "         bridge_organization AS bo\n" +
+                "      WHERE\n" +
+                "         bo.organization_id = %d\n" +
+                "   )", bridgeId, userOrganizationId);
         fields = new String[]{"section_id", "section_name"};
         JSONArray sectionList = baseDao.queryData(sql, fields);
         data.put("section_list", sectionList);
@@ -173,8 +215,21 @@ public class Sensor {
                 "	wp.`name` AS watch_point_name\n" +
                 "FROM\n" +
                 "	watch_point AS wp\n" +
+                "INNER JOIN\n" +
+                "   section AS s\n" +
+                "ON\n" +
+                "   wp.section_id = s.section_id\n" +
                 "WHERE\n" +
-                "	wp.section_id = %s", sectionId);
+                "	wp.section_id = %s\n" +
+                "AND\n" +
+                "   s.bridge_id IN (\n" +
+                "      SELECT\n" +
+                "         bo.bridge_id\n" +
+                "      FROM\n" +
+                "         bridge_organization AS bo\n" +
+                "      WHERE\n" +
+                "         bo.organization_id = %d\n" +
+                "   )", sectionId, userOrganizationId);
         fields = new String[]{"watch_point_id", "watch_point_name"};
         JSONArray watchPointList = baseDao.queryData(sql, fields);
         data.put("watch_point_list", watchPointList);
@@ -185,11 +240,21 @@ public class Sensor {
                 "FROM\n" +
                 "	watch_box AS wb\n" +
                 "WHERE\n" +
-                "	wb.bridge_id = %s", bridgeId);
+                "	wb.bridge_id = %s\n" +
+                "AND\n" +
+                "   wb.bridge_id IN (\n" +
+                "      SELECT\n" +
+                "         bo.bridge_id\n" +
+                "      FROM\n" +
+                "         bridge_organization AS bo\n" +
+                "      WHERE\n" +
+                "         bo.organization_id = %d\n" +
+                "   )", bridgeId, userOrganizationId);
         fields = new String[]{"watch_box_id", "watch_box_name"};
         JSONArray watchBoxList = baseDao.queryData(sql, fields);
         data.put("watch_box_list", watchBoxList);
         //查询传感器类型类别
+        //与 organization 无关
         sql = "SELECT\n" +
                 "	st.type_id AS sensor_type_id,\n" +
                 "	st.`name` AS sensor_type_name\n" +
@@ -217,8 +282,10 @@ public class Sensor {
      * @param reqMsg
      * @return
      */
+    // TODO: 检查有没有权限 && 单位是否相符
     @RequestMapping(value = "/sensor/delete", method = RequestMethod.POST, produces = "application/json")
     public JSONObject deleteSensor(@RequestBody JSONObject reqMsg) {
+        long userOrganizationId = sysUserService.getUserOrganizationId();
         HttpResponse response = new HttpResponse();
         String checkedListStr = reqMsg.getString("checkedList");
         if (checkedListStr != null) {

@@ -12,17 +12,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import scut.base.HttpResponse;
+import scut.service.OrganizationService;
+import scut.service.SysUserService;
 import scut.service.authority.CurrentUser;
 import scut.util.Constants;
 import scut.util.sql.SQLBaseDao;
 import scut.util.sql.SQLDaoFactory;
 
+import javax.annotation.Resource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by xiaoah on 2018/5/7.
@@ -34,6 +38,12 @@ public class UserManager {
     int maxActive = 100;
     String druid_mysql_url = String.format(Constants.MYSQL_FORMAT, Constants.MYSQL_URL, Constants.MYSQL_USERNAME, Constants.MYSQL_PASSWORD) + "|" + maxActive;
     SQLBaseDao baseDao = SQLDaoFactory.getSQLDaoInstance(druid_mysql_url);
+
+    @Resource
+    SysUserService sysUserService;
+
+    @Resource
+    OrganizationService organizationService;
 
     /**
      * 异步翻页
@@ -51,24 +61,29 @@ public class UserManager {
         CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
         model.addAttribute(Constants.CURRENT_USER, currentUser);
 
+        Set<Long> userAndInferiorOrganizationIds = sysUserService.getUserInferiorOrganizationIds();
+        userAndInferiorOrganizationIds.add(sysUserService.getUserOrganizationId());
+        String whereStr = String.format(" where organization_id in %s ", userAndInferiorOrganizationIds
+                .toString().replace("[", "(").replace("]", ")"));
+
         // 获取数据
-        String whereStr = "";
         if (!selectUserType.equals("all")) {
             switch (selectUserType) {
                 case "username":
-                    whereStr = "where username='" + selectUserContent + "'";
+                    whereStr += " and username='" + selectUserContent + "'";
                     break;
                 case "truename":
-                    whereStr = "where truename='" + selectUserContent + "'";
+                    whereStr += " and truename='" + selectUserContent + "'";
                     break;
                 case "department":
-                    whereStr = "where department='" + selectUserContent + "'";
+                    whereStr += " and department='" + selectUserContent + "'";
                     break;
                 default:
                     break;
             }
             //whereStr = "where bridge_name='" + bridgeName + "'";
         }
+
         String sql = String.format("select id as userid,username,truename,department,duty " +
                 "from sys_user %s limit %s offset %s", whereStr, pageSize, (page - 1) * pageSize);
         String[] fields = new String[]{"userid", "username", "truename", "department", "duty"};
@@ -130,12 +145,15 @@ public class UserManager {
         String username = reqMsg.get("username").toString();
         String password = reqMsg.get("password").toString();
         String truename = reqMsg.get("truename").toString();
+        Long organizationId = Long.valueOf(reqMsg.get("organization_id").toString());
         String department = reqMsg.get("department").toString();
         String duty = reqMsg.get("duty").toString();
         List role_select = (ArrayList) reqMsg.get("role_select");
 
-        String createUserSql = String.format("insert into sys_user (username,truename,password,department,duty)" +
-                " values ('%s','%s','%s','%s','%s')", username, truename, password, department, duty);
+        String createUserSql = String.format("insert into sys_user (" +
+                "username,truename,password,department,duty,organization_id)" +
+                " values ('%s','%s','%s','%s','%s',%d)",
+                username, truename, password, department, duty, organizationId);
         int ret = 0;
         try {
             ret = baseDao.Execute(createUserSql);
@@ -254,6 +272,8 @@ public class UserManager {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        if (userid != null)
+            userinfo.put("organization", organizationService.getSysUserDirectOrganizationName(Long.valueOf(userid)));
         data.put("userinfo", userinfo);
 
         response.setData(data);
@@ -270,14 +290,16 @@ public class UserManager {
         String username = reqMsg.get("username").toString();
         String password = reqMsg.get("password").toString();
         String truename = reqMsg.get("truename").toString();
+        Long organizationId = Long.valueOf(reqMsg.get("organization_id").toString());
         String department = reqMsg.get("department").toString();
         String duty = reqMsg.get("duty").toString();
         List rolelist = (ArrayList) reqMsg.get("role_list");
 
 
         List<String> updateuserSql = new ArrayList<String>();
-        String updateUserInfoSql = String.format("update sys_user set username='%s', password='%s', truename='%s', department='%s', duty='%s' " +
-                "where id=%s", username, password, truename, department, duty, userid);
+        String updateUserInfoSql = String.format("update sys_user set username='%s', password='%s', " +
+                "truename='%s', department='%s', duty='%s', organization_id=%d " +
+                "where id=%s", username, password, truename, department, duty, organizationId, userid);
         String deleteUserRoleSql = String.format("delete from sys_user_roles where sys_user_id='%s'", userid);
         updateuserSql.add(updateUserInfoSql);
         updateuserSql.add(deleteUserRoleSql);

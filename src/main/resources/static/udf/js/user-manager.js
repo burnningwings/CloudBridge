@@ -112,6 +112,7 @@ function showUserCreateDialog(title) {
     var username = "";
     var password = "";
     var truename = "";
+    var organization_id = "";
     var department = "";
     var duty = "";
     var role_select = [];
@@ -126,6 +127,9 @@ function showUserCreateDialog(title) {
             role_option = role_option + "<input type='checkbox' name='cuitem' value='" + key + "'/> " + data["rolelist"][key] + "<br/>";
         }
     }
+
+    var organization_option = getOrganizationOptionsHTML();
+
     var content = '\
          <div class="form-inline-custom">\
                 <label class="col-sm-3 control-label">用户名:</label>\
@@ -150,6 +154,14 @@ function showUserCreateDialog(title) {
             </div>\
         </div>\
         <br>\
+        <div class="form-inline-custom">\
+            <label class="col-sm-3 control-label">单位:</label>\
+            <div class="col-sm-8">\
+                <select class="form-control" id="c_organization">' + organization_option + '</select>\
+            </div>\
+            <span class="text-danger mt5 fl">*</span>\
+        </div>\
+        <br/>\
         <div class="form-inline-custom">\
             <label class="col-sm-3 control-label">部门:</label>\
             <div class="col-sm-8">\
@@ -176,12 +188,14 @@ function showUserCreateDialog(title) {
         username = $("#c_username").val();
         password = $("#c_password").val();
         truename = $("#c_truename").val();
+        organization_id = $("#c_organization").val();
         department = $("#c_department").val();
         duty = $("#c_duty").val();
         $('[name=cuitem]:checkbox:checked').each(function () {
             role_select.push($(this).val())
         });
 
+        console.log("organization id: " + organization_id);
 
         if (!username) {
             showTransientDialog("用户名不能为空");
@@ -192,12 +206,16 @@ function showUserCreateDialog(title) {
         } else if (role_select.length == 0) {
             showTransientDialog("请选择赋予用户的角色");
             return false;
+        } else if (!organization_id) {
+            showTransientDialog("请选择用户所属单位");
+            return false;
         } else {
             var url = "/user-manager/create-user";
             var params = {
                 "username": username,
                 "password": password,
                 "truename": truename,
+                "organization_id": organization_id,
                 "department": department,
                 "duty": duty,
                 "role_select": role_select
@@ -243,6 +261,8 @@ function showUserUpdateDialog(userid,title){
     var username = "";
     var truename = "";
     var password = "";
+    var organization = "";
+    var organization_id = "";
     var department = "";
     var duty = "";
     var role_option = "";
@@ -273,9 +293,13 @@ function showUserUpdateDialog(userid,title){
         username = data["userinfo"]["username"];
         password = data["userinfo"]["password"];
         truename = data["userinfo"]["truename"];
+        organization = data["userinfo"]["organization"];
         department = data["userinfo"]["department"];
         duty = data["userinfo"]["duty"];
     }
+
+    var organization_option = getOrganizationOptionsHTML(organization);
+
         var content = '\
          <div class="form-inline-custom">\
                 <label class="col-sm-3 control-label">用户名:</label>\
@@ -298,6 +322,14 @@ function showUserUpdateDialog(userid,title){
             <div class="col-sm-8">\
                 <input type="text" class="form-control" id="u_truename" value="'+truename+'" >\
             </div>\
+        </div>\
+        <br>\
+        <div class="form-inline-custom">\
+            <label class="col-sm-3 control-label">单位:</label>\
+            <div class="col-sm-8">\
+                <select class="form-control" id="u_organization">' + organization_option + '</select>\
+            </div>\
+            <span class="text-danger mt5 fl">*</span>\
         </div>\
         <br>\
         <div class="form-inline-custom">\
@@ -326,6 +358,7 @@ function showUserUpdateDialog(userid,title){
         username = $("#u_username").val();
         password = $("#u_password").val();
         truename = $("#u_truename").val();
+        organization_id = $('#u_organization').val();
         department = $("#u_department").val();
         duty = $("#u_duty").val();
         var role_list = [];
@@ -343,6 +376,8 @@ function showUserUpdateDialog(userid,title){
         }else if(role_list.length == 0){
             showTransientDialog("请选择赋予角色的权限");
             return false;
+        }else if(!organization_id) {
+            showTransientDialog("用户所属单位不能为空");
         }else{
             var url = "/user-manager/update-user";
             var params = {
@@ -350,6 +385,7 @@ function showUserUpdateDialog(userid,title){
                 "username" : username,
                 "password" : password,
                 "truename" : truename,
+                "organization_id": organization_id,
                 "department" : department,
                 "duty" : duty,
                 "role_list" : role_list

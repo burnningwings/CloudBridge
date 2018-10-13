@@ -213,7 +213,7 @@ public class WatchBox {
 
     @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping(value = "/watch-box/create-or-update", method = RequestMethod.POST, produces = "application/json")
-    public JSONObject createWatchBox(@RequestBody Map<String,Object> reqMsg) {
+        public JSONObject createWatchBox(@RequestBody Map<String,Object> reqMsg) {
         HttpResponse response = new HttpResponse();
         String operation_type = reqMsg.get("operation_type").toString();
         Object box_id = reqMsg.get("box_id");

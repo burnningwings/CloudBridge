@@ -8,13 +8,12 @@ import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.filter.Filter;
 import org.apache.hadoop.hbase.filter.FilterList;
 import org.apache.hadoop.hbase.filter.PageFilter;
+import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.log4j.Logger;
 import scut.util.sql.SQLDaoFactory;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by Carrod on 2018/5/3.
@@ -158,6 +157,7 @@ public class HBaseCli {
                 JSONObject rowObj = new JSONObject();
                 rowObj.put("CLSJ",new String(r.getRow()));
                 for(String column: columns){
+//                    System.out.println(column);
                     Cell a = r.getColumnCells(
                             new String("family").getBytes(),
                             new String(column).getBytes()).get(0);
@@ -190,5 +190,106 @@ public class HBaseCli {
             LOG.info(String.format("断开与HBase的连接"));
         }
         return data;
+    }
+
+//    public void updateRow(String tableName, String rowKey, String qualifier, String value){
+//        Connection connection = null;
+//        Table table = null;
+//        try {
+//            connection = ConnectionFactory.createConnection(conf);
+//            table = connection.getTable(TableName.valueOf(tableName));
+//            Put p = new Put(Bytes.toBytes(rowKey));
+//            p.addColumn(Bytes.toBytes("family"), Bytes.toBytes(qualifier), Bytes.toBytes(value));
+//            table.put(p);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } finally {
+//            if (table != null){
+//                try {
+//                    table.close();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//            if (connection != null){
+//                try {
+//                    connection.close();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//        }
+//    }
+
+    public int updateRow(String tableName, String rowKey, Map<String,String> sensorInfo){
+        System.out.print(tableName);
+        System.out.print(rowKey);
+        int resultFlag = 0;
+        Connection connection = null;
+        Table table = null;
+        try {
+            connection = ConnectionFactory.createConnection(conf);
+            table = connection.getTable(TableName.valueOf(tableName));
+            Put p = new Put(Bytes.toBytes(rowKey));
+            for(Map.Entry<String, String> entry : sensorInfo.entrySet()){
+                p.addColumn(Bytes.toBytes("family"), Bytes.toBytes(entry.getKey()),Bytes.toBytes(entry.getValue()));
+            }
+            table.put(p);
+        } catch (IOException e) {
+            resultFlag = 1;
+            e.printStackTrace();
+        } finally {
+            if (table != null){
+                try {
+                    table.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (connection != null){
+                try {
+                    connection.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        return resultFlag;
+        }
+    }
+
+    public int deleteRow(String tableName, ArrayList<String> rowKeys){
+        int resultFlag = 0;
+        Connection connection = null;
+        Table table = null;
+        try {
+            connection = ConnectionFactory.createConnection(conf);
+            table = connection.getTable(TableName.valueOf(tableName));
+            List<Delete> deleteList = new ArrayList<Delete>();
+            for(String rowkey : rowKeys){
+                Delete delete = new Delete(Bytes.toBytes(rowkey));
+                deleteList.add(delete);
+            }
+            table.delete(deleteList);
+        } catch (IOException e) {
+            resultFlag = 1;
+            e.printStackTrace();
+        } finally {
+            if(table != null){
+                try {
+                    table.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(connection != null){
+                try {
+                    connection.close();
+                } catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
+            return resultFlag;
+        }
     }
 }

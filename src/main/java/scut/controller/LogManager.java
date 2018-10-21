@@ -54,10 +54,10 @@ public class LogManager {
             sql = String.format("select log_id, bridge_name, username, DATE_FORMAT(log_time,\"%%Y-%%m-%%d %%H:%%i:%%s\") as log_time, log_info from log_bridge  limit %s,%s "
                     ,(page-1)*pageSize, pageSize);
 
-        //因为用到stringformat的缘故，需要使用%%对%进行转义，然后datttime也要转成string的形式才能显示
+            //因为用到stringformat的缘故，需要使用%%对%进行转义，然后datttime也要转成string的形式才能显示
         else
             sql = String.format(
-                "select log_id, bridge_name, username, DATE_FORMAT(log_time,\"%%Y-%%m-%%d %%H:%%i:%%s\") as log_time, log_info from log_bridge where bridge_name = '%s' limit %s,%s " ,
+                    "select log_id, bridge_name, username, DATE_FORMAT(log_time,\"%%Y-%%m-%%d %%H:%%i:%%s\") as log_time, log_info from log_bridge where bridge_name = '%s' limit %s,%s " ,
                     bridgeName,(page-1)*pageSize, pageSize);
 
         String[] fields = new String[]{"log_id","bridge_name","username","log_time","log_info"};
@@ -67,7 +67,7 @@ public class LogManager {
         logger.info(sql);
         logger.info(data.toString());
         if (!bridgeName.equals("全部"))
-        sql = String.format("SELECT COUNT(*) AS total FROM log_bridge where bridge_name='%s'",bridgeName);
+            sql = String.format("SELECT COUNT(*) AS total FROM log_bridge where bridge_name='%s'",bridgeName);
         else
             sql = String.format("SELECT COUNT(*) AS total FROM log_bridge",bridgeName);
         fields = new String[]{"total"};
@@ -97,6 +97,138 @@ public class LogManager {
         response.setStatus(HttpResponse.FAIL_STATUS);
         response.setCode(HttpResponse.FAIL_CODE);
         response.setMsg("删除桥梁修改日志失败！");
+        return response.getHttpResponse();
+    }
+
+    /**
+     * 异步翻页
+     * @param model
+     * @param page
+     * @param pageSize 切换为All时需强制为null，因此必须为Integer
+     * @return
+     */
+
+    @RequestMapping(value = "/log_system/list", method = RequestMethod.GET, produces = "application/json")
+    public JSONObject log_systemList(Model model, int page, Integer pageSize) {
+        // 渲染模板
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
+        model.addAttribute(Constants.CURRENT_USER, currentUser);
+
+        JSONObject response = new JSONObject();
+        // 获取数据
+        logger.info(page+","+pageSize);
+        String sql = "";
+        sql = String.format("select log_id, username, DATE_FORMAT(log_time,\"%%Y-%%m-%%d %%H:%%i:%%s\") as log_time, log_info from log_system limit %s,%s "
+                ,(page-1)*pageSize, pageSize);
+
+        String[] fields = new String[]{"log_id","username","log_time","log_info"};
+        JSONArray data = baseDao.queryData(sql, fields);
+        response.put("data", data);
+
+        logger.info(sql);
+        logger.info(data.toString());
+
+        sql = String.format("SELECT COUNT(*) AS total FROM log_system");
+        fields = new String[]{"total"};
+        data = baseDao.queryData(sql, fields);
+        response.put("total", data.getJSONObject(0).get("total"));
+        return response;
+    }
+
+    /**
+     * 删除系统修改日志
+     *
+     * @param reqMsg 参数
+     * @return
+     */
+    @RequestMapping(value = "/log_system/delete", method = RequestMethod.POST, produces = "application/json")
+    public JSONObject deleteSysttem(@RequestBody JSONObject reqMsg) {
+        HttpResponse response = new HttpResponse();
+        String checkedListStr = reqMsg.getString("checkedList");
+        if (checkedListStr != null) {
+            String sql = String.format("DELETE FROM log_system WHERE log_id IN (%s)", checkedListStr);
+            int ret = baseDao.updateData(sql);
+            if (ret > 0) {
+                return response.getHttpResponse();
+            }
+        }
+
+        response.setStatus(HttpResponse.FAIL_STATUS);
+        response.setCode(HttpResponse.FAIL_CODE);
+        response.setMsg("删除系统操作日志失败！");
+        return response.getHttpResponse();
+    }
+
+    /**
+     * 异步翻页
+     * @param model
+     * @param page
+     * @param pageSize 切换为All时需强制为null，因此必须为Integer
+     * @return
+     */
+
+    @RequestMapping(value = "/log_option/list", method = RequestMethod.GET, produces = "application/json")
+    public JSONObject log_optionList(Model model, int page, Integer pageSize) {
+        // 渲染模板
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
+        model.addAttribute(Constants.CURRENT_USER, currentUser);
+
+        JSONObject response = new JSONObject();
+        // 获取数据
+
+        String sql = "";
+        sql = String.format("select option_name, option_id, option_state from log_option limit %s,%s "
+                ,(page-1)*pageSize, pageSize);
+
+        String[] fields = new String[]{"option_name","option_id","option_state"};
+        JSONArray data = baseDao.queryData(sql, fields);
+        response.put("data", data);
+
+        logger.info(sql);
+        logger.info(data.toString());
+
+        sql = String.format("SELECT COUNT(*) AS total FROM log_option");
+        fields = new String[]{"total"};
+        data = baseDao.queryData(sql, fields);
+        response.put("total", data.getJSONObject(0).get("total"));
+        return response;
+    }
+
+    /**
+     * 日志选项
+     *
+     * @param reqMsg 参数
+     * @return
+     */
+    @RequestMapping(value = "/log_option/save", method = RequestMethod.POST, produces = "application/json")
+    public JSONObject log_optionsave(@RequestBody JSONObject reqMsg) {
+        HttpResponse response = new HttpResponse();
+        String checkedListStr = reqMsg.getString("checkedList");
+        logger.info(checkedListStr);
+        if (checkedListStr.isEmpty())
+        {
+            String sql = String.format("update log_option set option_state = '%s' ", " ");
+            int ret = baseDao.updateData(sql);
+            if (ret >= 0) {
+                return response.getHttpResponse();
+            }
+        }
+        else if (checkedListStr != null) {
+            String sql = String.format("update log_option set option_state = '%s' WHERE option_id IN (%s)", "checked",checkedListStr);
+            int ret1 = baseDao.updateData(sql);
+            sql = String.format("update log_option set option_state = '%s' WHERE option_id not IN (%s)", " ",checkedListStr);
+            int ret2 = baseDao.updateData(sql);
+            logger.info("ret1:"+ret1+",ret2:"+ret2);
+            if ( (ret1 >= 0) && (ret2 >= 0)) {
+                return response.getHttpResponse();
+            }
+        }
+
+        response.setStatus(HttpResponse.FAIL_STATUS);
+        response.setCode(HttpResponse.FAIL_CODE);
+        response.setMsg("保存日志选项失败！");
         return response.getHttpResponse();
     }
 

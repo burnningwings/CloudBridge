@@ -4,12 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.log4j.Logger;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import scut.base.HttpResponse;
 import scut.service.SysUserService;
@@ -27,6 +25,7 @@ import javax.annotation.Resource;
 import java.io.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -304,6 +303,7 @@ public class DataManager {
                 Map<String,String> otherInfo = new HashMap<>();
                 otherInfo.put("sensor_id",sensorId);
                 otherInfo.put("sensor_number",sensorInfoArray[1]);
+                System.out.print(dataSchema.keySet());
                 data = HBaseCli.getInstance().getPage(
                         hbaseTableName,
                         pageSize,
@@ -314,10 +314,10 @@ public class DataManager {
                         otherInfo);
                 if(data.size()>0){
                     System.out.println("next:" + next);
-                    System.out.println("1:" + rowKey);
-                    System.out.println("2:" + data.size());
-                    System.out.println("3:"  + pageSize);
-                    System.out.println("4:"  + skip);
+                    System.out.println("rowKey:" + rowKey);
+                    System.out.println("data.Size:" + data.size());
+                    System.out.println("pageSize:"  + pageSize);
+                    System.out.println("skip:"  + skip);
                     if(data.size() > pageSize){
                         JSONObject lastItem = (JSONObject) data.get(data.size()-1);
                         nextRowKey = lastItem.get("CLSJ").toString();
@@ -378,5 +378,289 @@ public class DataManager {
         }
         response.setData(data);
         return response.getHttpResponse();
+    }
+
+    @RequestMapping(value = "/query-data/sensor_info", method = RequestMethod.GET, produces = "application/json")
+    public JSONObject getSensorInfo(String sensor_id, String clsj){
+        HttpResponse response = new HttpResponse();
+        JSONObject data = new JSONObject();
+
+        Map<String, Object> dataSchema = getDataSchema(sensor_id);
+        System.out.print(dataSchema.keySet());
+
+        response.setData(data);
+        return response.getHttpResponse();
+    }
+    @RequestMapping(value = "/query-data/updateJSDsensor", method = RequestMethod.POST, produces = "application/json")
+    public JSONObject updateJSDsensordata(@RequestBody Map<String,Object> reqMsg){
+        HttpResponse response = new HttpResponse();
+        JSONObject data = new JSONObject();
+        String sensor_id = reqMsg.get("sensor_id").toString();
+        String CLSJ = reqMsg.get("CLSJ").toString();
+        String JSD = reqMsg.get("JSD").toString();
+        String DY = reqMsg.get("DY").toString();
+
+        //检查参数是否为空
+        if(sensor_id==null || sensor_id.equals("") || CLSJ==null || CLSJ.equals("")
+                || JSD==null || JSD.equals("") || DY==null || DY.equals("")){
+            response.setStatus(HttpResponse.FAIL_STATUS);
+            response.setCode(HttpResponse.FAIL_CODE);
+            response.setMsg("错误，相关参数为空！");
+            return response.getHttpResponse();
+        }
+        //检查参数是否合法
+        if(!CLSJ.matches("([1-9]\\d*\\.?\\d*)|(0\\.\\d*)|(0)") || !JSD.matches("([1-9]\\d*\\.?\\d*)|(0\\.\\d*)|(0)") || !DY.matches("([1-9]\\d*\\.?\\d*)|(0\\.\\d*)|(0)")){
+            response.setStatus(HttpResponse.FAIL_STATUS);
+            response.setCode(HttpResponse.FAIL_CODE);
+            response.setMsg("参数类型错误！");
+            return response.getHttpResponse();
+        }
+
+        String hbaseTable = "CloudBridge:" + sensor_id;
+        String rowKey = CLSJ;
+        Map<String, String> sensorInfo = new HashMap<>();
+        sensorInfo.put("JSD",JSD);
+        sensorInfo.put("DY", DY);
+        System.out.print(hbaseTable+"-"+rowKey);
+        int result = HBaseCli.getInstance().updateRow(hbaseTable, rowKey, sensorInfo);
+        if(result != 0){
+            response.setStatus(HttpResponse.FAIL_STATUS);
+            response.setCode(HttpResponse.FAIL_CODE);
+            response.setMsg("修改失败！");
+            return response.getHttpResponse();
+        }else{
+            response.setData(data);
+            return response.getHttpResponse();
+        }
+    }
+
+    @RequestMapping(value = "/query-data/updateGXYBsensor", method = RequestMethod.POST, produces = "application/json")
+    public JSONObject updateGXYBsensordata(@RequestBody Map<String,Object> reqMsg){
+        HttpResponse response = new HttpResponse();
+        JSONObject data = new JSONObject();
+        String sensor_id = reqMsg.get("sensor_id").toString();
+        String CLSJ = reqMsg.get("CLSJ").toString();
+        String CLBC = reqMsg.get("CLBC").toString();
+        String YB = reqMsg.get("YB").toString();
+
+        //检查参数是否为空
+        if(sensor_id==null || sensor_id.equals("") || CLSJ==null || CLSJ.equals("")
+                || CLBC==null || CLBC.equals("") || YB==null || YB.equals("")){
+            response.setStatus(HttpResponse.FAIL_STATUS);
+            response.setCode(HttpResponse.FAIL_CODE);
+            response.setMsg("错误，相关参数为空！");
+            return response.getHttpResponse();
+        }
+        //检查参数是否合法
+        if(!CLSJ.matches("([1-9]\\d*\\.?\\d*)|(0\\.\\d*)|(0)") || !CLBC.matches("([1-9]\\d*\\.?\\d*)|(0\\.\\d*)|(0)") || !YB.matches("([1-9]\\d*\\.?\\d*)|(0\\.\\d*)|(0)")){
+            response.setStatus(HttpResponse.FAIL_STATUS);
+            response.setCode(HttpResponse.FAIL_CODE);
+            response.setMsg("参数类型错误！");
+            return response.getHttpResponse();
+        }
+
+        String hbaseTable = "CloudBridge:" + sensor_id;
+        String rowKey = CLSJ;
+        Map<String, String> sensorInfo = new HashMap<>();
+        sensorInfo.put("CLBC",CLBC);
+        sensorInfo.put("YB", YB);
+        System.out.print(hbaseTable+"-"+rowKey);
+        int result = HBaseCli.getInstance().updateRow(hbaseTable, rowKey, sensorInfo);
+        if(result != 0){
+            response.setStatus(HttpResponse.FAIL_STATUS);
+            response.setCode(HttpResponse.FAIL_CODE);
+            response.setMsg("修改失败！");
+            return response.getHttpResponse();
+        }else{
+            response.setData(data);
+            return response.getHttpResponse();
+        }
+    }
+
+    @RequestMapping(value = "/query-data/updateSLsensor", method = RequestMethod.POST, produces = "application/json")
+    public JSONObject updateSLsensordata(@RequestBody Map<String,Object> reqMsg){
+        HttpResponse response = new HttpResponse();
+        JSONObject data = new JSONObject();
+        String sensor_id = reqMsg.get("sensor_id").toString();
+        String CLSJ = reqMsg.get("CLSJ").toString();
+        String DY = reqMsg.get("DY").toString();
+        String JSD = reqMsg.get("JSD").toString();
+        String SL = reqMsg.get("SL").toString();
+
+        //检查参数是否为空
+        if(sensor_id==null || sensor_id.equals("") || CLSJ==null || CLSJ.equals("")
+                || DY==null || DY.equals("") || JSD==null || JSD.equals("") || SL==null || SL.equals("")){
+            response.setStatus(HttpResponse.FAIL_STATUS);
+            response.setCode(HttpResponse.FAIL_CODE);
+            response.setMsg("错误，相关参数为空！");
+            return response.getHttpResponse();
+        }
+        //检查参数是否合法
+        if(!CLSJ.matches("([1-9]\\d*\\.?\\d*)|(0\\.\\d*)|(0)") || !DY.matches("([1-9]\\d*\\.?\\d*)|(0\\.\\d*)|(0)")
+                || !JSD.matches("([1-9]\\d*\\.?\\d*)|(0\\.\\d*)|(0)") || !SL.matches("([1-9]\\d*\\.?\\d*)|(0\\.\\d*)|(0)")){
+            response.setStatus(HttpResponse.FAIL_STATUS);
+            response.setCode(HttpResponse.FAIL_CODE);
+            response.setMsg("参数类型错误！");
+            return response.getHttpResponse();
+        }
+
+        String hbaseTable = "CloudBridge:" + sensor_id;
+        String rowKey = CLSJ;
+        Map<String, String> sensorInfo = new HashMap<>();
+        sensorInfo.put("DY",DY);
+        sensorInfo.put("JSD", JSD);
+        sensorInfo.put("SL", SL);
+        System.out.print(hbaseTable+"-"+rowKey);
+        int result = HBaseCli.getInstance().updateRow(hbaseTable, rowKey, sensorInfo);
+        if(result != 0){
+            response.setStatus(HttpResponse.FAIL_STATUS);
+            response.setCode(HttpResponse.FAIL_CODE);
+            response.setMsg("修改失败！");
+            return response.getHttpResponse();
+        }else{
+            response.setData(data);
+            return response.getHttpResponse();
+        }
+    }
+
+    @RequestMapping(value = "/query-data/updateGPSsensor", method = RequestMethod.POST, produces = "application/json")
+    public JSONObject updateGPSsensordata(@RequestBody Map<String,Object> reqMsg){
+        HttpResponse response = new HttpResponse();
+        JSONObject data = new JSONObject();
+        String sensor_id = reqMsg.get("sensor_id").toString();
+        String CLSJ = reqMsg.get("CLSJ").toString();
+        String WXZBX = reqMsg.get("WXZBX").toString();
+        String QLZBX = reqMsg.get("QLZBX").toString();
+        String WXWYX = reqMsg.get("WXWYX").toString();
+        String QLWYX = reqMsg.get("QLWYX").toString();
+        String WXZBY = reqMsg.get("WXZBY").toString();
+        String QLZBY = reqMsg.get("QLZBY").toString();
+        String WXWYY = reqMsg.get("WXWYY").toString();
+        String QLWYY = reqMsg.get("QLWYY").toString();
+        String WXZBZ = reqMsg.get("WXZBZ").toString();
+        String QLZBZ = reqMsg.get("QLZBZ").toString();
+        String WXWYZ = reqMsg.get("WXWYZ").toString();
+        String QLWZ = reqMsg.get("QLWZ").toString();
+
+        //检查参数是否为空
+        if(sensor_id==null || sensor_id.equals("") || CLSJ==null || CLSJ.equals("")
+                || WXZBX==null || WXZBX.equals("") || QLZBX==null || QLZBX.equals("") || WXWYX==null || WXWYX.equals("") || QLWYX==null || QLWYX.equals("")
+                || WXZBY==null || WXZBY.equals("") || QLZBY==null || QLZBY.equals("") || WXWYY==null || WXWYY.equals("") || QLWYY==null || QLWYY.equals("")
+                || WXZBZ==null || WXZBZ.equals("") || QLZBZ==null || QLZBZ.equals("") || WXWYZ==null || WXWYZ.equals("") || QLWZ==null || QLWZ.equals("")){
+            response.setStatus(HttpResponse.FAIL_STATUS);
+            response.setCode(HttpResponse.FAIL_CODE);
+            response.setMsg("错误，相关参数为空！");
+            return response.getHttpResponse();
+        }
+        //检查参数是否合法
+        String regex = "([1-9]\\d*\\.?\\d*)|(0\\.\\d*)|(0)";
+        if(!CLSJ.matches(regex) || !WXZBX.matches(regex) || !QLZBX.matches(regex) || !WXWYX.matches(regex) || !QLWYX.matches(regex) ||
+        !WXZBY.matches(regex) || !QLZBY.matches(regex) || !WXWYY.matches(regex) || !QLWYY.matches(regex) ||
+                !WXZBZ.matches(regex) || !QLZBZ.matches(regex) || !WXWYZ.matches(regex) || !QLWZ.matches(regex)){
+            response.setStatus(HttpResponse.FAIL_STATUS);
+            response.setCode(HttpResponse.FAIL_CODE);
+            response.setMsg("参数类型错误！");
+            return response.getHttpResponse();
+        }
+
+        String hbaseTable = "CloudBridge:" + sensor_id;
+        String rowKey = CLSJ;
+        Map<String, String> sensorInfo = new HashMap<>();
+        sensorInfo.put("WXZBX",WXZBX);
+        sensorInfo.put("QLZBX", QLZBX);
+        sensorInfo.put("WXWYX", WXWYX);
+        sensorInfo.put("QLWYX", QLWYX);
+        sensorInfo.put("WXZBY",WXZBY);
+        sensorInfo.put("QLZBY", QLZBY);
+        sensorInfo.put("WXWYY", WXWYY);
+        sensorInfo.put("QLWYY", QLWYY);
+        sensorInfo.put("WXZBZ",WXZBZ);
+        sensorInfo.put("QLZBZ", QLZBZ);
+        sensorInfo.put("WXWYZ", WXWYZ);
+        sensorInfo.put("QLWZ", QLWZ);
+        System.out.print(hbaseTable+"-"+rowKey);
+        int result = HBaseCli.getInstance().updateRow(hbaseTable, rowKey, sensorInfo);
+        if(result != 0){
+            response.setStatus(HttpResponse.FAIL_STATUS);
+            response.setCode(HttpResponse.FAIL_CODE);
+            response.setMsg("修改失败！");
+            return response.getHttpResponse();
+        }else{
+            response.setData(data);
+            return response.getHttpResponse();
+        }
+    }
+
+    @RequestMapping(value = "/query-data/updateZXsensor", method = RequestMethod.POST, produces = "application/json")
+    public JSONObject updateZXsensordata(@RequestBody Map<String,Object> reqMsg){
+        HttpResponse response = new HttpResponse();
+        JSONObject data = new JSONObject();
+        String sensor_id = reqMsg.get("sensor_id").toString();
+        String CLSJ = reqMsg.get("CLSJ").toString();
+        String CLYB = reqMsg.get("CLYB").toString();
+        String XZYB = reqMsg.get("XZYB").toString();
+        String DZ = reqMsg.get("DZ").toString();
+        String CLWD = reqMsg.get("CLWD").toString();
+
+        //检查参数是否为空
+        if(sensor_id==null || sensor_id.equals("") || CLSJ==null || CLSJ.equals("")
+                || CLYB==null || CLYB.equals("") || XZYB==null || XZYB.equals("")
+                || DZ==null || DZ.equals("") || CLWD==null || CLWD.equals("")){
+            response.setStatus(HttpResponse.FAIL_STATUS);
+            response.setCode(HttpResponse.FAIL_CODE);
+            response.setMsg("错误，相关参数为空！");
+            return response.getHttpResponse();
+        }
+        //检查参数是否合法
+        if(!CLSJ.matches("([1-9]\\d*\\.?\\d*)|(0\\.\\d*)|(0)") || !CLYB.matches("([1-9]\\d*\\.?\\d*)|(0\\.\\d*)|(0)")
+                || !XZYB.matches("([1-9]\\d*\\.?\\d*)|(0\\.\\d*)|(0)") || !DZ.matches("([1-9]\\d*\\.?\\d*)|(0\\.\\d*)|(0)")
+                || !CLWD.matches("([1-9]\\d*\\.?\\d*)|(0\\.\\d*)|(0)")){
+            response.setStatus(HttpResponse.FAIL_STATUS);
+            response.setCode(HttpResponse.FAIL_CODE);
+            response.setMsg("参数类型错误！");
+            return response.getHttpResponse();
+        }
+
+        String hbaseTable = "CloudBridge:" + sensor_id;
+        String rowKey = CLSJ;
+        Map<String, String> sensorInfo = new HashMap<>();
+        sensorInfo.put("CLYB",CLYB);
+        sensorInfo.put("XZYB", XZYB);
+        sensorInfo.put("DZ", DZ);
+        sensorInfo.put("CLWD", CLWD);
+        System.out.print(hbaseTable+"-"+rowKey);
+        int result = HBaseCli.getInstance().updateRow(hbaseTable, rowKey, sensorInfo);
+        if(result != 0){
+            response.setStatus(HttpResponse.FAIL_STATUS);
+            response.setCode(HttpResponse.FAIL_CODE);
+            response.setMsg("修改失败！");
+            return response.getHttpResponse();
+        }else{
+            response.setData(data);
+            return response.getHttpResponse();
+        }
+    }
+    @RequestMapping(value = "/query-data/delete", method = RequestMethod.POST)
+    public JSONObject deletesdSensordata(@RequestBody Map<String,Object> reqMsg){
+        HttpResponse response = new HttpResponse();
+        JSONObject data = new JSONObject();
+        String sensor_id = reqMsg.get("sensor_id").toString();
+        String checked = reqMsg.get("checkedList").toString();
+        String[] split = checked.split(",");
+        ArrayList<String> rowkeys = new ArrayList<>();
+        for(int i=0; i<split.length;i++){
+            rowkeys.add(split[i]);
+        }
+        String hbaseTable = "CloudBridge:" + sensor_id;
+        int result = HBaseCli.getInstance().deleteRow(hbaseTable, rowkeys);
+        if(result != 0){
+            response.setStatus(HttpResponse.FAIL_STATUS);
+            response.setCode(HttpResponse.FAIL_CODE);
+            response.setMsg("删除失败！");
+            return response.getHttpResponse();
+        }else{
+            response.setData(data);
+            return response.getHttpResponse();
+        }
     }
 }

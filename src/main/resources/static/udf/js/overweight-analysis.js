@@ -18,6 +18,119 @@
 //     });
 // })
 
+function countNumOverweight(timelist, overweightlist) {
+    if(timelist.length == 0){
+        return;
+    }else{
+        var start_time = Date.parse(new Date(timelist[0])) / 1000;
+        var end_time = Date.parse(new Date(timelist[timelist.length-1])) / 1000;
+        var interval = end_time - start_time;
+        console.log("interval:",interval);
+        if(interval <= 3600){   //间隔一个小时
+            var count = countPerMin(timelist, overweightlist);
+            console.log("count by min")
+            return count;
+        }else if(interval <= 86400){     //间隔一天
+            console.log("count by hour")
+            var count =  countPerHour(timelist, overweightlist);
+            return count;
+        }else if(interval <=2592000){    //间隔一个月
+            console.log("count by day");
+            var count = countPerDay(timelist, overweightlist);
+            return count;
+        }else if(interval <= 31104000){  //间隔一年
+            console.log("count by month");
+            var count = countPerMonth(timelist, overweightlist);
+            return count;
+        }else{
+            console.log("count by year")
+            var count = countPerYear();
+            return count;
+        }
+    }
+}
+
+function countPerHour(timelist, overweight) {
+    var count = new Map();
+    for(var i = 0; i < timelist.length; i++){
+        if(overweight[i] == 1){
+            var newtime = timelist[i].substring(0,14) + "00:00";
+            if(count.get(newtime)){
+                var v = count.get(newtime) + 1;
+                count.set(newtime, v);
+            }else{
+                count.set(newtime, 1);
+            }
+        }
+    }
+    return count;
+}
+
+function countPerMin(timelist, overweight) {
+    var count = new Map();
+    for (var i = 0; i < timelist.length; i++) {
+        if (overweight[i] == 1) {
+            var newtime = timelist[i].substr(0, 17) + "00";
+            if (count.get(newtime)) {
+                var v = count.get(newtime) + 1;
+                count.set(newtime, v);
+            } else {
+                count.set(newtime, 1);
+            }
+        }
+    }
+    return count;
+}
+
+function countPerDay(timelist, overweight) {
+    var count = new Map();
+    for(var i = 0; i < timelist.length; i++){
+        if(overweight[i] == 1){
+            var newtime = timelist[i].substring(0,11) + "00:00:00";
+            if(count.get(newtime)){
+                var v = count.get(newtime) + 1;
+                count.set(newtime, v);
+            }else{
+                count.set(newtime, 1);
+            }
+        }
+    }
+    return count;
+}
+
+function countPerMonth(timelist, overweight) {
+    var count = new Map();
+    for(var i = 0; i < timelist.length; i++){
+        if(overweight[i] == 1){
+            var newtime = timelist[i].substring(0,8) + "00 00:00:00";
+            if(count.get(newtime)){
+                var v = count.get(newtime) + 1;
+                count.set(newtime, v);
+            }else{
+                count.set(newtime, 1);
+            }
+        }
+    }
+    return count;
+}
+
+function countPerYear(timelist, overweight) {
+    var count = new Map();
+    for(var i = 0; i < timelist.length; i++){
+        if(overweight[i] == 1){
+            var newtime = timelist[i].substring(0,5) + "00-00 00:00:00";
+            if(count.get(newtime)){
+                var v = count.get(newtime) + 1;
+                count.set(newtime, v);
+            }else{
+                count.set(newtime, 1);
+            }
+        }
+    }
+    return count;
+}
+
+
 function getAndshowPredictResult(figure_id, current_dialog, params) {
     function successCaller(message) {
         console.log(message)
@@ -41,6 +154,26 @@ function getAndshowPredictResult(figure_id, current_dialog, params) {
     }
     var url = "/overweight-analysis/getPredictResult";
     webRequest(url, "GET", true, params,successCaller);
+}
+
+function  getAndshowPredictUDFResult(figure_id, current_dialog, params) {
+
+    function successCaller(message) {
+        console.log(message);
+        current_dialog.button('reset').dequeue();
+        var status = message["status"];
+        if(status != 0){
+            $("#" + figure_id).html("<img style='margin-top:120px;' src='assets/img/warning.png'/>");
+            showTransientDialog(message["msg"]);
+            return;
+        }else{
+            var timelist = message["data"]["timelist"];
+            var overweightlist = message["data"]["overweightlist"];
+            showPredictUDFResultChart_OVERWEIGHT(figure_id, timelist, overweightlist);
+        }
+    }
+    var url = "/overweight-analysis/getUDFPredictResult";
+    webRequest(url, "GET", true, params, successCaller);
 }
 
 function updateDropdownListTrainFile(){
@@ -137,6 +270,95 @@ function updateDropdownListEvaluateModel(){
     $("#evaluate_model_selected").selectpicker('refresh');
 }
 
+function updateDropdownListUdfTrainModel(){
+    $("#udf_train_model_selected").empty();
+    var url = "/overweight-analysis/dropdown";
+    var response = webRequest(url, "GET", false, {"type" : "trainmodel"});
+    var options ="<option value=\'\' disabled selected>请选择训练模型</option>"
+    if(response!=null && response.status==0){
+        var data = response.data;
+        for(var key in data){
+            options = options + "<option>" + key + "</option>";
+        }
+    }
+    $("#udf_train_model_selected").append(options);
+    $("#udf_train_model_selected").selectpicker('refresh');
+}
+
+function updateDropdownListUdfEvaluateModel(){
+    $("#udf_evaluate_model_selected").empty();
+    var url = "/overweight-analysis/dropdown";
+    var response = webRequest(url, "GET", false, {"type" : "savedmodel"});
+    var options ="<option value=\'\' disabled selected>请选择验证模型</option>"
+    if(response!=null && response.status==0){
+        var data = response.data;
+        for(var key in data){
+            options = options + "<option>" + key + "</option>";
+        }
+    }
+    $("#udf_evaluate_model_selected").append(options);
+    $("#udf_evaluate_model_selected").selectpicker('refresh');
+}
+
+function updateDropdownListUdfTrainBridge(){
+    $("#train_bridge_selected").empty();
+    var url = "/overweight-analysis/udf_bridge_dropdown";
+    var response = webRequest(url, "GET", false, {});
+    var options = "<option value='' disabled selected>请选择分析的桥梁</option>";
+    if(response != null && response.status==0){
+        var data = response.data;
+        for(var key in data){
+            options = options + "<option>" + key +"</option>";
+        }
+    }
+    $("#train_bridge_selected").append(options);
+    $("#train_bridge_selected").selectpicker('refresh');
+}
+
+function updateDropdownListUdfEvaluateBridge(){
+    $("#evaluate_bridge_selected").empty();
+    var url = "/overweight-analysis/udf_bridge_dropdown";
+    var response = webRequest(url, "GET", false, {});
+    var options = "<option value='' disabled selected>请选择分析的桥梁</option>";
+    if(response != null && response.status==0){
+        var data = response.data;
+        for(var key in data){
+            options = options + "<option>" + key +"</option>";
+        }
+    }
+    $("#evaluate_bridge_selected").append(options);
+    $("#evaluate_bridge_selected").selectpicker('refresh');
+}
+
+function updateDropdownListUdfTestModel(){
+    $("#udf_test_model_selected").empty();
+    var url = "/overweight-analysis/dropdown";
+    var response = webRequest(url, "GET", false, {"type" : "savedmodel"});
+    var options ="<option value=\'\' disabled selected>请选择预测模型</option>"
+    if(response!=null && response.status==0){
+        var data = response.data;
+        for(var key in data){
+            options = options + "<option>" + key + "</option>";
+        }
+    }
+    $("#udf_test_model_selected").append(options);
+    $("#udf_test_model_selected").selectpicker('refresh');
+}
+
+function updateDropdownListUdfTestBridge(){
+    $("#test_bridge_selected").empty();
+    var url = "/overweight-analysis/udf_bridge_dropdown";
+    var response = webRequest(url, "GET", false, {});
+    var options = "<option value='' disabled selected>请选择分析的桥梁</option>";
+    if(response != null && response.status==0){
+        var data = response.data;
+        for(var key in data){
+            options = options + "<option>" + key +"</option>";
+        }
+    }
+    $("#test_bridge_selected").append(options);
+    $("#test_bridge_selected").selectpicker('refresh');
+}
 //初始化
 $(function () {
     // $("#train_file_selected").selectpicker({
@@ -164,6 +386,12 @@ $(function () {
     updateDropdownListSavedModel();
     updateDropdownListEvaluateFile();
     updateDropdownListEvaluateModel();
+    updateDropdownListUdfTrainModel();
+    updateDropdownListUdfTrainBridge();
+    updateDropdownListUdfEvaluateModel();
+    updateDropdownListUdfEvaluateBridge();
+    updateDropdownListUdfTestBridge();
+    updateDropdownListUdfTestModel();
     //$("#train_file_selected").on('shown.bs.select', updateDropdownListTrainFile());
     // $("#train_file_selected").click(function () {
     //     var url = "/overweight-analysis/dropdown";
@@ -190,6 +418,42 @@ $(function () {
     //     popoverEl.popover("show");
     //
     // });
+
+    var data_format_str = 'yyyy-MM-dd HH:mm:ss';
+    var current_time = new Date().format(data_format_str);
+    $('#train_udf_begin_time').datetimepicker({
+        timeFormat: "HH:mm:ss",
+        dateFormat: "yy-mm-dd"
+    });
+    $('#train_udf_end_time').datetimepicker({
+        timeFormat: "HH:mm:ss",
+        dateFormat: "yy-mm-dd"
+    });
+    $('#train_udf_begin_time').val(current_time);
+    $('#train_udf_end_time').val(current_time);
+
+    $('#evaluate_udf_begin_time').datetimepicker({
+        timeFormat: "HH:mm:ss",
+        dateFormat: "yy-mm-dd"
+    });
+    $('#evaluate_udf_end_time').datetimepicker({
+        timeFormat: "HH:mm:ss",
+        dateFormat: "yy-mm-dd"
+    });
+    $('#evaluate_udf_begin_time').val(current_time);
+    $('#evaluate_udf_end_time').val(current_time);
+
+    $('#test_udf_begin_time').datetimepicker({
+        timeFormat: "HH:mm:ss",
+        dateFormat: "yy-mm-dd"
+    });
+    $('#test_udf_end_time').datetimepicker({
+        timeFormat: "HH:mm:ss",
+        dateFormat: "yy-mm-dd"
+    });
+    $('#test_udf_begin_time').val(current_time);
+    $('#test_udf_end_time').val(current_time);
+
 
     $("#description_train_dataformat").click(function(){
         var popoverEl = $("#description_train_dataformat");
@@ -295,6 +559,7 @@ $(function () {
             showModalDialog("提示", "<div style='text-align:center;'>文件正在上传...</div>",function(){},120,40);
         }
         updateDropdownListTrainModel();
+        updateDropdownListUdfTrainModel();
     }).on('fileuploaderror', function (event, data, msg) {
         var response = data.response;
         console.log("data");
@@ -449,7 +714,10 @@ $(function () {
                 $("#train_start").text("开始训练");
                 $("#train_process").attr("value", "100");
                 updateDropdownListSavedModel();
-                updateDropdownListEvaluateModel()
+                updateDropdownListEvaluateModel();
+                updateDropdownListUdfEvaluateModel();
+                updateDropdownListUdfTestModel();
+
                 // if (d != null) {
                 //     d.close().remove();
                 // }
@@ -669,4 +937,281 @@ $(function () {
         //     }
         // });
     });
+
+    $("#udf_train_start").click(function () {
+        var train_model = $("#udf_train_model_selected").val();
+        var bridge = $("#train_bridge_selected").val();
+        var saved_model = $("#udf_saved_model").val();
+
+        if(train_model == null){
+            showTransientDialog("请选择训练模型");
+            //showDialog("请选择训练模型");
+            return;
+        }
+        if(bridge == null){
+            showTransientDialog("请选择分析桥梁");
+            return;
+        }
+        if(!saved_model){
+            showTransientDialog("请输入保存模型名称");
+            //showDialog("请输入保存模型名称");
+            return;
+        }
+        var begin_time = $("#train_udf_begin_time").val();
+        var end_time = $("#train_udf_end_time").val();
+        if(begin_time >= end_time){
+            showTransientDialog("开始时间必须小于截止时间");
+            return;
+        }
+        var token = $("meta[name='_csrf']").attr("content");
+        var header = $("meta[name='_csrf_header']").attr("content");
+        $(document).ajaxSend(function(e, xhr, options) {
+            xhr.setRequestHeader(header, token);
+        });
+
+        $.ajax({
+            url: "/overweight-analysis/train-udf",
+            type: "POST",
+            async: true,
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({
+                "bridge" : bridge,
+                "trainmodel" : train_model,
+                "savedmodel" : saved_model,
+                "begintime" : new Date(begin_time).format('yyyyMMddHHmmss'),
+                "endtime" : new Date(end_time).format("yyyyMMddHHmmss")
+            }),
+            dataType: "json",
+            beforeSend: function () {
+                $("#udf_train_start").text('训练中...');
+                $("#udf_train_process").removeAttr("value");
+                // var content = '' +
+                //     ' <img alt="loadding" src="/assets/img/loading.gif" /> \
+                //     '
+                // d = dialog({
+                //     content: content
+                // });
+                // d.showModal();
+            },
+            success: function(response) {
+                var data = response.data;
+                var result = data['result'];
+                if (result == 'success') {
+                    //showTransientDialog('训练完成!')
+                    //showModalDialog("提示", "训练完成")
+                    //showAlertDialog('训练完成')
+                    showDialog("训练完成")
+                } else if(result == 'failed') {
+                    showTransientDialog('训练失败！')
+                } else{
+                    showTransientDialog("没有符合条件的数据！")
+                }
+            },
+            complete:function () {
+                $("#udf_train_start").text("开始训练");
+                $("#udf_train_process").attr("value", "100");
+                updateDropdownListSavedModel();
+                updateDropdownListEvaluateModel();
+                updateDropdownListUdfEvaluateModel();
+                updateDropdownListUdfTestModel();
+                // if (d != null) {
+                //     d.close().remove();
+                // }
+            },
+            error: function(response) {
+                //showTransientDialog('调用失败！')
+                alert("提交任务失败");
+            }
+
+        });
+    })
+
+    $("#udf_evaluate_start").click(function () {
+        var evaluate_model = $("#udf_evaluate_model_selected").val();
+        var bridge = $("#evaluate_bridge_selected").val();
+
+        if(evaluate_model == null){
+            showTransientDialog("请选择验证模型");
+            //showDialog("请选择训练模型");
+            return;
+        }
+        if(bridge == null){
+            showTransientDialog("请选择分析桥梁");
+            return;
+        }
+        var begin_time = $("#evaluate_udf_begin_time").val();
+        var end_time = $("#evaluate_udf_end_time").val();
+        if(begin_time >= end_time){
+            showTransientDialog("开始时间必须小于截止时间");
+            return;
+        }
+        var token = $("meta[name='_csrf']").attr("content");
+        var header = $("meta[name='_csrf_header']").attr("content");
+        $(document).ajaxSend(function(e, xhr, options) {
+            xhr.setRequestHeader(header, token);
+        });
+        $.ajax({
+            url: "/overweight-analysis/evaluate-udf",
+            type: "POST",
+            async: true,
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({
+                "bridge" : bridge,
+                "evaluatemodel" : evaluate_model,
+                "begintime" : new Date(begin_time).format('yyyyMMddHHmmss'),
+                "endtime" : new Date(end_time).format("yyyyMMddHHmmss")
+            }),
+            dataType: "json",
+            beforeSend: function () {
+                $("#udf_evaluate_start").text('验证中...');
+                $("#udf_evaluate_process").removeAttr("value");
+            },
+            success: function(response) {
+                var data = response.data;
+                var result = data['result'];
+                if(result == 'success'){
+                    var p = data['precision'];
+                    var r = data['recall'];
+                    var f1 = data['f1'];
+                    var content = "验证完成！<br/> 准确率为"+p+"<br/>召回率为"+r + "</br>f1值为"+f1;
+                    showDialog(content);
+                }else if(result == 'failed'){
+                    showTransientDialog('训练失败！')
+                }else{
+                    showTransientDialog("没有符合条件的数据！")
+                }
+            },
+            complete:function () {
+                $("#udf_evaluate_start").text("开始训练");
+                $("#udf_evaluate_process").attr("value", "100");
+                //updateDropdownListSavedModel();
+                //updateDropdownListEvaluateModel();
+                //updateDropdownListUdfEvaluateModel();
+                //updateDropdownListUdfTestModel();
+            },
+            error: function(response) {
+                alert("提交任务失败");
+            }
+
+        });
+    })
+
+    $("#udf_test_start").click(function () {
+        var test_model = $("#udf_test_model_selected").val();
+        var bridge = $("#test_bridge_selected").val();
+
+        if(test_model == null){
+            showTransientDialog("请选择预测模型");
+            //showDialog("请选择训练模型");
+            return;
+        }
+        if(bridge == null){
+            showTransientDialog("请选择分析桥梁");
+            return;
+        }
+        var begin_time = $("#test_udf_begin_time").val();
+        var end_time = $("#test_udf_end_time").val();
+        if(begin_time >= end_time){
+            showTransientDialog("开始时间必须小于截止时间");
+            return;
+        }
+        var token = $("meta[name='_csrf']").attr("content");
+        var header = $("meta[name='_csrf_header']").attr("content");
+        $(document).ajaxSend(function(e, xhr, options) {
+            xhr.setRequestHeader(header, token);
+        });
+
+        $.ajax({
+            url: "/overweight-analysis/test-udf",
+            type: "POST",
+            async: true,
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({
+                "bridge" : bridge,
+                "testmodel" : test_model,
+                "begintime" : new Date(begin_time).format('yyyyMMddHHmmss'),
+                "endtime" : new Date(end_time).format("yyyyMMddHHmmss")
+            }),
+            dataType: "json",
+            beforeSend: function () {
+                $("#udf_test_start").text('预测中...');
+                $("#udf_test_process").removeAttr("value");
+            },
+            success: function(response) {
+                var data = response.data;
+                var result = data['result'];
+                if (result == 'success') {
+                    showTransientDialog("预测完成");
+                } else if(result == 'failed'){
+                    showTransientDialog('预测失败！');
+                } else{
+                    showTransientDialog('没有符合条件的数据!');
+                }
+
+            },
+            complete:function () {
+                $("#udf_test_start").text("开始预测");
+                $("#udf_test_process").attr("value", "100");
+            },
+            error: function(response) {
+                alert("提交任务失败");
+            }
+
+        });
+    })
+
+    $("#udf_result_overweight").click(function () {
+        var test_model = $("#udf_test_model_selected").val();
+        var bridge = $("#test_bridge_selected").val();
+        var begin_time = $("#test_udf_begin_time").val();
+        var end_time = $("#test_udf_end_time").val();
+
+        if(test_model == null){
+            showTransientDialog("请选择预测模型");
+            //showDialog("请选择训练模型");
+            return;
+        }
+        if(bridge == null){
+            showTransientDialog("请选择分析桥梁");
+            return;
+        }
+        if(begin_time >= end_time){
+            showTransientDialog("开始时间必须小于截止时间");
+            return;
+        }
+
+        var token = $("meta[name='_csrf']").attr("content");
+        var header = $("meta[name='_csrf_header']").attr("content");
+        $(document).ajaxSend(function(e, xhr, options) {
+            xhr.setRequestHeader(header, token);
+        });
+
+        var figure_id = "udf_show_result_figure";
+        $("#" + figure_id).html("<img style='margin-top:120px;' src='assets/img/loading.gif'/>");
+        $(this).button("loading").delay(1000).queue(function () {
+            var param ={
+                "testmodel" : test_model,
+                "bridge" : bridge,
+                "begintime" : new Date(begin_time).format('yyyyMMddHHmmss'),
+                "endtime" : new Date(end_time).format('yyyyMMddHHmmss')
+            }
+            var current_dialog = $(this);
+            getAndshowPredictUDFResult(figure_id, current_dialog, param);
+        })
+    })
+    var stringTime = "2018-10-23 16:13:30";
+    console.log(stringTime.substring(0,14) + "00:00");
+    var timestamp = Date.parse(new Date(stringTime));
+    console.log(timestamp);
+    console.log(timestamp/1000);
+
+    var counttt = new Map();
+    counttt.set("a",1);
+    counttt.set("b",2);
+    console.log(counttt);
+    
+    counttt.forEach(function (value, key, map) {
+        console.log(value);
+        console.log(key);
+    })
 });

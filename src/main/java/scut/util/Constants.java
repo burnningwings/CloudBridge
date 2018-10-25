@@ -28,9 +28,24 @@ public class Constants {
      */
     //上传训练文件路径
     public static String OVERWEIGHT_UPLOAD_TRAIN_FILE_DIR = null;
+    public static String OVERWEIGHT_TRAIN_FILE_MERGED_DIR = null;
+    public static String OVERWEIGHT_EVALUATE_FILE_MERGED_DIR = null;
+    public static String OVERWEIGHT_TEST_FILE_MERGED_DIR = null;
     public static String DAMAGE_UPLOAD_TRAIN_FILE_DIR = null;
+    public static String DAMAGE_TRAIN_FILE_MERGED_DIR = null;
+    public static String DAMAGE_EVALUATE_FILE_MERGED_DIR = null;
+    public static String DAMAGE_TEST_FILE_MERGED_DIR = null;
 
-    //上传测试文件路径
+
+    //自定义条件目标文件路径
+    public static String DAMAGE_TRAINFILE_TARGET_DIR = null;
+    public static String DAMAGE_EVALUATEFILE_TARGET_DIR = null;
+    public static String DAMAGE_TESTFILE_TARGET_DIR = null;
+    public static String OVERWEIGHT_TRAINFILE_TARGET_DIR = null;
+    public static String OVERWEIGHT_EVALUATEFILE_TARGET_DIR = null;
+    public static String OVERWEIGHT_TESTFILE_TARGET_DIR = null;
+
+    //传测试文件路径
     public static String OVERWEIGHT_UPLOAD_TEST_FILE_DIR = null;
     public static String DAMAGE_UPLOAD_TEST_FILE_DIR = null;
 
@@ -50,8 +65,10 @@ public class Constants {
     public static String DAMAGE_EVALUATE_MODEL_PROGRAM = null;
     public static String OVERWEIGHT_EVALUATE_MODEL_PROGRAM = null;
 
-    //测试模型程序
+    //预测程序
     public static String TEST_MODEL_PROGRAM = null;
+    public static String OVERWEIGHT_PREDICT_PROGRAM = null;
+    public static String DAMAGE_PREDICT_PROGRAM = null;
 
     //验证模型结果保存路径
     public static String DAMAGE_EVALUATE_MODEL_RESULT_DIR = null;

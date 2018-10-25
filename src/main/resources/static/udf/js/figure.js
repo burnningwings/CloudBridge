@@ -231,6 +231,280 @@ function showTimeLineChart(figure_id,time_array,series_data,single){
     chart.setOption(option);
 }
 
+// function showPredictUDFResultChart(figure_id, timelist, locationlist, levellist) {
+//     console.log(timelist);
+//     console.log(locationlist);
+//     console.log(levellist);
+//     // var three = [];
+//     // for(var i=0;i<locationlist.length;i++){
+//     //     three.push([timelist[i], locationlist[i],levellist[i]]);
+//     // }
+//     // console.log(three);
+//
+//     //three = [['1',13,20],['2',25,50],['3',16,40],['4',25,60]];
+//     // var two = [];
+//     // for(var i = 0; i < locationlist.length; i++){
+//     //     two[i] = [locationlist[i],levellist[i]];
+//     // }
+//     // console.log(two);
+//     var option = {
+//         title : {
+//             text : '预测结果'
+//         },
+//         tooltip: {},
+//         legend: {
+//             data : ['损伤位置']
+//         },
+//         xAxis :{
+//             data : timelist,
+//             show : true,
+//             name : '时间'
+//             //type : 'value'
+//         },
+//         yAxis : {
+//             type : 'value',
+//             min : 0,
+//             max : 40,
+//             interval : 1,
+//             name : "损伤位置"
+//         },
+//         // visualMAP : [
+//         //     {
+//         //         min : 0,
+//         //         max: 100,
+//         //         splitNumber : 10,
+//         //        // dimension : 1
+//         //
+//         //     }
+//         // ],
+//         dataZoom : [
+//             {
+//                 type : 'slider',
+//                 show : true,
+//                 start : 0,
+//                 end : 30,
+//                 handleSize : 8,
+//                 height : 10
+//             },
+//             {
+//                 type : 'inside',
+//                 start : 0,
+//                 end : 30
+//             },
+//             {
+//                 type : 'slider',
+//                 show : true,
+//                 yAxisIndex : 0,
+//                 filterMode : 'empty',
+//                 width : 10,
+//                 height : '70%',
+//                 handleSize : 8,
+//                 showDataShadow : false,
+//                 left : '93%',
+//                 start : 0,
+//                 end : 30
+//             }
+//         ],
+//         toolbox : {
+//             show : true,
+//             right : '5% ',
+//             feature :{
+//                 dataView:{
+//                     readOnly: true,
+//                     optionToContent: function (opt) {
+//                         var series = opt.series[0].data;
+//                         var index = opt.xAxis[0].data;
+//                         var tdHeads = '<td  style="padding: 0 10px">测量时间</td>'
+//                             +'<td  style="padding: 0 10px">预测损伤位置</td>'
+//                             +'<td  style="padding: 0 10px">预测损伤级别</td>'; //表头
+//                         var table = '<table border="1" style="margin-left:20px;border-collapse:collapse;font-size:14px;text-align:center"><tbody><tr>'+tdHeads+'</tr>';
+//                         var tdBody = '';
+//                         for(var i = 0; i < series.length;i++)
+//                         {
+//                             table += '<tr><td style="padding: 0 10px">'+index[i]+'</td><td style="padding: 0 10px">'+series[i]+'</td><td  style="padding: 0 10px">'+levellist[i]+'</td></tr>';
+//                         }
+//                         table += '</tbody></table>';
+//                         return table;
+//                     }
+//                 },
+//                 saveAsImage: {
+//                     pixelRatio:2,
+//                     show: true
+//                 },
+//                 // magicType: {
+//                 //     show: true,
+//                 //     type: ['scatter','line']
+//                 // },
+//             }
+//
+//         },
+//         series : [{
+//             name : '损伤位置',
+//             type : 'scatter',
+//             data : locationlist
+//             //data : three
+//         }]
+//     };
+//     var chart = echarts.init(document.getElementById(figure_id));
+//     chart.setOption(option);
+// }
+
+function showPredictUDFResultChart(figure_id, timelist, locationlist, levellist) {
+
+    // var databj = [[0,12,30],[1,14,20],[2,15,40]];
+    var three = [];
+    for(var i=0;i<locationlist.length;i++){
+        three.push( [i, locationlist[i],levellist[i] ]);
+    }
+    console.log(three);
+
+    // var itemStyle = {
+    //     normal: {
+    //         opacity: 0.8,
+    //         shadowBlur: 10,
+    //         shadowOffsetX: 0,
+    //         shadowOffsetY: 0,
+    //         shadowColor: 'rgba(0, 0, 0, 0.5)'
+    //     }
+    // };
+    option = {
+        // backgroundColor : '#404a59',
+        // grid : {
+        //     x : '10%',
+        //     x2 : 150,
+        //     y : '18%',
+        //     y2 : '10%'
+        // },
+        title : {
+            text : '预测结果'
+        },
+        tooltip: {},
+        legend: {
+            data : ['损伤位置']
+        },
+        xAxis : {
+            type : 'category',
+            data : timelist,
+            name : '时间',
+            show : true
+            // splitLine : {
+            //     show : false
+            // },
+            // axisLine: {
+            //     lineStyle : {
+            //         color : '#eee'
+            //     }
+            // }
+        },
+        yAxis : {
+            type : 'value',
+            name : '损伤位置',
+            min : 0,
+            max : 40,
+            interval : 1
+            // nameTextStyle: {
+            //     color: '#fff',
+            //     fontSize: 16
+            // },
+            // axisLine: {
+            //     lineStyle: {
+            //         color: '#eee'
+            //     }
+            // },
+            // splitLine: {
+            //     show: false
+            // }
+        },
+        visualMap : [
+            {
+                //left : 'right',
+                right : '0%',
+                bottom : '5%',
+                dimension : 2,
+                min : 0,
+                max : 100,
+                itemHeight : 120,
+                calculable : true,
+                text : ['明暗 : 损伤级别'],
+                textGap : 30
+
+            }
+        ],
+        dataZoom : [
+            {
+                type : 'slider',
+                show : true,
+                start : 0,
+                end : 30,
+                handleSize : 8,
+                height : 10
+            },
+            {
+                type : 'inside',
+                start : 0,
+                end : 30
+            },
+            {
+                type : 'slider',
+                show : true,
+                yAxisIndex : 0,
+                filterMode : 'empty',
+                width : 10,
+                height : '70%',
+                handleSize : 8,
+                showDataShadow : false,
+                left : '90%',
+                start : 0,
+                end : 30
+            }
+        ],
+        toolbox : {
+            show : true,
+            right : '5% ',
+            feature :{
+                dataView:{
+                    readOnly: true,
+                    optionToContent: function (opt) {
+                        var series = opt.series[0].data;
+                        var index = opt.xAxis[0].data;
+                        var tdHeads = '<td  style="padding: 0 10px">测量时间</td>'
+                            +'<td  style="padding: 0 10px">预测损伤位置</td>'
+                            +'<td  style="padding: 0 10px">预测损伤级别</td>'; //表头
+                        var table = '<table border="1" style="margin-left:20px;border-collapse:collapse;font-size:14px;text-align:center"><tbody><tr>'+tdHeads+'</tr>';
+                        var tdBody = '';
+                        for(var i = 0; i < series.length;i++)
+                        {
+                            table += '<tr><td style="padding: 0 10px">'+index[i]+'</td><td style="padding: 0 10px">'+locationlist[i]+'</td><td  style="padding: 0 10px">'+levellist[i]+'</td></tr>';
+                        }
+                        table += '</tbody></table>';
+                        return table;
+                    }
+                },
+                saveAsImage: {
+                    pixelRatio:2,
+                    show: true
+                },
+                // magicType: {
+                //     show: true,
+                //     type: ['scatter','line']
+                // },
+            }
+
+        },
+        series : [
+            {
+                name : '损伤位置',
+                type : 'scatter',
+                //itemStyle : itemStyle,
+                data : three
+            }
+        ]
+    };
+    var chart = echarts.init(document.getElementById(figure_id));
+    chart.setOption(option);
+
+}
+
 function showPredictResultChart(figure_id, predict_list, index_list) {
     console.log('show figure result');
 
@@ -355,6 +629,232 @@ function showPredictResultChart_OVERWEIGHT(figure_id, predict_list, index_list) 
             type : 'scatter',
             data : predict_list
         }]
+    };
+    var chart = echarts.init(document.getElementById(figure_id));
+    chart.setOption(option);
+}
+
+function showPredictUDFResultChart_OVERWEIGHT(figure_id, timelist, overweightlist){
+
+    var count = countNumOverweight(timelist, overweightlist);
+    var countTime = [];
+    var countOverweight = [];
+    count.forEach(function (value, key, map) {
+        countTime.push(key);
+        countOverweight.push(value);
+    })
+    console.log(countTime)
+    console.log(countOverweight);
+
+
+    var option = {
+        title : [{
+            text : '预测结果',
+            left : 'center'
+            },
+            {
+                text : '每个时段超重车辆统计',
+                left : 'center',
+                top : '52%'
+            }],
+        tooltip: {},
+        // legend: {
+        //     data : ['超重情况 0:正常，1:超重']
+        // },
+        grid:[
+            { x : '17%', y : '7%', height : '39%', width : '70%'},
+            { x : '17%', y2 : '5%', height : '39%', width : '70%'}
+        ],
+        xAxis :[
+            {
+            name : '时间',
+            data : timelist,
+            show : true,
+            gridIndex : 0
+            //type : 'value'
+            },
+            {
+                name : '时间',
+                data : countTime,
+                show : true,
+                gridIndex : 1
+            }
+        ],
+        yAxis : [
+            {
+            name : '超重情况 [1:超重，0:正常]',
+            type : 'value',
+            min : 0,
+            max : 1,
+            interval : 1,
+            gridIndex : 0
+            },
+            {
+                name : '超重车数量',
+                type : 'value',
+                gridIndex : 1
+            }
+        ],
+        dataZoom : [
+            {
+                type : 'slider',
+                show : true,
+                start : 0,
+                end : 0.1,
+                handleSize : 8 ,
+                height : 10,
+                xAxisIndex : 0,
+                top : '50%'
+            },
+            {
+                type : 'slider',
+                show : true,
+                yAxisIndex : 0,
+                width : 10,
+                height : '37%',
+                handleSize : 8,
+                showDataShadow : false,
+                left : '90%',
+                start : 0,
+                end : 100
+            },
+            {
+                type : 'inside',
+                start : 0,
+                end : 30,
+               // xAxisIndex: 1,
+               // yAxisIndex: 1
+            },
+            {
+                type : 'slider',
+                show : true,
+                start : 0,
+                end : 100,
+                // handleSize : '50%' ,
+                height : 10,
+                xAxisIndex : 1,
+                top : '98%'
+            },
+            {
+                type : 'inside',
+                start : 0,
+                end : 30,
+                xAxisIndex: 1
+            },
+            {
+                type : 'slider',
+                show : true,
+                yAxisIndex : 0,
+                width : 10,
+                height : '37%',
+                handleSize : 8,
+                showDataShadow : false,
+                left : '90%',
+                top : '55%',
+                start : 0,
+                end : 100
+            }
+            // {
+            //     type : 'slider',
+            //     show : true,
+            //     yAxisIndex : 0,
+            //     filterMode : 'empty',
+            //     width : 10,
+            //     //height : '70%',
+            //     //handleSize : 8,
+            //     showDataShadow : false,
+            //     //left : '90%',
+            //     start : 0,
+            //     end : 100,
+            //     //xAxisIndex : 0,
+            //     yAxisIndex : 0
+            // }
+        ],
+        toolbox : {
+            show : true,
+            right : '10% ',
+            feature :{
+                dataView:{
+                    readOnly: true,
+                    optionToContent: function (opt) {
+                        var series = opt.series[0].data;
+                        var index = opt.xAxis[0].data;
+                        var tdHeads = '<td  style="padding: 0 10px">测量时间</td>'
+                            +'<td  style="padding: 0 10px">预测是否超重</td>'; //表头
+                        var table = '<table border="1" style="margin-left:20px;border-collapse:collapse;font-size:14px;text-align:center"><tbody><tr>'+tdHeads+'</tr>';
+                        var tdBody = '';
+                        for(var i = 0; i < series.length;i++)
+                        {
+                            table += '<tr><td style="padding: 0 10px">'+timelist[i]+'</td><td style="padding: 0 10px">'+series[i]+'</td></tr>';
+                        }
+                        table += '</tbody></table>';
+                        return table;
+                    }
+                },
+                saveAsImage: {
+                    pixelRatio:2,
+                    show: true
+                },
+                restore: {show : true},
+                // magicType: {
+                //     show: true,
+                //     type: ['bar'],
+                //     option : {
+                //         xAxis :{
+                //             type : 'category',
+                //             data : countTime
+                //         },
+                //         yAxis: {
+                //             type : 'value'
+                //         },
+                //         series : [
+                //             {
+                //                 data : countOverweight,
+                //                 type : 'bar'
+                //             }
+                //             ]
+                //     }
+                //     // option: {
+                //     //     bar : {
+                //     //         xAxis :{
+                //     //             type : 'category',
+                //     //             data : countTime
+                //     //         },
+                //     //         yAxis: {
+                //     //             type : 'value'
+                //     //         },
+                //     //         series : [
+                //     //             {
+                //     //                 data : countOverweight,
+                //     //                 type : 'bar'
+                //     //             }
+                //     //         ]
+                //     //     }
+                //     // }
+                //
+                //     // seriesIndex : {
+                //     //     bar : [['a',32],['b',31],['c',12]]
+                //     // }
+                // },
+            }
+
+        },
+        series : [
+            {
+                name : '超重情况',
+                type : 'scatter',
+                data : overweightlist,
+                xAxisIndex : 0,
+                yAxisIndex : 0
+            },
+            {
+                name : '统计',
+                type : 'bar',
+                data : countOverweight,
+                xAxisIndex : 1,
+                yAxisIndex : 1
+            }
+        ]
     };
     var chart = echarts.init(document.getElementById(figure_id));
     chart.setOption(option);

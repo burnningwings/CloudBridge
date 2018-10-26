@@ -183,4 +183,20 @@ public class Home {
         model.addAttribute(Constants.CURRENT_USER, currentUser);
         return "log_option";
     }
+
+    @RequestMapping("/bridge_type")
+    public String bridge_type(Model model) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
+        model.addAttribute(Constants.CURRENT_USER, currentUser);
+        return "bridge_type";
+    }
+
+    @RequestMapping("/watchbox_type")
+    public String watchbox_type(Model model) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
+        model.addAttribute(Constants.CURRENT_USER, currentUser);
+        return "watchbox_type";
+    }
 }

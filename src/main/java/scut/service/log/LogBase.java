@@ -455,5 +455,32 @@ public class LogBase {
         String curTime = sdf.format(new Date());
         return ressql;
     }
+
+    /*
+     *记录增加修改桥梁类型的日志
+     */
+    public static String log_add_bridge_type(
+            String username,
+            String bridge_type_name,String old_bridge_type_name,
+            String operation_type)
+    {
+        String info = "";
+        if (operation_type.equals("create"))
+        {
+            info = "创建新的桥梁类型："+bridge_type_name;
+        }
+        else if (operation_type.equals("update"))
+        {
+            if (!old_bridge_type_name.equals(bridge_type_name))
+            {
+                info = old_bridge_type_name+" 修改为 "+bridge_type_name;
+            }
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String curTime = sdf.format(new Date());
+        String ressql = String.format("insert into log_system(username,log_time,log_info) " +
+                "values('%s','%s','%s')",username,curTime,info);;
+        return ressql;
+    }
 }
 

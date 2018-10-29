@@ -2,7 +2,10 @@ package scut.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.log4j.Logger;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -11,6 +14,7 @@ import scut.base.HttpResponse;
 import scut.domain.Organization;
 import scut.service.OrganizationService;
 import scut.service.SysUserService;
+import scut.service.log.LogBase;
 import scut.util.Constants;
 import scut.util.StringUtil;
 import scut.util.sql.SQLBaseDao;
@@ -31,6 +35,8 @@ public class WatchPoint {
     int maxActive = 100;
     String druid_mysql_url = String.format(Constants.MYSQL_FORMAT, Constants.MYSQL_URL, Constants.MYSQL_USERNAME, Constants.MYSQL_PASSWORD) + "|" + maxActive;
     SQLBaseDao baseDao = SQLDaoFactory.getSQLDaoInstance(druid_mysql_url);
+
+    public static Logger logger = Logger.getLogger(WatchPoint.class);
 
     @Resource
     SysUserService sysUserService;
@@ -228,6 +234,9 @@ public class WatchPoint {
         Double negativeTGain = reqMsg.getDouble("negativeTGain");
         Double positiveTGain = reqMsg.getDouble("positiveTGain");
 
+        Integer old_bridgeId = reqMsg.getInteger("old_bridge_id");
+        Integer old_sectionId = reqMsg.getInteger("old_section_id");
+
         //检查必须参数
         if (operationType == null || StringUtil.isEmpty(watchPointName) || StringUtil.isEmpty(watchPointNumber) || bridgeId == null || sectionId == null) {
             response.setStatus(HttpResponse.FAIL_STATUS);
@@ -273,6 +282,27 @@ public class WatchPoint {
             response.setMsg("操作失败！");
         }
 
+        logger.info(sectionId+","+old_sectionId+","+bridgeId+","+old_bridgeId);
+        LogBase logbase = new LogBase();
+        boolean logoption = logbase.sys_logoption(23);
+        if (logoption) {
+            String bridgename = logbase.findBridgeName(bridgeId);
+            String old_bridgename = "";
+            if (old_bridgeId == null || old_bridgeId == 0) old_bridgename = "";
+            else old_bridgename = logbase.findBridgeName(old_bridgeId);
+            String sectionname = logbase.findSectionName(sectionId);
+            String old_sectionname = "";
+            if (old_sectionId == null || old_sectionId == 0) old_sectionname = "";
+            else old_sectionname = logbase.findSectionName(old_sectionId);
+            logger.info(old_bridgename + "," + bridgename + "," + old_sectionname + "," + sectionname);
+
+            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String log_watchpoint_sql = LogBase.log_watchpoint(reqMsg, userDetails.getUsername(),
+                    bridgename, old_bridgename, sectionname, old_sectionname);
+            logger.info(log_watchpoint_sql);
+            baseDao.updateData(log_watchpoint_sql);
+        }
+
         return response.getHttpResponse();
     }
 
@@ -301,6 +331,20 @@ public class WatchPoint {
                 response.setCode(HttpResponse.FAIL_CODE);
                 response.setMsg("删除测点失败，请检查要删除的测点是否都由您的单位或其下级单位管辖！");
                 return response.getHttpResponse();
+            }
+        }
+
+        if (checkedListStr != null)
+        {
+            LogBase logbase = new LogBase();
+            boolean logoption = logbase.sys_logoption(23);
+            if (logoption)
+            {
+                String watchpointnames = logbase.findWatchPointNameList(checkedListStr);
+                UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                String res = logbase.log_del_watchpoint(userDetails.getUsername(), watchpointnames);
+                baseDao.updateData(res);
+                logger.info(res);
             }
         }
 

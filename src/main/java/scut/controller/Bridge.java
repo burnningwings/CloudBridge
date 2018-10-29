@@ -358,15 +358,20 @@ public class Bridge {
 
         // TODO: 新增桥梁要不要写日志?
         // 新增桥梁的时候 NullPointerException 了
-        if ("update".equals(operationType)) {
-            //桥梁修改日志写进数据库
-            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        LogBase logbase = new LogBase();
+        //桥梁修改日志写进数据库
+        boolean logoption = logbase.sys_logoption(22);
+        if (logoption)
+        {
             String log_bridge_sql = LogBase.log_bridge(userDetails.getUsername(),
                     bridgeName, old_bridgeName, bridgeNumber, old_bridgeNumber,
-                    bridgeTypeId, old_bridgeTypeId, organization, old_organization);
+                    bridgeTypeId, old_bridgeTypeId, organization, old_organization,
+                    operationType);
             logger.info(log_bridge_sql);
             baseDao.updateData(log_bridge_sql);
         }
+
         return response.getHttpResponse();
     }
 
@@ -382,6 +387,17 @@ public class Bridge {
         long userOrganizationId = sysUserService.getUserOrganizationId();
         HttpResponse response = new HttpResponse();
         String checkedListStr = reqMsg.getString("checkedList");
+
+        LogBase logbase = new LogBase();
+        boolean logoption = logbase.sys_logoption(22);
+        if (logoption)
+        {
+            String bridgenames = logbase.findBridgeNameList(checkedListStr);
+            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String res = logbase.log_del_bridge(userDetails.getUsername(), bridgenames);
+            baseDao.updateData(res);
+            logger.info(res);
+        }
 
         if (checkedListStr != null) {
             String sql = String.format("DELETE b \n" +

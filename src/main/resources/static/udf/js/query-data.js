@@ -1,13 +1,25 @@
-
+// var sensor_index = {
+//     "CLBC" : "测量波长",
+//     "YB" : "应变",
+//     "CLSJ" : "测量时间"
+// };
+//重新读取并刷新数据
+function refreshData() {
+    var $watch_point_grid = $("#query_data_grid");
+    $watch_point_grid.data("kendoGrid").dataSource.read();
+    $watch_point_grid.data("kendoGrid").refresh();
+}
 var sensor_map = {
     "加速度传感器": [
         {
-            template:'<input type="checkbox" class="checkbox" name=sensordata-"#: sensor_id #" value="#: sensor_id #" />',
+           // template:'<input type="checkbox" class="checkbox" name=sensordata-"#: sensor_id #" value="#: sensor_id #" />',
+            template:'<input type="checkbox" class="checkbox" name="sensordata" value="#: CLSJ #" />',
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         },
         {
             title: "传感器编号",
+            field: "sensor_number",
             template: '<a href="javascript: void(0);" onclick="sensorFigure(\'#: sensor_id #\',\'#: sensor_number #\')"/>#: sensor_number #</button>',
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
@@ -28,19 +40,21 @@ var sensor_map = {
             attributes:{ class:"text-center" }
         }, {
             title: "修改",
-            template: "<button class='btn btn-success' type='button' id='modify-#: sensor_id #' onclick='modifySensorData()'/>修改</button>",
+            template: "<button class='btn btn-success' type='button' id='modify-#: sensor_id #' onclick='modifyJSDSensorData(\"#: sensor_id #\",\"#: CLSJ #\",\"#: JSD #\",\"#: DY #\")'/>修改</button>",
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         }
     ],
     "索力传感器":[
         {
-            template:'<input type="checkbox" class="checkbox" name=sensordata-"#: sensor_id #" value="#: sensor_id #" />',
+            //template:'<input type="checkbox" class="checkbox" name=sensordata-"#: sensor_id #" value="#: sensor_id #" />',
+            template:'<input type="checkbox" class="checkbox" name="sensordata" value="#: CLSJ #" />',
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         },
         {
             title: "传感器编号",
+            field: "sensor_number",
             template: '<a href="javascript: void(0);" onclick="sensorFigure(\'#: sensor_id #\',\'#: sensor_number #\')"/>#: sensor_number #</button>',
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
@@ -66,19 +80,24 @@ var sensor_map = {
             attributes:{ class:"text-center" }
         }, {
             title: "修改",
-            template: "<button class='btn btn-success' type='button' id='modify-#: sensor_id #' onclick='modifySensorData()'/>修改</button>",
+            template: "<button class='btn btn-success' type='button' id='modify-#: sensor_id #' onclick='modifySLSensorData(\"#: sensor_id #\",\"#: CLSJ #\",\"#: DY #\",\"#: JSD #\",\"#: SL #\")'/>修改</button>",
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         }
     ],
-    "光纤传感器":[
+    "光纤应变传感器":[
         {
-            template:'<input type="checkbox" class="checkbox" name=sensordata-"#: sensor_info #" value="#: sensor_info #" />',
+            // template:'<input type="checkbox" class="checkbox" name=sensordata-"#: sensor_info #" value="#: sensor_info #" />',
+            // headerAttributes:{ style:"text-align:center"},
+            // attributes:{ class:"text-center" }
+            //template:'<input type="checkbox" class="checkbox" name=sensordata-"#: sensor_id #" value="#: sensor_id #" />',
+            template:'<input type="checkbox" class="checkbox" name="sensordata" value="#: CLSJ #" />',
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         },
         {
             title: "传感器编号",
+            field: "sensor_number",
             template: '<a href="javascript: void(0);" onclick="sensorFigure(\'#: sensor_id #\',\'#: sensor_number #\')"/>#: sensor_number #</button>',
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
@@ -99,19 +118,24 @@ var sensor_map = {
             attributes:{ class:"text-center" }
         }, {
             title: "修改",
-            template: "<button class='btn btn-success' type='button' id='modify-#: sensor_id #' onclick='modifySensorData()'/>修改</button>",
+            template: "<button class='btn btn-success' type='button' id='modify-#: sensor_id #' onclick='modifyGXYBSensorData(\"#: sensor_id #\",\"#: CLSJ #\", \"#: CLBC #\", \"#: YB #\", )'/>修改</button>",
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         }
     ],
     "GPS传感器":[
         {
-            template:'<input type="checkbox" class="checkbox" name=sensordata-"#: sensor_info #" value="#: sensor_info #" />',
+            // template:'<input type="checkbox" class="checkbox" name=sensordata-"#: sensor_info #" value="#: sensor_info #" />',
+            // headerAttributes:{ style:"text-align:center"},
+            // attributes:{ class:"text-center" }
+            //template:'<input type="checkbox" class="checkbox" name=sensordata-"#: sensor_id #" value="#: sensor_id #" />',
+            template:'<input type="checkbox" class="checkbox" name="sensordata" value="#: CLSJ #" />',
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         },
         {
             title: "传感器编号",
+            field: "sensor_number",
             template: '<a href="javascript: void(0);" onclick="sensorFigure(\'#: sensor_id #\',\'#: sensor_number #\')"/>#: sensor_number #</button>',
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
@@ -121,7 +145,7 @@ var sensor_map = {
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         }, {
-            field: "CLZBX",
+            field: "QLZBX",
             title: "局部坐标X",
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
@@ -141,7 +165,7 @@ var sensor_map = {
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         }, {
-            field: "CLZBY",
+            field: "QLZBY",
             title: "局部坐标Y",
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
@@ -161,7 +185,7 @@ var sensor_map = {
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         }, {
-            field: "CLZBZ",
+            field: "QLZBZ",
             title: "局部坐标Z",
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
@@ -171,7 +195,7 @@ var sensor_map = {
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         }, {
-            field: "QLWYZ",
+            field: "QLWZ",
             title: "局部位移Z",
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
@@ -182,19 +206,24 @@ var sensor_map = {
             attributes:{ class:"text-center" }
         }, {
             title: "修改",
-            template: "<button class='btn btn-success' type='button' id='modify-#: sensor_id #' onclick='modifySensorData()'/>修改</button>",
+            template: "<button class='btn btn-success' type='button' id='modify-#: sensor_id #' onclick='modifyGPSSensorData(\"#: sensor_id #\",\"#: CLSJ #\",\"#: WXZBX #\", \"#: QLZBX #\", \"#: WXWYX #\", \"#: QLWYX #\", \"#: WXZBY #\", \"#: QLZBY #\", \"#: WXWYY #\", \"#: QLWYY #\", \"#: WXZBZ #\", \"#: QLZBZ #\", \"#: WXWYZ #\", \"#: QLWZ #\")'/>修改</button>",
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         }
     ],
     "正弦传感器":[
         {
-            template:'<input type="checkbox" class="checkbox" name=sensordata-"#: sensor_info #" value="#: sensor_info #" />',
+            // template:'<input type="checkbox" class="checkbox" name=sensordata-"#: sensor_info #" value="#: sensor_info #" />',
+            // headerAttributes:{ style:"text-align:center"},
+            // attributes:{ class:"text-center" }
+            //template:'<input type="checkbox" class="checkbox" name=sensordata-"#: sensor_id #" value="#: sensor_id #" />',
+            template:'<input type="checkbox" class="checkbox" name="sensordata" value="#: CLSJ #" />',
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         },
         {
             title: "传感器编号",
+            field: "sensor_number",
             template: '<a href="javascript: void(0);" onclick="sensorFigure(\'#: sensor_id #\',\'#: sensor_number #\')"/>#: sensor_number #</button>',
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
@@ -225,11 +254,459 @@ var sensor_map = {
             attributes:{ class:"text-center" }
         }, {
             title: "修改",
-            template: "<button class='btn btn-success' type='button' id='modify-#: sensor_id #' onclick='modifySensorData()'/>修改</button>",
+            template: "<button class='btn btn-success' type='button' id='modify-#: sensor_id #' onclick='modifyZXSensorData(\"#: sensor_id #\",\"#: CLSJ #\", \"#: CLYB #\", \"#: XZYB #\", \"#: DZ #\", \"#: CLWD #\" )'/>修改</button>",
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         }
     ]
+}
+
+function modifyJSDSensorData(sensor_id, clsj, jsd, dy) {
+    showJSDSensorDataDialog("修改传感器数据", "update", sensor_id,clsj,jsd,dy);
+}
+
+function modifyGXYBSensorData(sensor_id, clsj, clbc, yb) {
+    showGXYBSensorDataDialog("修改传感器数据", "update", sensor_id, clsj, clbc, yb);
+}
+
+function modifySLSensorData(sensor_id, clsj, dy, jsd, sl){
+    showSLSensorDataDialog("修改传感器数据", "update", sensor_id, clsj, dy, jsd, sl);
+}
+
+function modifyGPSSensorData(sensor_id, clsj, wxzbx, qlzbx, wxwyx, qlwyx, wxzby, qlzby, wxwyy, qlwyy, wxzbz, qlzbz, wxwyz, qlwz){
+    showGPSSensorDataDialog("修改传感器数据", "update", sensor_id, clsj, wxzbx, qlzbx, wxwyx, qlwyx, wxzby, qlzby, wxwyy, qlwyy, wxzbz, qlzbz, wxwyz, qlwz);
+}
+
+function modifyZXSensorData(sensor_id, clsj, clyb, xzyb, dz,clwd) {
+    showZXSensorDataDialog("修改传感器数据", "update", sensor_id, clsj, clyb, xzyb, dz, clwd);
+}
+
+function showJSDSensorDataDialog(title, operation_tpe, sensor_id,clsj,jsd,dy) {
+        var content = '\
+             <div class="form-inline-custom"> \
+                <label class="col-sm-3 control-label">测量时间:</label>\
+            <div class="col-sm-8"> \
+                <input type="text" class="form-control" id="CLSJ" placeholder="请输入测量时间" value="' + clsj + '"> \
+            </div>\
+            <span class="text-danger mt5 fl">*</span>\
+        </div> \
+        <br>\
+        <div class="form-inline-custom">\
+            <label class="col-sm-3 control-label">加速度:</label>\
+            <div class="col-sm-8"> \
+                <input type="text" class="form-control" id="JSD" placeholder="请输入加速度" value="' + jsd + '"> \
+            </div>\
+            <span class="text-danger mt5 fl">*</span>\
+        </div> \
+        <br>\
+        <div class="form-inline-custom">\
+            <label class="col-sm-3 control-label">电压:</label>\
+            <div class="col-sm-8"> \
+                <input type="text" class="form-control" id="DY" placeholder="请输入电压" value="' + dy + '"> \
+            </div>\
+            <span class="text-danger mt5 fl">*</span>\
+        </div> \
+        <br>\
+        ';
+    showModifyModalDialog(title, content, ok_callback, 605, 330);
+    
+    function ok_callback() {
+        var CLSJ = $("#CLSJ").val();
+        var JSD = $("#JSD").val();
+        var DY = $("#DY").val();
+        var sensorid = sensor_id;
+
+        if(!CLSJ || !JSD || !DY){
+            showTransientDialog("必填项不能为空！");
+            return false;
+        }else{
+            var url = '/query-data/updateJSDsensor'
+            var params = {
+                'sensor_id' : sensorid,
+                'CLSJ' : CLSJ,
+                'JSD' : JSD,
+                'DY' : DY
+            }
+            var response = webRequest(url, 'POST', false, params);
+            if (response.status == 0) {
+                refreshData();
+                showTransientDialog("操作成功！");
+                return true;
+            } else {
+                showTransientDialog(response.msg);
+                return false;
+            }
+        }
+    }
+
+}
+
+function showGXYBSensorDataDialog(title, operation_type, sensor_id, clsj, clbc, yb){
+    var content = '\
+             <div class="form-inline-custom"> \
+                <label class="col-sm-3 control-label">测量时间:</label>\
+            <div class="col-sm-8"> \
+                <input type="text" class="form-control" id="CLSJ" placeholder="请输入测量时间" value="' + clsj + '"> \
+            </div>\
+            <span class="text-danger mt5 fl">*</span>\
+        </div> \
+        <br>\
+        <div class="form-inline-custom">\
+            <label class="col-sm-3 control-label">测量波长:</label>\
+            <div class="col-sm-8"> \
+                <input type="text" class="form-control" id="CLBC" placeholder="请输入测量波长" value="' + clbc + '"> \
+            </div>\
+            <span class="text-danger mt5 fl">*</span>\
+        </div> \
+        <br>\
+        <div class="form-inline-custom">\
+            <label class="col-sm-3 control-label">应变:</label>\
+            <div class="col-sm-8"> \
+                <input type="text" class="form-control" id="YB" placeholder="请输入应变" value="' + yb + '"> \
+            </div>\
+            <span class="text-danger mt5 fl">*</span>\
+        </div> \
+        <br>\
+        ';
+    showModifyModalDialog(title, content, ok_callback, 605, 330);
+
+    function ok_callback() {
+        var CLSJ = $("#CLSJ").val();
+        var CLBC = $("#CLBC").val();
+        var YB = $("#YB").val();
+        var sensorid = sensor_id;
+
+        if(!CLSJ || !CLBC || !YB){
+            showTransientDialog("必填项不能为空！");
+            return false;
+        }else{
+            var url = '/query-data/updateGXYBsensor'
+            var params = {
+                'sensor_id' : sensorid,
+                'CLSJ' : CLSJ,
+                'CLBC' : CLBC,
+                'YB' : YB
+            }
+            var response = webRequest(url, 'POST', false, params);
+            if (response.status == 0) {
+                refreshData();
+                showTransientDialog("操作成功！");
+                return true;
+            } else {
+                showTransientDialog(response.msg);
+                return false;
+            }
+        }
+    }
+
+}
+
+function showSLSensorDataDialog(title, operation_type, sensor_id, clsj, dy, jsd, sl){
+    var content = '\
+             <div class="form-inline-custom"> \
+                <label class="col-sm-3 control-label">测量时间:</label>\
+            <div class="col-sm-8"> \
+                <input type="text" class="form-control" id="CLSJ" placeholder="请输入测量时间" value="' + clsj + '"> \
+            </div>\
+            <span class="text-danger mt5 fl">*</span>\
+        </div> \
+        <br>\
+        <div class="form-inline-custom">\
+            <label class="col-sm-3 control-label">电压:</label>\
+            <div class="col-sm-8"> \
+                <input type="text" class="form-control" id="DY" placeholder="请输入电压" value="' + dy + '"> \
+            </div>\
+            <span class="text-danger mt5 fl">*</span>\
+        </div> \
+        <br>\
+        <div class="form-inline-custom">\
+            <label class="col-sm-3 control-label">加速度:</label>\
+            <div class="col-sm-8"> \
+                <input type="text" class="form-control" id="JSD" placeholder="请输入加速度" value="' + jsd + '"> \
+            </div>\
+            <span class="text-danger mt5 fl">*</span>\
+        </div> \
+        <br>\
+        <div class="form-inline-custom">\
+            <label class="col-sm-3 control-label">索力:</label>\
+            <div class="col-sm-8"> \
+                <input type="text" class="form-control" id="SL" placeholder="请输入索力" value="' + sl + '"> \
+            </div>\
+            <span class="text-danger mt5 fl">*</span>\
+        </div> \
+        <br>\
+        ';
+    showModifyModalDialog(title, content, ok_callback, 605, 330);
+
+    function ok_callback() {
+        var CLSJ = $("#CLSJ").val();
+        var DY = $("#DY").val();
+        var JSD = $("#JSD").val();
+        var SL = $("#SL").val();
+        var sensorid = sensor_id;
+
+        if(!CLSJ || !DY || !JSD || !SL){
+            showTransientDialog("必填项不能为空！");
+            return false;
+        }else{
+            var url = '/query-data/updateSLsensor'
+            var params = {
+                'sensor_id' : sensorid,
+                'CLSJ' : CLSJ,
+                'DY' : DY,
+                'JSD' : JSD,
+                'SL' : SL
+            }
+            var response = webRequest(url, 'POST', false, params);
+            if (response.status == 0) {
+                refreshData();
+                showTransientDialog("操作成功！");
+                return true;
+            } else {
+                showTransientDialog(response.msg);
+                return false;
+            }
+        }
+    }
+}
+
+function showGPSSensorDataDialog(title, operation_type, sensor_id, clsj, wxzbx, qlzbx, wxwyx, qlwyx, wxzby, qlzby, wxwyy, qlwyy, wxzbz, qlzbz, wxwyz, qlwz)
+{
+    var content = '\
+             <div class="form-inline-custom"> \
+                <label class="col-sm-3 control-label">测量时间:</label>\
+            <div class="col-sm-8"> \
+                <input type="text" class="form-control" id="CLSJ" placeholder="请输入测量时间" value="' + clsj + '"> \
+            </div>\
+            <span class="text-danger mt5 fl">*</span>\
+        </div> \
+        <br>\
+        <div class="form-inline-custom">\
+            <label class="col-sm-3 control-label">卫星坐标X:</label>\
+            <div class="col-sm-8"> \
+                <input type="text" class="form-control" id="WXZBX" placeholder="请输入卫星坐标X" value="' + wxzbx + '"> \
+            </div>\
+            <span class="text-danger mt5 fl">*</span>\
+        </div> \
+        <br>\
+        <div class="form-inline-custom">\
+            <label class="col-sm-3 control-label">局部坐标X:</label>\
+            <div class="col-sm-8"> \
+                <input type="text" class="form-control" id="QLZBX" placeholder="请输入局部坐标X" value="' + qlzbx + '"> \
+            </div>\
+            <span class="text-danger mt5 fl">*</span>\
+        </div> \
+        <br>\
+        <div class="form-inline-custom">\
+            <label class="col-sm-3 control-label">卫星位移X:</label>\
+            <div class="col-sm-8"> \
+                <input type="text" class="form-control" id="WXWYX" placeholder="请输入卫星位移X" value="' + wxwyx + '"> \
+            </div>\
+            <span class="text-danger mt5 fl">*</span>\
+        </div> \
+        <br>\
+        <div class="form-inline-custom">\
+            <label class="col-sm-3 control-label">局部位移X:</label>\
+            <div class="col-sm-8"> \
+                <input type="text" class="form-control" id="QLWYX" placeholder="请输入局部位移X" value="' + qlwyx + '"> \
+            </div>\
+            <span class="text-danger mt5 fl">*</span>\
+        </div> \
+        <br>\
+        <div class="form-inline-custom">\
+            <label class="col-sm-3 control-label">卫星坐标Y:</label>\
+            <div class="col-sm-8"> \
+                <input type="text" class="form-control" id="WXZBY" placeholder="请输入卫星坐标Y" value="' + wxzby + '"> \
+            </div>\
+            <span class="text-danger mt5 fl">*</span>\
+        </div> \
+        <br>\
+        <div class="form-inline-custom">\
+            <label class="col-sm-3 control-label">局部坐标Y:</label>\
+            <div class="col-sm-8"> \
+                <input type="text" class="form-control" id="QLZBY" placeholder="请输入局部坐标Y" value="' + qlzby + '"> \
+            </div>\
+            <span class="text-danger mt5 fl">*</span>\
+        </div> \
+        <br>\
+        <div class="form-inline-custom">\
+            <label class="col-sm-3 control-label">卫星位移Y:</label>\
+            <div class="col-sm-8"> \
+                <input type="text" class="form-control" id="WXWYY" placeholder="请输入卫星位移Y" value="' + wxwyy + '"> \
+            </div>\
+            <span class="text-danger mt5 fl">*</span>\
+        </div> \
+        <br>\
+        <div class="form-inline-custom">\
+            <label class="col-sm-3 control-label">局部位移Y:</label>\
+            <div class="col-sm-8"> \
+                <input type="text" class="form-control" id="QLWYY" placeholder="请输入局部位移Y" value="' + qlwyy + '"> \
+            </div>\
+            <span class="text-danger mt5 fl">*</span>\
+        </div> \
+        <br>\
+        <div class="form-inline-custom">\
+            <label class="col-sm-3 control-label">卫星坐标Z:</label>\
+            <div class="col-sm-8"> \
+                <input type="text" class="form-control" id="WXZBZ" placeholder="请输入卫星坐标Z" value="' + wxzbz + '"> \
+            </div>\
+            <span class="text-danger mt5 fl">*</span>\
+        </div> \
+        <br>\
+        <div class="form-inline-custom">\
+            <label class="col-sm-3 control-label">局部坐标Z:</label>\
+            <div class="col-sm-8"> \
+                <input type="text" class="form-control" id="QLZBZ" placeholder="请输入局部坐标Z" value="' + qlzbz + '"> \
+            </div>\
+            <span class="text-danger mt5 fl">*</span>\
+        </div> \
+        <br>\
+        <div class="form-inline-custom">\
+            <label class="col-sm-3 control-label">卫星位移Z:</label>\
+            <div class="col-sm-8"> \
+                <input type="text" class="form-control" id="WXWYZ" placeholder="请输入卫星位移Z" value="' + wxwyz + '"> \
+            </div>\
+            <span class="text-danger mt5 fl">*</span>\
+        </div> \
+        <br>\
+        <div class="form-inline-custom">\
+            <label class="col-sm-3 control-label">局部位移Z:</label>\
+            <div class="col-sm-8"> \
+                <input type="text" class="form-control" id="QLWZ" placeholder="请输入局部位移Z" value="' + qlwz + '"> \
+            </div>\
+            <span class="text-danger mt5 fl">*</span>\
+        </div> \
+        <br>\
+        ';
+    showModifyModalDialog(title, content, ok_callback, 605, 330);
+
+    function ok_callback() {
+        var CLSJ = $("#CLSJ").val();
+        var WXZBX = $("#WXZBX").val();
+        var QLZBX = $("#QLZBX").val();
+        var WXWYX = $("#WXWYX").val();
+        var QLWYX = $("#QLWYX").val();
+        var WXZBY = $("#WXZBY").val();
+        var QLZBY = $("#QLZBY").val();
+        var WXWYY = $("#WXWYY").val();
+        var QLWYY = $("#QLWYY").val();
+        var WXZBZ = $("#WXZBZ").val();
+        var QLZBZ = $("#QLZBZ").val();
+        var WXWYZ = $("#WXWYZ").val();
+        var QLWZ = $("#QLWZ").val();
+        var sensorid = sensor_id;
+
+        if(!CLSJ || !WXZBX || !QLZBX || !WXWYX || !QLWYX || !WXZBY || !QLZBY || !WXWYY || !QLWYY || !WXZBZ || !QLZBZ || !WXWYZ || !QLWZ){
+            showTransientDialog("必填项不能为空！");
+            return false;
+        }else{
+            var url = '/query-data/updateGPSsensor'
+            var params = {
+                'sensor_id' : sensorid,
+                'CLSJ' : CLSJ,
+                'WXZBX' : WXZBX,
+                'QLZBX' : QLZBX,
+                'WXWYX' : WXWYX,
+                'QLWYX' : QLWYX,
+                'WXZBY' : WXZBY,
+                'QLZBY' : QLZBY,
+                'WXWYY' : WXWYY,
+                'QLWYY' : QLWYY,
+                'WXZBZ' : WXZBZ,
+                'QLZBZ' : QLZBZ,
+                'WXWYZ' : WXWYZ,
+                'QLWZ' : QLWZ,
+            }
+            var response = webRequest(url, 'POST', false, params);
+            if (response.status == 0) {
+                refreshData();
+                showTransientDialog("操作成功！");
+                return true;
+            } else {
+                showTransientDialog(response.msg);
+                return false;
+            }
+        }
+    }
+}
+
+function showZXSensorDataDialog(title, operation_type, sensor_id, clsj, clyb, xzyb, dz, clwd){
+    var content = '\
+             <div class="form-inline-custom"> \
+                <label class="col-sm-3 control-label">测量时间:</label>\
+            <div class="col-sm-8"> \
+                <input type="text" class="form-control" id="CLSJ" placeholder="请输入测量时间" value="' + clsj + '"> \
+            </div>\
+            <span class="text-danger mt5 fl">*</span>\
+        </div> \
+        <br>\
+        <div class="form-inline-custom">\
+            <label class="col-sm-3 control-label">测量值:</label>\
+            <div class="col-sm-8"> \
+                <input type="text" class="form-control" id="CLYB" placeholder="请输入测量值" value="' + clyb + '"> \
+            </div>\
+            <span class="text-danger mt5 fl">*</span>\
+        </div> \
+        <br>\
+        <div class="form-inline-custom">\
+            <label class="col-sm-3 control-label">修正后的值:</label>\
+            <div class="col-sm-8"> \
+                <input type="text" class="form-control" id="XZYB" placeholder="请输入修正后的值" value="' + xzyb + '"> \
+            </div>\
+            <span class="text-danger mt5 fl">*</span>\
+        </div> \
+        <br>\
+        <div class="form-inline-custom">\
+            <label class="col-sm-3 control-label">电阻:</label>\
+            <div class="col-sm-8"> \
+                <input type="text" class="form-control" id="DZ" placeholder="请输入电阻" value="' + dz + '"> \
+            </div>\
+            <span class="text-danger mt5 fl">*</span>\
+        </div> \
+        <br>\
+        <div class="form-inline-custom">\
+            <label class="col-sm-3 control-label">测量温度:</label>\
+            <div class="col-sm-8"> \
+                <input type="text" class="form-control" id="CLWD" placeholder="请输入测量温度" value="' + clwd + '"> \
+            </div>\
+            <span class="text-danger mt5 fl">*</span>\
+        </div> \
+        <br>\
+        ';
+    showModifyModalDialog(title, content, ok_callback, 605, 330);
+
+    function ok_callback() {
+        var CLSJ = $("#CLSJ").val();
+        var CLYB = $("#CLYB").val();
+        var XZYB = $("#XZYB").val();
+        var DZ = $("#DZ").val();
+        var CLWD = $("#CLWD").val();
+        var sensorid = sensor_id;
+
+        if(!CLSJ || !CLYB || !XZYB || !DZ || !CLWD){
+            showTransientDialog("必填项不能为空！");
+            return false;
+        }else{
+            var url = '/query-data/updateZXsensor'
+            var params = {
+                'sensor_id' : sensorid,
+                'CLSJ' : CLSJ,
+                'CLYB' : CLYB,
+                'XZYB' : XZYB,
+                'DZ' : DZ,
+                'CLWD' : CLWD
+            }
+            var response = webRequest(url, 'POST', false, params);
+            if (response.status == 0) {
+                refreshData();
+                showTransientDialog("操作成功！");
+                return true;
+            } else {
+                showTransientDialog(response.msg);
+                return false;
+            }
+        }
+    }
 }
 
 function getAndshowSensorFigure(figure_id,sensor_id_array,sensor_number_array,current_dialog,params,single){
@@ -461,6 +938,7 @@ function updateGrid(bridge_id,box_id,sensor_info){
     var sensor_info_list = sensor_info.split(" - ");
     console.log(sensor_info);
     var table_columns = sensor_map[sensor_info_list[2]];
+    console.log("啊哈哈哈", table_columns);
     var dataSource = new kendo.data.DataSource({
         transport: {
             read: {
@@ -470,7 +948,8 @@ function updateGrid(bridge_id,box_id,sensor_info){
                 contentType: "application/json; charset=utf-8"
             },
             parameterMap: function (options, operation) {
-                console.log("operaton:"+operation)
+                console.log("operaton:", operation)
+                console.log("options:", options)
                 if (operation == "read") {
                     var next = true;
                     if(options.skip==0){
@@ -478,12 +957,14 @@ function updateGrid(bridge_id,box_id,sensor_info){
                         current_row_key = "";
                         skip = 0;
                     }
+                    console.log("看看skip:",skip);
                     if(options.skip >= skip){
                         // 下一页
                         // 返回后start_row_key成为当前第一行row_key
                         row_key = next_row_key;
                     }else{
                         // 上一页
+
                         row_key = current_row_key;
                         next = false;
                     }
@@ -533,10 +1014,16 @@ function updateGrid(bridge_id,box_id,sensor_info){
         serverPaging: true
     });
 
+
     $("#query_data_grid").kendoGrid({
+        // toolbar : ["excel"],
+        excel : {
+            fileName : "data.xlsx"
+        },
         dataSource: dataSource,
         pageable: {
             // pageSizes: true,
+            refresh : true,
             pageSizes: [5,10,25,50,100],
             buttonCount: 1, // 限制其不能点击对应页
             messages: {
@@ -552,14 +1039,21 @@ function updateGrid(bridge_id,box_id,sensor_info){
                 refresh: "刷新"
             }
         },
+        // refresh: true,
+        // resizeable: true,
         columns: table_columns
     });
     $("a.k-pager-last").addClass("k-state-disabled");
+
+    // $("#query_data_grid").data('kendoGrid').dataSource.read();
+    // $("#query_data_grid").data('kendoGrid').refresh();
 }
 
-function modifySensorData(watch_box_id,bridge_id,watch_box_type_id){
-    // showWatchBoxDialog("修改测控箱信息","update",watch_box_id,bridge_id,watch_box_type_id)
-}
+// function modifySensorData(watch_box_id,bridge_id,watch_box_type_id){
+//     // showWatchBoxDialog("修改测控箱信息","update",watch_box_id,bridge_id,watch_box_type_id)
+// }function modifySensorData(watch_box_id,bridge_id,watch_box_type_id){
+// //     // showWatchBoxDialog("修改测控箱信息","update",watch_box_id,bridge_id,watch_box_type_id)
+// // }
 
 function showModalDialog(title,custom_content,ok_callback){
     var d = dialog({
@@ -571,6 +1065,26 @@ function showModalDialog(title,custom_content,ok_callback){
         }
     });
     d.width(620).height(400).showModal();
+    $(".ui-dialog-content").mCustomScrollbar({
+        axis:"y",
+        advanced:{autoExpandHorizontalScroll:true},
+        theme:"minimal-dark"
+    });
+}
+
+function showModifyModalDialog(title,custom_content,ok_callback){
+    var d = dialog({
+        title: title,
+        content: custom_content,
+        okValue: '确定',
+        ok: function () {
+            return ok_callback();
+        },
+        cancelValue: '取消',
+        cancel: function() {
+        }
+    });
+    d.width(605).height(300).showModal();
     $(".ui-dialog-content").mCustomScrollbar({
         axis:"y",
         advanced:{autoExpandHorizontalScroll:true},
@@ -712,6 +1226,14 @@ $(function () {
 
     // 点击查询
     $("#query_grid_btn").click(function(){
+
+        if(!$("#query_data_grid").html()){
+            console.log("空")
+        }else{
+            console.log("有");
+            $("#query_data_grid").empty();
+        }
+
         $(this).button('loading').delay(1000).queue(function() {
             var bridge_id = $("#bridge_menu").val();
             var box_id = $("#watch_box_menu").val();
@@ -724,6 +1246,57 @@ $(function () {
             $(this).button('reset').dequeue();
         });
     });
+
+    $("#add_data").click(function () {
+        var sensor_info = $("#sensor_menu").val();
+        if(sensor_info==null || sensor_info=="") return;
+        var sensor_info_list = sensor_info.split(" - ");
+        console.log(sensor_info);
+        var sensor_id = sensor_info_list[0];
+        var sensor_type = sensor_info_list[2];
+        switch (sensor_type)
+        {
+            case "加速度传感器" : showJSDSensorDataDialog("增加传感器数据", "create", sensor_id,"","",""); break;
+            case "光纤应变传感器" : showGXYBSensorDataDialog("增加传感器数据","create",sensor_id,"","",""); break;
+            case "正弦传感器" : showZXSensorDataDialog("增加传感器数据", "create",sensor_id, "","","","",""); break;
+            case "索力传感器" : showSLSensorDataDialog("增加传感器数据", "create", sensor_id, "", "", "", ""); break;
+            case "GPS传感器" : showGPSSensorDataDialog("增加传感器数据", "create", sensor_id, "","","","","","","","","","","","",""); break;
+            default: break;
+        }
+    })
+
+    $("#delete_data").click(function () {
+        var sensor_info = $("#sensor_menu").val();
+        if(sensor_info==null || sensor_info=="") return;
+        var sensor_info_list = sensor_info.split(" - ");
+        var sensor_id = sensor_info_list[0];
+        var checked_list = [];
+        $('[name=sensordata]').each(function (index, ele) {
+            if ($(ele).prop("checked")) {
+                checked_list.push($(ele).val())
+            }
+        });
+        var checked_len = checked_list.length;
+        if (checked_len <= 0) {
+            showTransientDialog("请选择要删除的记录！");
+        } else {
+            showAlertDialog("确定删除 " + checked_len + " 条记录？", function () {
+                var url = '/query-data/delete';
+                var params = {
+                    'sensor_id' : sensor_id,
+                    'checkedList': checked_list.join(",")
+                };
+                var response = webRequest(url, 'POST', false, params);
+                if (response != null && response.status == 0) {
+                    refreshData();
+                    showTransientDialog("删除 " + checked_len + " 条记录成功！");
+                } else {
+                    showTransientDialog(response.msg);
+                }
+            });
+        }
+    })
+
     // end
 
     // begin
@@ -890,5 +1463,20 @@ $(function () {
         }
     });
     // end
+
+    $("#export_xml").click(function () {
+        var grid = $("#query_data_grid").data("kendoGrid");
+        grid.saveAsExcel();
+        // var data = grid.dataSource.data()
+        // console.log(data)
+    })
+
+    $("#export_csv").click(function () {
+        var grid = $("#query_data_grid").data("kendoGrid");
+        var csv = toCSV("query_data_grid");
+        console.log(csv);
+        window.open("data:text/csv;charset=utf-8," + csv);
+    })
+
 });
 

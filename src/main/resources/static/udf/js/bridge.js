@@ -177,7 +177,7 @@ function showBridgeDialog(title, operation_type, bridge_id) {
         </div> \
         <br>\
         <div class="form-inline-custom">\
-            <label class="col-sm-3 control-label">桥梁类型:</label>  \
+            <label class="col-sm-3 control-label">桥梁类型: </label>  \
             <div class="col-sm-8">\
                 <select class="form-control" id="bridge_type_sel">' + bridge_type_options + '</select>  \
             </div>\

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http:// www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
     <meta name="_csrf" th:content="${_csrf.token}"/>
@@ -26,35 +26,29 @@
 <body class="cm-no-transition cm-1-navbar">
 
 <div id="cm-menu"
-     th:replace="base/menu::menu (one,active,two_2,three_1,three_2,four_1,four_2,four_3,four_4,five_1,five_2,six_1,six_2,six_3,seven_1,seven_2,seven_3,seven_4)"></div>
-<div th:replace="base/header::header"></div>
+     th:include="base/menu::menu (one,two_1,two_2,three_1,three_2,four_1,four_2,four_3,four_4,five_1,five_2,six_1,six_two,six_3,seven_1,active,seven_3,seven_4)"></div>
+<div th:include="base/header"></div>
 
 <div id="global">
     <div class="container-fluid">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title">
-                    截面列表
+                    日志选项
                 </h3>
             </div>
             <div class="panel-body">
-                <select class="selectpicker" id="dropdownMenu1" th:attr="init-value=${bridge_id}"></select>
-                <br><br>
-                <div id="section-grid"></div>
+                <div id="option-grid"></div>
                 <div style="float:left;margin: 20px 0px 0px 0px">
-                    <button id="add_section" type="button" style="margin:.0em 1em 0em 0em"
-                            class="btn btn-l btn-primary">
-                        增加
-                    </button>
-                    <button id="delete_section" type="button" style="margin:0em 1em 0em 0em"
+                    <button id="save_option" type="button" style="margin:0em 1em 0em 0em"
                             class="btn btn-l btn-danger">
-                        删除
+                        保存
                     </button>
                 </div>
             </div>
         </div>
     </div>
-    <div th:replace="base/footer::footer"></div>
+    <div th:include="base/footer"></div>
 </div>
 <script src="assets/js/lib/jquery-2.1.3.min.js"></script>
 <script src="assets/js/jquery.mousewheel.min.js"></script>
@@ -73,6 +67,6 @@
 <!-- table相关 -->
 <script src="assets/js/kendo.web.min.js"></script>
 <script src="udf/js/common.js"></script>
-<script src="udf/js/section.js"></script>
+<script src="udf/js/log_option.js"></script>
 </body>
 </html>

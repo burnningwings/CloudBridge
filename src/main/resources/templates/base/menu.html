@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <body>
-<div th:fragment="menu (one,two_1,two_2,three_1,three_2,four_1,four_2,four_3,four_4,five_1,five_2,six_1,six_2,six_3,seven_1,seven_2)"
+<div th:fragment="menu (one,two_1,two_2,three_1,three_2,four_1,four_2,four_3,four_4,five_1,five_2,six_1,six_2,six_3,seven_1,seven_2,seven_3,seven_4)"
      id="cm-menu">
     <nav class="cm-navbar cm-navbar-primary">
         <div class="cm-flex"><a href="/" class="cm-logo"></a></div>
@@ -48,15 +48,17 @@
                         <a class="sf-file-text">日志管理<span class="caret"></span></a>
                         <ul>
                             <li th:class="${six_1}"><a href="ico-sf.html">阈值警告日志</a></li>
-                            <li th:class="${six_2}"><a href="ico-md.html">系统操作日志</a></li>
+                            <li th:class="${six_2}"><a href="log_system.html">系统操作日志</a></li>
                             <li th:class="${six_3}"><a href="log_bridge.html">桥梁修改日志</a></li>
                         </ul>
                     </li>
-                    <li class="cm-submenu" th:classappend="${seven_1=='active' or seven_2=='active'}? pre-open : ''">
+                    <li class="cm-submenu" th:classappend="${seven_1=='active' or seven_2=='active' or seven_3=='active' or seven_4=='active'}? pre-open : ''">
                         <a class="sf-cogs">系统管理<span class="caret"></span></a>
                         <ul>
                             <li th:class="${seven_1}"><a href="ico-sf.html">警告级别</a></li>
-                            <li th:class="${seven_2}"><a href="ico-md.html">日志选项</a></li>
+                            <li th:class="${seven_2}"><a href="log_option.html">日志选项</a></li>
+                            <li th:class="${seven_3}"><a href="bridge_type.html">桥梁类型</a></li>
+                            <li th:class="${seven_4}"><a href="log_option.html">测控箱类型</a></li>
                         </ul>
                     </li>
                     <li><a th:href="@{/logout}" class="sf-lock-open">退出</a></li>

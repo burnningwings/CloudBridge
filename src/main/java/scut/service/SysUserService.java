@@ -39,6 +39,12 @@ public class SysUserService {
         return organizationService.getOrganizationIds(getUserInferiorOrganizations());
     }
 
+    public Set<Long> getUserSelfAndInferiorOrganizationIds() {
+        Set<Long> s = getUserInferiorOrganizationIds();
+        s.add(getUserOrganizationId());
+        return s;
+    }
+
     public boolean userInferiorOrganizationContains(Long organizationId) {
         return getUserInferiorOrganizationIds().contains(organizationId);
     }

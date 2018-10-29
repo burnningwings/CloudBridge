@@ -256,16 +256,30 @@ function showSensorDialog(title, operation_type, sensor_id, bridge_id, section_i
         //必须参数
         var bridge_id = $('#bridge_sel').val();
         var section_id = $('#section_sel').val();
-        var watch_point_name = $('#watch_point_name').val();
-        var watch_point_number = $('#watch_point_number').val();
-        //非必须参数
+        var watch_point_id = $('#watch_point_sel').val();
+        var watch_box_id = $('#watch_box_sel').val();
+        var sensor_name = $('#sensor_name').val();
+        var sensor_number = $('#sensor_number').val();
+        var sensor_type_id = $('#sensor_type_sel').val();
 
-        if (!watch_point_name || !watch_point_number || !bridge_id || !section_id) {
+
+        if (!bridge_id || !section_id || !watch_point_id || !watch_box_id) {
             showTransientDialog("必填项不能为空！");
             return false;
         } else {
             var url = '/sensor/create-or-update';
-            var params = {};
+            var params = {
+                operationType: operation_type,
+                bridgeId: bridge_id,
+                sectionId: section_id,
+                watchPointId: watch_point_id,
+                watchBoxId: watch_box_id,
+                sensorName: sensor_name,
+                sensorNumber: sensor_number,
+                sensorTypeId: sensor_type_id
+            };
+            console.log(params);
+
             var response = webRequest(url, 'POST', false, params);
             if (response != null && response.status == 0) {
                 refreshData();

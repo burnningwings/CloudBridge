@@ -38,7 +38,7 @@
                         </h3>
                     </div>
                     <div class="panel-body">
-                        <select class="selectpicker" id="bridge_menu" onchange="selectBridgeOnchange(this)"></select>
+                        <select class="selectpicker" id="bridge_menu" onchange="selectBridgeOnchange(this)" th:attr="init-value=${bridge_id}"></select>
                         <br>
                         <br>
                         <div id="watch-box-grid"></div>

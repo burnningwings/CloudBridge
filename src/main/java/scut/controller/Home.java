@@ -65,10 +65,11 @@ public class Home {
     }
 
     @RequestMapping("/watch-box")
-    public String watchBox(Model model) {
+    public String watchBox(Model model, Integer bridgeId) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
         model.addAttribute(Constants.CURRENT_USER, currentUser);
+        model.addAttribute("bridge_id", bridgeId == null ? 0 : bridgeId);
         return "watch-box";
     }
 

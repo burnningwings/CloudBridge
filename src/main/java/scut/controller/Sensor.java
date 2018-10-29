@@ -2,6 +2,7 @@ package scut.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -9,11 +10,13 @@ import org.springframework.web.bind.annotation.RestController;
 import scut.base.HttpResponse;
 import scut.service.SysUserService;
 import scut.util.Constants;
+import scut.util.StringUtil;
 import scut.util.sql.SQLBaseDao;
 import scut.util.sql.SQLDaoFactory;
 
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by riverluo on 2018/5/13.
@@ -368,9 +371,9 @@ public class Sensor {
                             "	gs.QLJBZBXYDWD,\n" +
                             "	gs.QLJBZBXYDJD,\n" +
                             "	gs.QLJBZBXYDGC,\n" +
-                            "	gs.CGQZBX,\n" +
-                            "	gs.CGQZBY,\n" +
-                            "	gs.CGQZBZ,\n" +
+                            "	gs.CSZBX,\n" +
+                            "	gs.CSZBY,\n" +
+                            "	gs.CSZBZ,\n" +
                             "	gs.CGQJD,\n" +
                             "	gs.CSSJ,\n" +
                             "	gs.CGQCDBH,\n" +
@@ -379,7 +382,7 @@ public class Sensor {
                             "	gps_sensor_info AS gs\n" +
                             "WHERE\n" +
                             "	gs.sensor_id = %s", sensorId);
-                    fields = new String[]{"QLJBZBXYDWD", "QLJBZBXYDJD", "QLJBZBXYDGC", "CGQZBX", "CGQZBY", "CGQZBZ", "CGQJD",
+                    fields = new String[]{"QLJBZBXYDWD", "QLJBZBXYDJD", "QLJBZBXYDGC", "CSZBX", "CSZBY", "CSZBZ", "CGQJD",
                             "CSSJ", "CGQCDBH", "sensor_id"};
                     break;
                 case 4:  //加速度传感器
@@ -436,5 +439,60 @@ public class Sensor {
             }
         }
         return fullInfo;
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @RequestMapping(value = "/sensor/create-or-update", method = RequestMethod.POST, produces = "application/json")
+    public JSONObject createOrUpdate(@RequestBody JSONObject reqMsg) {
+        HttpResponse response = new HttpResponse();
+//        Integer sectionId = reqMsg.getInteger("sectionId");
+//        Integer bridgeId = reqMsg.getInteger("bridgeId");
+//        String operationType = reqMsg.getString("operationType");
+//        String sectionName = reqMsg.getString("sectionName");
+//        String sectionNumber = reqMsg.getString("sectionNumber");
+//        String position = reqMsg.getString("position");
+//        String description = reqMsg.getString("description");
+//
+//        //检查必须参数
+//        if (operationType == null || StringUtil.isEmpty(sectionName) || StringUtil.isEmpty(sectionNumber) || bridgeId == null) {
+//            response.setStatus(HttpResponse.FAIL_STATUS);
+//            response.setCode(HttpResponse.FAIL_CODE);
+//            response.setMsg("参数错误！");
+//            return response.getHttpResponse();
+//        }
+//
+////        long bridgeDirectOrganizationId = organizationService.getBridgeDirectOrganizationId(bridgeId.longValue());
+////        if (!sysUserService.getUserOrganizationId().equals(bridgeDirectOrganizationId) &&
+////                !sysUserService.userInferiorOrganizationContains(bridgeDirectOrganizationId)) {
+////            response.setStatus(HttpResponse.FAIL_STATUS);
+////            response.setCode(HttpResponse.FAIL_CODE);
+////            response.setMsg("您没有权限新建或修改属于此桥梁的截面！");
+////            return response.getHttpResponse();
+////        }
+//
+//        String curTime = sdf.format(new Date());
+//        //插入数据语句
+//        String sql = null;
+//        if ("insert".equals(operationType)) {
+//            sql = String.format("INSERT INTO section(name,section_number,bridge_id,position,description,last_update)" +
+//                " VALUES('%s','%s',%s,'%s','%s','%s')", sectionName, sectionNumber, bridgeId, position, description, curTime);
+//        }
+//        //更新数据语句
+//        if ("update".equals(operationType) && sectionId != null) {
+//            sql = String.format("UPDATE section SET name='%s',section_number='%s',bridge_id=%s,position='%s',description='%s',last_update='%s'" +
+//                " WHERE section_id=%s", sectionName, sectionNumber, bridgeId, position, description, curTime, sectionId);
+//        }
+//
+//        //执行操作
+        int ret = 0;
+//        if (sql != null) {
+//            ret = baseDao.updateData(sql);
+//        }
+        if (ret != 1) {
+            response.setStatus(HttpResponse.FAIL_STATUS);
+            response.setCode(HttpResponse.FAIL_CODE);
+            response.setMsg("操作失败！");
+        }
+        return response.getHttpResponse();
     }
 }

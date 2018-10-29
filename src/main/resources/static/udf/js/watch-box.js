@@ -1,10 +1,10 @@
 
 function selectBridgeOnchange(obj){
-    var bridge_name = obj.value;
-    updateBoxGrid(bridge_name);
+    var bridge_id = obj.value;
+    updateBoxGrid(bridge_id);
 }
 
-function updateBoxGrid(bridge_name){
+function updateBoxGrid(bridge_id){
     var dataSource = new kendo.data.DataSource({
         transport: {
             read: {
@@ -19,7 +19,7 @@ function updateBoxGrid(bridge_name){
                     var parameter = {
                         page: options.page,
                         pageSize: options.pageSize,
-                        bridgeName: bridge_name
+                        bridgeId: bridge_id | 0
                     };
                     return parameter;
                 }
@@ -105,7 +105,8 @@ function updateBoxGrid(bridge_name){
                 attributes:{ class:"text-center" }
             }, {
                 title: "传感器",
-                template: "<a href='/sensor/#: box_id #' />查看传感器</a>",
+                //template: "<a href='/sensor/#: box_id #' />查看传感器</a>",
+                template: "<a href='/sensor?watchBoxId=#: box_id #&bridgeId=#: bridge_id #' />查看传感器</a>",
                 headerAttributes:{ style:"text-align:center"},
                 attributes:{ class:"text-center" }
             }
@@ -114,7 +115,7 @@ function updateBoxGrid(bridge_name){
 }
 
 function modifyWatchBox(watch_box_id,bridge_id,watch_box_type_id){
-    showWatchBoxDialog("修改测控箱信息","update",watch_box_id,bridge_id,watch_box_type_id)
+    showWatchBoxDialog("修改测控箱信息","update",bridge_id,watch_box_id,watch_box_type_id)
 }
 
 function showModalDialog(title,custom_content,ok_callback){
@@ -137,7 +138,7 @@ function showModalDialog(title,custom_content,ok_callback){
     });
 }
 
-function showWatchBoxDialog(title,operation_type,watch_box_id,bridge_id,watch_box_type_id){
+function showWatchBoxDialog(title,operation_type,bridge_id,watch_box_id,watch_box_type_id){
     // 获取所有大桥 & 所有控制箱
     var url = "/watch-box/info";
     var params = {
@@ -177,9 +178,13 @@ function showWatchBoxDialog(title,operation_type,watch_box_id,bridge_id,watch_bo
                 change_time_interval = watch_box_info["change_time_interval"];
             }
         }
-        for(var key in data["bridge_list"]){
-            if(key!=bridge_id)
-                bridge_options = bridge_options + "<option value='" + key + "'>" + data["bridge_list"][key] + "</option>";
+        for (var key in data["bridge_list"]) {
+            if (key == bridge_id) {
+                bridge_options = bridge_options + '<option value="' + key + '" selected="selected">' +
+                    data["bridge_list"][key] + '</option>';
+            } else {
+                bridge_options = bridge_options + '<option value="' + key + '">' + data["bridge_list"][key] + '</option>';
+            }
         }
         for(var key in data["watch_box_type_list"]){
             if(key!=watch_box_type_id)
@@ -360,22 +365,28 @@ function showWatchBoxDialog(title,operation_type,watch_box_id,bridge_id,watch_bo
 // 其它初始化
 $(function () {
     var url = "/watch-box/dropdown";
-    var response = webRequest(url,"GET",false,{})
-    var options = "<option>全部</option>";
-    if(response!=null && response.status==0){
+    var response = webRequest(url, "GET", false, {});
+    var options = '<option value="0">全部</option>';
+    if (response != null && response.status == 0) {
         var data = response.data;
-        for(var key in data){
-            options = options + "<option>" + key + "</option>";
+        for (var key in data) {
+            if (data.hasOwnProperty(key)) {
+                options = options + '<option value="' + data[key] + '">' + key + '</option>';
+            }
         }
     }
-    $("#bridge_menu").append(options);
-    $("#bridge_menu").on('shown.bs.select',function(e){
-        // console.log('展开');
-    })
+    var bridge_menu = $("#bridge_menu");
+    bridge_menu
+        .append(options)
+        .on('shown.bs.select', function (e) {
+            // console.log('展开');
+        })
+        .selectpicker('val', bridge_menu.attr('init-value'));
 
     // 增加测控箱事件绑定
     $("#add_box").click(function() {
-        showWatchBoxDialog("创建测控箱信息","insert")
+        console.log(bridge_menu.attr('init-value'));
+        showWatchBoxDialog("创建测控箱信息", "insert", bridge_menu.attr('init-value'));
     });
 
     // 删除测控箱事件绑定

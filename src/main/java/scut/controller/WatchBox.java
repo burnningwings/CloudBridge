@@ -47,18 +47,18 @@ public class WatchBox {
      * 异步翻页
      * @param page
      * @param pageSize 切换为All时需强制为null，因此必须为Integer
-     * @param bridgeName
+     * @param bridgeId
      * @return
      */
     @RequestMapping(value = "/watch-box/list", method = RequestMethod.GET, produces = "application/json")
-    public JSONObject tableList(int page, Integer pageSize, String bridgeName) {
+    public JSONObject tableList(int page, Integer pageSize, Integer bridgeId) {
         long userOrganizationId = sysUserService.getUserOrganizationId();
         // 获取数据
         String whereStr = String.format(" where b.bridge_id in (" +
                 "select bo.bridge_id from bridge_organization bo " +
                 "where bo.organization_id = %d) ", userOrganizationId);
-        if(!bridgeName.equals("全部")){
-            whereStr += " and b.bridge_name='" + bridgeName + "'";
+        if(!bridgeId.equals(0)){
+            whereStr += " and b.bridge_id='" + bridgeId + "'";
         }
         String sql = String.format(
                 "select w.*,b.bridge_name,w_t.name as box_type_name " +
@@ -206,6 +206,7 @@ public class WatchBox {
             }
         }
         data.put("watch_box",watchBox);
+
         response.setData(data);
         return response.getHttpResponse();
     }

@@ -55,7 +55,7 @@ public class SysUserService {
 
     public boolean isUserUnmanageableOrganization(Long organizationId) {
         return !(getUserOrganizationId().equals(organizationId) ||
-                userInferiorOrganizationContains(organizationId));
+            userInferiorOrganizationContains(organizationId));
     }
 
     public boolean isUserUnmanageableOrganizations(List<Organization> organizations) {
@@ -70,6 +70,6 @@ public class SysUserService {
     public boolean isUserUnmanageableUser(Long userId) {
         Long userDirectOrganizationId = organizationService.getSysUserDirectOrganizationId(userId);
         return !(getUserOrganizationId().equals(userDirectOrganizationId) ||
-                userInferiorOrganizationContains(userDirectOrganizationId));
+            userInferiorOrganizationContains(userDirectOrganizationId));
     }
 }

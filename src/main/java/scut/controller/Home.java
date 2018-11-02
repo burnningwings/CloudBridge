@@ -200,4 +200,5 @@ public class Home {
         model.addAttribute(Constants.CURRENT_USER, currentUser);
         return "watchbox_type";
     }
+
 }

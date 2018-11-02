@@ -171,4 +171,136 @@ public class TypeControl {
         }
         return response.getHttpResponse();
     }
+
+    /**
+     * 异步翻页
+     *
+     * @param model
+     * @param page
+     * @param pageSize 切换为All时需强制为null，因此必须为Integer
+     * @return
+     */
+    @RequestMapping(value = "/watchbox_type/list", method = RequestMethod.GET, produces = "application/json")
+    public JSONObject watchbox_typeList(Model model, Integer page, Integer pageSize) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        long userOrganizationId = sysUserService.getUserOrganizationId();
+        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
+        model.addAttribute(Constants.CURRENT_USER, currentUser);
+
+        JSONObject response = new JSONObject();
+        //查询控制箱类型列表
+        //与 organization 无关
+        String sql = "SELECT\n" +
+                "bt.`name` AS watchbox_type_name,\n" +
+                "bt.type_id AS watchbox_type_id\n" +
+                "FROM\n" +
+                "watch_box_type AS bt";
+        String[] fields = new String[]{"watchbox_type_id", "watchbox_type_name"};
+        JSONArray data = baseDao.queryData(sql, fields);
+        response.put("data", data);
+
+        sql = String.format("SELECT COUNT(*) AS total\n" +
+                "FROM watch_box_type");
+        fields = new String[]{"total"};
+        data = baseDao.queryData(sql, fields);
+        response.put("total", data.getJSONObject(0).get("total"));
+
+        return response;
+    }
+
+    /**
+     * 查询指定控制箱类型信息
+     *
+     * @param typeId 桥梁类型id 如无则为null
+     * @return
+     */
+    @RequestMapping(value = "watchbox_type/info", method = RequestMethod.GET, produces = "application/json")
+    public JSONObject watchbox_typeInfo(Integer typeId) {
+        long userOrganizationId = sysUserService.getUserOrganizationId();
+        HttpResponse response = new HttpResponse();
+        JSONObject data = new JSONObject();
+        //查询指定桥梁信息
+        if (typeId != null) {
+            String sql = String.format(
+                    "select type_id,name from watch_box_type where type_id = %d",
+                    typeId );
+            String[] fields = new String[]{"type_id","name"};
+            JSONArray watchbox_typeInfo = baseDao.queryData(sql, fields);
+            data.put("watch_box_type_info", watchbox_typeInfo);
+        }
+        logger.info(data.toString());
+
+        response.setData(data);
+        return response.getHttpResponse();
+    }
+
+    /**
+     * 更新或创建指定控制箱类型信息
+     *
+     * @param
+     * @return
+     */
+    @RequestMapping(value = "/watchbox_type/create-or-update", method = RequestMethod.POST, produces = "application/json")
+    public JSONObject createOrupdateWatchBox_type(@RequestBody JSONObject reqMsg) {
+        long userOrganizationId = sysUserService.getUserOrganizationId();
+        HttpResponse response = new HttpResponse();
+        Integer typeId = reqMsg.getInteger("typeId");
+        String operation_type = reqMsg.getString("operationType");
+        String watchbox_type_name = reqMsg.getString("watchbox_type_name");
+        String old_watchbox_type_name = "";
+
+        logger.info(reqMsg.toString());
+        //检查必须参数
+        if (operation_type == null || StringUtil.isEmpty(watchbox_type_name)) {
+            response.setStatus(HttpResponse.FAIL_STATUS);
+            response.setCode(HttpResponse.FAIL_CODE);
+            response.setMsg("参数错误！");
+            return response.getHttpResponse();
+        }
+
+        //查询指定桥梁类型信息
+        if (typeId != null) {
+            String sql = String.format(
+                    "select name from watch_box_type where type_id = %d",
+                    typeId );
+            String[] fields = new String[]{"name"};
+            old_watchbox_type_name = baseDao.queryData(sql, fields).getJSONObject(0).get("name").toString();
+        }
+
+        String curTime = sdf.format(new Date());
+        //插入数据语句
+        String sql = null;
+        if ("create".equals(operation_type)) {
+            sql = String.format("INSERT INTO watch_box_type(name,last_update)" +
+                    " VALUES('%s','%s')", watchbox_type_name, curTime);
+        }
+        //更新数据语句
+        if ("update".equals(operation_type) && typeId != null) {
+            sql = String.format("update watch_box_type set name='%s', last_update='%s' where type_id=%d;",
+                    watchbox_type_name, curTime,typeId);
+        }
+        //执行操作
+        int ret = 0;
+        if (sql != null) {
+            ret = baseDao.updateData(sql);
+        }
+        if (ret != 1) {
+            response.setStatus(HttpResponse.FAIL_STATUS);
+            response.setCode(HttpResponse.FAIL_CODE);
+            response.setMsg("操作失败！");
+        }
+        //操作写入日志
+        LogBase logbase = new LogBase();
+        boolean logoption = logbase.sys_logoption(23);
+        if (logoption) {
+
+            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String log_sql = LogBase.log_add_watchbox_type(userDetails.getUsername(),
+                    watchbox_type_name, old_watchbox_type_name, operation_type
+            );
+            logger.info(log_sql);
+            baseDao.updateData(log_sql);
+        }
+        return response.getHttpResponse();
+    }
 }

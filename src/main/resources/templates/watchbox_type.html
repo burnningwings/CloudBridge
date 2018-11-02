@@ -26,7 +26,7 @@
 <body class="cm-no-transition cm-1-navbar">
 <!--在这里设置menu的active的项，log——bridge是six_3-->
 <div id="cm-menu"
-     th:replace="base/menu::menu (one,two_1,two_2,three_1,three_2,four_1,four_2,four_3,four_4,five_1,five_2,six_1,six_2,six_3,seven_1,seven_2,active,seven_4)"></div>
+     th:replace="base/menu::menu (one,two_1,two_2,three_1,three_2,four_1,four_2,four_3,four_4,five_1,five_2,six_1,six_2,six_3,seven_1,seven_2,seven_3,active)"></div>
 <div th:replace="base/header::header"></div>
 
 <div id="global">
@@ -34,7 +34,7 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title">
-                    桥梁类型列表
+                    控制箱类型列表
                 </h3>
             </div>
             <div class="panel-body">
@@ -43,7 +43,7 @@
                 <div id="system-grid"></div>
                 <div style="float:left;margin: 20px 0px 0px 0px">
                     <!--add_bridgetype与js中的dom相对应-->
-                    <button id="add_bridge_type" type="button" style="margin:0em 1em 0em 0em"
+                    <button id="add_watchbox_type" type="button" style="margin:0em 1em 0em 0em"
                             class="btn btn-l btn-danger">
                         增加
                     </button>
@@ -70,7 +70,7 @@
 <!-- table相关 -->
 <script src="assets/js/kendo.web.min.js"></script>
 <script src="udf/js/common.js"></script>
-<script src="udf/js/bridge_type.js"></script>  <!--这里的脚本要记得替换成自己写的-->
+<script src="udf/js/watchbox_type.js"></script>  <!--这里的脚本要记得替换成自己写的-->
 
 </body>
 </html>

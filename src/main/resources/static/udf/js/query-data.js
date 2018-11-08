@@ -1194,6 +1194,7 @@ function updateDropdownMenu2(response){
 
 // 其它初始化
 $(function () {
+
     // begin
     // 表格操作
     var url = "/query-data/dropdown";

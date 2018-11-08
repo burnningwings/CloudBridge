@@ -250,7 +250,7 @@ public class DataManager {
                                 while(rs.next()){
                                     String boxId = rs.getString("box_id");
                                     JSONObject boxItem = (JSONObject) bridgeItem.getOrDefault(boxId,new JSONObject());
-                                    JSONObject sensorItem= (JSONObject) boxItem.getOrDefault("sensor",new JSONObject());
+                                    JSONObject sensorItem= (JSONObject) boxItem.getOrDefault("sensor",  new JSONObject());
                                     boxItem.put("name",rs.getString("box_name"));
                                     String sensorId = rs.getString("sensor_id");
                                     if(sensorId!=null) {

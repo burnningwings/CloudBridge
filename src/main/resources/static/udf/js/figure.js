@@ -480,10 +480,13 @@ function showPredictUDFResultChart(figure_id, timelist, locationlist, levellist)
                         return table;
                     }
                 },
+                restore: {show : true},
+
                 saveAsImage: {
                     pixelRatio:2,
                     show: true
                 },
+
                 // magicType: {
                 //     show: true,
                 //     type: ['scatter','line']
@@ -944,123 +947,979 @@ function showPredictUDFResultChart_OVERWEIGHT(figure_id, timelist, overweightlis
 //     chart.setOption(option);
 // }
 
-function showAnalysisResultChart(figure_id, temp1, temp2, analysisresult) {
+// function showAnalysisResultChart(figure_id, temp1, temp2, analysisresult) {
+//
+//     var resultlist = analysisresult;
+//     var num_sensor = Object.keys(temp1).length
+//     console.log(num_sensor);
+//     var sensorlist = [];
+//     var series = [];
+//     var series1 = [];
+//     for(var key in temp1){
+//
+//         var sensor_id = 'sensor'+key;
+//         sensorlist.push(sensor_id);
+//         series.push({
+//             xAxisIndex : 0,
+//             yAxisIndex : 0,
+//             name : sensor_id,
+//             type : "line",
+//             data : temp1[key]
+//         })
+//     }
+//     for(var key in temp2){
+//
+//         var sensor_id = 'sensor'+key;
+//         sensorlist.push(sensor_id);
+//         series1.push({
+//             xAxisIndex : 1,
+//             yAxisIndex : 1,
+//             name : sensor_id,
+//             type : "line",
+//             data : temp2[key],
+//
+//         })
+//     }
+//     series_merge = series.concat(series1);
+//
+//
+//     console.log(sensorlist);
+//     console.log(series);
+//
+//     var option = {
+//         title : [{
+//             text : "温度与桥顶传感器变化关系",
+//             x : 380,
+//             y : 35,
+//         },{
+//             text : "温度与桥底传感器变化关系",
+//             x : 380,
+//             y : 310,
+//         }
+//         ],
+//         grid:[
+//             { x : '17%', y : '7%', height : '40%', width : '70%'},
+//             { x : '17%', y2 : '7%', height : '40%', width : '70%'}
+//         ],
+//         tooltip : {
+//
+//         },
+//         toolbox : {
+//             show : true,
+//             right : '5% ',
+//             feature :{
+//                 dataView:{
+//                     readOnly: true,
+//                     optionToContent: function (opt) {
+//                         // var series = opt.series[0].data;
+//                         // var index = opt.xAxis[0].data;
+//                         var tdHeads = '<td  style="padding: 0 10px">测量温度位置</td>'
+//                             +'<td  style="padding: 0 10px">传感器编号</td>'
+//                             +'<td  style="padding: 0 10px">k值</td>'
+//                             +'<td  style="padding: 0 10px">b值</td>>'; //表头
+//                         var table = '<table border="1" style="margin-left:20px;border-collapse:collapse;font-size:14px;text-align:center"><tbody><tr>'+tdHeads+'</tr>';
+//                         var tdBody = '';
+//                         for(var i = 0; i < resultlist.length;i++)
+//                         {
+//                             table += '<tr><td style="padding: 0 10px">'+resultlist[i][0]+
+//                                 '</td><td style="padding: 0 10px">'+resultlist[i][1]+
+//                                 '</td><td style="padding: 0 10px">'+resultlist[i][2]+
+//                                 '</td><td style="padding: 0 10px">'+resultlist[i][3]+'</tr>';
+//                         }
+//                         table += '</tbody></table>';
+//                         return table;
+//                     }
+//                 },
+//                 saveAsImage: {
+//                     pixelRatio:2,
+//                     show: true
+//                 },
+//
+//             }
+//
+//         },
+//         legend : [
+//             { data : sensorlist , left : '10%'},
+//             { data : sensorlist , left : '10%'}
+//         ],
+//         xAxis: [
+//             {
+//                 min : 'dataMin',
+//                 max : 'dataMax',
+//                 gridIndex : 0
+//             },
+//             {
+//                 min : 'dataMin',
+//                 max : 'dataMax',
+//                 gridIndex : 1
+//             }
+//         ],
+//         yAxis: [
+//             { gridIndex : 0},
+//             { gridIndex : 1}
+//         ],
+//         series: series_merge
+//     };
+//     var chart = echarts.init(document.getElementById(figure_id));
+//     chart.setOption(option);
+// }
 
-    var resultlist = analysisresult;
-    var num_sensor = Object.keys(temp1).length
-    console.log(num_sensor);
-    var sensorlist = [];
-    var series = [];
-    var series1 = [];
-    for(var key in temp1){
-
-        var sensor_id = 'sensor'+key;
-        sensorlist.push(sensor_id);
-        series.push({
-            xAxisIndex : 0,
-            yAxisIndex : 0,
-            name : sensor_id,
-            type : "line",
-            data : temp1[key]
-        })
-    }
-    for(var key in temp2){
-
-        var sensor_id = 'sensor'+key;
-        sensorlist.push(sensor_id);
-        series1.push({
-            xAxisIndex : 1,
-            yAxisIndex : 1,
-            name : sensor_id,
-            type : "line",
-            data : temp2[key],
-
-        })
-    }
-    series_merge = series.concat(series1);
-
-
-    console.log(sensorlist);
-    console.log(series);
-
+function showAnalysisResultChart_sevenlayer(figure_id, timeList, strain, sa7, sd1, sd2, sd3, sd4, sd5, sd6, sd7, temperature, ta7, td1, td2, td3, td4, td5, td6, td7){
     var option = {
-        title : [{
-            text : "温度与桥顶传感器变化关系",
-            x : 380,
-            y : 35,
-        },{
-            text : "温度与桥底传感器变化关系",
-            x : 380,
-            y : 310,
-        }
-        ],
-        grid:[
-            { x : '17%', y : '7%', height : '40%', width : '70%'},
-            { x : '17%', y2 : '7%', height : '40%', width : '70%'}
-        ],
-        tooltip : {
-
-        },
-        toolbox : {
-            show : true,
-            right : '5% ',
-            feature :{
-                dataView:{
-                    readOnly: true,
-                    optionToContent: function (opt) {
-                        // var series = opt.series[0].data;
-                        // var index = opt.xAxis[0].data;
-                        var tdHeads = '<td  style="padding: 0 10px">测量温度位置</td>'
-                            +'<td  style="padding: 0 10px">传感器编号</td>'
-                            +'<td  style="padding: 0 10px">k值</td>'
-                            +'<td  style="padding: 0 10px">b值</td>>'; //表头
-                        var table = '<table border="1" style="margin-left:20px;border-collapse:collapse;font-size:14px;text-align:center"><tbody><tr>'+tdHeads+'</tr>';
-                        var tdBody = '';
-                        for(var i = 0; i < resultlist.length;i++)
-                        {
-                            table += '<tr><td style="padding: 0 10px">'+resultlist[i][0]+
-                                '</td><td style="padding: 0 10px">'+resultlist[i][1]+
-                                '</td><td style="padding: 0 10px">'+resultlist[i][2]+
-                                '</td><td style="padding: 0 10px">'+resultlist[i][3]+'</tr>';
-                        }
-                        table += '</tbody></table>';
-                        return table;
-                    }
-                },
-                saveAsImage: {
-                    pixelRatio:2,
-                    show: true
-                },
-
+        title : [
+            {
+                left : 'center',
+                text : 'strain-temperature',
+                top : '1%'
+             },
+            {
+                top : '12%',
+                left : 'center',
+                text : 'sa7-ta7'
+            },
+            {
+                top: '23%',
+                left : 'center',
+                text : 'sd1-td1'
+            },
+            {
+                top: '34%',
+                left : 'center',
+                text : 'sd2-td2'
+            },
+            {
+                top: '45%',
+                left : 'center',
+                text : 'sd3-td3'
+            },
+            {
+                top: '56%',
+                left : 'center',
+                text : 'sd4-td4'
+            },
+            {
+                top: '67%',
+                left : 'center',
+                text : 'sd5-td5'
+            },
+            {
+                top: '78%',
+                left : 'center',
+                text : 'sd6-td6'
+            },
+            {
+                top: '89%',
+                left : 'center',
+                text : 'sd7-td7'
             }
-
-        },
+        ],
+        grid : [
+            {
+                id : 0,
+               // top : '1%',
+                height : '8%'
+              },
+            {
+                 id : 1,
+                 top : '13%',
+                 height : '8%'
+             },
+            {
+                id : 2,
+                top : '24%',
+                height : '8%'
+            },
+            {
+                id : 3,
+                top : '35%',
+                height : '8%'
+            },
+            {
+                id : 4,
+                top : '46%',
+                height : '8%'
+            },
+            {
+                id : 5,
+                top : '57%',
+                height : '8%'
+            },
+            {
+                id : 6,
+                top : '68%',
+                height : '8%'
+            },
+            {
+                id : 7,
+                top : '79%',
+                height : '8%'
+            },
+            {
+                id : 8,
+                top : '90%',
+                height : '8%'
+            }
+        ],
         legend : [
-            { data : sensorlist , left : '10%'},
-            { data : sensorlist , left : '10%'}
+            {
+                data : ['应变','温度'],
+                x : 'left',
+                top : 'top'
+            },
+            // {
+            //     data : ['应变','温度'],
+            //     x : 'left'
+            // }
+        ],
+        dataZoom : [
+            {
+                type : 'inside',
+                xAxisIndex : 0,
+                yAxisIndex : [0,1]
+            },
+            {
+                type : 'slider',
+                show : false,
+                xAxisIndex : 0,
+                yAxisIndex : [0,1]
+            },
+            {
+                type : 'inside',
+                xAxisIndex : 1,
+                yAxisIndex : [2,3]
+            },
+            {
+                type : 'slider',
+                show : false,
+                xAxisIndex : 1,
+                yAxisIndex : [2,3]
+            },
+            {
+                type : 'inside',
+                xAxisIndex : 2,
+                yAxisIndex : [4,5]
+            },
+            {
+                type : 'slider',
+                show : false,
+                xAxisIndex : 2,
+                yAxisIndex : [4,5]
+            },
+            {
+                type : 'inside',
+                xAxisIndex : 3,
+                yAxisIndex : [6,7]
+            },
+            {
+                type : 'slider',
+                show : false,
+                xAxisIndex : 3,
+                yAxisIndex : [6,7]
+            },
+            {
+                type : 'inside',
+                xAxisIndex : 4,
+                yAxisIndex : [8,9]
+            },
+            {
+                type : 'slider',
+                show : false,
+                xAxisIndex : 4,
+                yAxisIndex : [8,9]
+            },
+            {
+                type : 'inside',
+                xAxisIndex : 5,
+                yAxisIndex : [10,11]
+            },
+            {
+                type : 'slider',
+                show : false,
+                xAxisIndex : 5,
+                yAxisIndex : [10,11]
+            },
+            {
+                type : 'inside',
+                xAxisIndex : 6,
+                yAxisIndex : [12,13]
+            },
+            {
+                type : 'slider',
+                show : false,
+                xAxisIndex : 6,
+                yAxisIndex : [12,13]
+            },
+            {
+                type : 'inside',
+                xAxisIndex : 7,
+                yAxisIndex : [14,15]
+            },
+            {
+                type : 'slider',
+                show : false,
+                xAxisIndex : 7,
+                yAxisIndex : [14,15]
+            },
+            {
+                type : 'inside',
+                xAxisIndex : 8,
+                yAxisIndex : [16,17]
+            },
+            {
+                type : 'slider',
+                show : false,
+                //filterMode : 'empty',
+                xAxisIndex : 8,
+                yAxisIndex : [16,17]
+            }
         ],
         xAxis: [
             {
-                min : 'dataMin',
-                max : 'dataMax',
+                name : '时间',
+                data : timeList,
+                id : 0,
                 gridIndex : 0
             },
             {
+                name : '时间',
+                data : timeList,
+                id : 1,
+                gridIndex : 1
+            },
+            {
+                name : '时间',
+                data : timeList,
+                id : 2,
+                gridIndex : 2
+            },
+            {
+                name : '时间',
+                data : timeList,
+                id : 3,
+                gridIndex : 3
+            },
+            {
+                name : '时间',
+                data : timeList,
+                id : 4,
+                gridIndex : 4
+            },
+            {
+                name : '时间',
+                data : timeList,
+                id : 5,
+                gridIndex : 5
+            },
+            {
+                name : '时间',
+                data : timeList,
+                id : 6,
+                gridIndex : 6
+            },
+            {
+                name : '时间',
+                data : timeList,
+                id : 7,
+                gridIndex : 7
+            },
+            {
+                name : '时间',
+                data : timeList,
+                id : 8,
+                gridIndex : 8
+            },
+        ],
+        yAxis: [
+            {
+                name : '应变',
+                id : 0,
+                min : 'dataMin',
+                max : 'dataMax',
+                gridIndex : 0
+            },{
+                name : '温度',
+                id : 1,
+                min : 'dataMin',
+                max : 'dataMax',
+                gridIndex : 0
+            },{
+                name : '应变',
+                id : 2,
                 min : 'dataMin',
                 max : 'dataMax',
                 gridIndex : 1
-            }
+            },{
+                name : '温度',
+                id : 3,
+                min : 'dataMin',
+                max : 'dataMax',
+                gridIndex : 1
+            },{
+                name : '应变',
+                id : 4,
+                min : 'dataMin',
+                max : 'dataMax',
+                gridIndex : 2
+            },{
+                name : '温度',
+                id : 5,
+                min : 'dataMin',
+                max : 'dataMax',
+                gridIndex : 2
+            },{
+                name : '应变',
+                id : 6,
+                min : 'dataMin',
+                max : 'dataMax',
+                gridIndex : 3
+            },{
+                name : '温度',
+                id : 7,
+                min : 'dataMin',
+                max : 'dataMax',
+                gridIndex : 3
+            },{
+                name : '应变',
+                id : 8,
+                min : 'dataMin',
+                max : 'dataMax',
+                gridIndex : 4
+            },{
+                name : '温度',
+                id : 9,
+                min : 'dataMin',
+                max : 'dataMax',
+                gridIndex : 4
+            },{
+                name : '应变',
+                id : 10,
+                min : 'dataMin',
+                max : 'dataMax',
+                gridIndex : 5
+            },{
+                name : '温度',
+                id : 11,
+                min : 'dataMin',
+                max : 'dataMax',
+                gridIndex : 5
+            },{
+                name : '应变',
+                id : 12,
+                min : 'dataMin',
+                max : 'dataMax',
+                gridIndex : 6
+            },{
+                name : '温度',
+                id : 13,
+                min : 'dataMin',
+                max : 'dataMax',
+                gridIndex : 6
+            },{
+                name : '应变',
+                id : 14,
+                min : 'dataMin',
+                max : 'dataMax',
+                gridIndex : 7
+            },{
+                name : '温度',
+                id : 15,
+                min : 'dataMin',
+                max : 'dataMax',
+                gridIndex : 7
+            },{
+                name : '应变',
+                id : 16,
+                min : 'dataMin',
+                max : 'dataMax',
+                gridIndex : 8
+            },{
+                name : '温度',
+                id : 17,
+                min : 'dataMin',
+                max : 'dataMax',
+                gridIndex : 8
+            },
         ],
-        yAxis: [
-            { gridIndex : 0},
-            { gridIndex : 1}
-        ],
-        series: series_merge
-    };
+        series : [
+            {
+                name : '应变',
+                type : 'line',
+                data : strain,
+                yAxisIndex : 0
+            },
+            {
+                name : '温度',
+                type : 'line',
+                data : temperature,
+                yAxisIndex : 1
+            },
+            {
+                name : '应变',
+                type : 'line',
+                data : sa7,
+                xAxisIndex : 1,
+                yAxisIndex : 2
+            },
+            {
+                name : '温度',
+                type : 'line',
+                data : ta7,
+                xAxisIndex : 1,
+                yAxisIndex : 3
+            },
+            {
+                name : '应变',
+                type : 'line',
+                data : sd1,
+                xAxisIndex : 2,
+                yAxisIndex : 4
+            },
+            {
+                name : '温度',
+                type : 'line',
+                data : td1,
+                xAxisIndex : 2,
+                yAxisIndex : 5
+            },
+            {
+                name : '应变',
+                type : 'line',
+                data : sd2,
+                xAxisIndex : 3,
+                yAxisIndex : 6
+            },
+            {
+                name : '温度',
+                type : 'line',
+                data : td2,
+                xAxisIndex : 3,
+                yAxisIndex : 7
+            },
+            {
+                name : '应变',
+                type : 'line',
+                data : sd3,
+                xAxisIndex : 4,
+                yAxisIndex : 8
+            },
+            {
+                name : '温度',
+                type : 'line',
+                data : td3,
+                xAxisIndex : 4,
+                yAxisIndex : 9
+            },
+            {
+                name : '应变',
+                type : 'line',
+                data : sd4,
+                xAxisIndex : 5,
+                yAxisIndex : 10
+            },
+            {
+                name : '温度',
+                type : 'line',
+                data : td4,
+                xAxisIndex : 5,
+                yAxisIndex : 11
+            },
+            {
+                name : '应变',
+                type : 'line',
+                data : sd5,
+                xAxisIndex : 6,
+                yAxisIndex : 12
+            },
+            {
+                name : '温度',
+                type : 'line',
+                data : td5,
+                xAxisIndex : 6,
+                yAxisIndex : 13
+            },
+            {
+                name : '应变',
+                type : 'line',
+                data : sd6,
+                xAxisIndex : 7,
+                yAxisIndex : 14
+            },
+            {
+                name : '温度',
+                type : 'line',
+                data : td6,
+                xAxisIndex : 7,
+                yAxisIndex : 15
+            },
+            {
+                name : '应变',
+                type : 'line',
+                data : sd7,
+                xAxisIndex : 8,
+                yAxisIndex : 16
+            },
+            {
+                name : '温度',
+                type : 'line',
+                data : td7,
+                xAxisIndex : 8,
+                yAxisIndex : 17
+            },
+        ]
+    }
     var chart = echarts.init(document.getElementById(figure_id));
     chart.setOption(option);
 }
 
+function showAnalysisResultChart_fourlayer(figure_id, timeList, strain, sa4, sd1, sd2, sd3, sd4, temperature, ta4, td1, td2, td3, td4){
+    var option = {
+        title : [
+            {
+                left : 'center',
+                text : 'strain-temperature',
+                top : '1%'
+            },
+            {
+                top : '16%',
+                left : 'center',
+                text : 'sa4-ta4'
+            },
+            {
+                top: '31%',
+                left : 'center',
+                text : 'sd1-td1'
+            },
+            {
+                top: '46%',
+                left : 'center',
+                text : 'sd2-td2'
+            },
+            {
+                top: '61%',
+                left : 'center',
+                text : 'sd3-td3'
+            },
+            {
+                top: '76%',
+                left : 'center',
+                text : 'sd4-td4'
+            }
+        ],
+        grid : [
+            {
+                id : 0,
+                // top : '1%',
+                height : '12%'
+            },
+            {
+                id : 1,
+                top : '17%',
+                height : '12%'
+            },
+            {
+                id : 2,
+                top : '32%',
+                height : '12%'
+            },
+            {
+                id : 3,
+                top : '47%',
+                height : '12%'
+            },
+            {
+                id : 4,
+                top : '62%',
+                height : '12%'
+            },
+            {
+                id : 5,
+                top : '77%',
+                height : '12%'
+            }
+        ],
+        legend : [
+            {
+                data : ['应变','温度'],
+                x : 'left',
+                top : 'top'
+            },
+            // {
+            //     data : ['应变','温度'],
+            //     x : 'left'
+            // }
+        ],
+        dataZoom : [
+            {
+                type : 'inside',
+                xAxisIndex : 0,
+                yAxisIndex : [0,1]
+            },
+            {
+                type : 'slider',
+                show : false,
+                xAxisIndex : 0,
+                yAxisIndex : [0,1]
+            },
+            {
+                type : 'inside',
+                xAxisIndex : 1,
+                yAxisIndex : [2,3]
+            },
+            {
+                type : 'slider',
+                show : false,
+                xAxisIndex : 1,
+                yAxisIndex : [2,3]
+            },
+            {
+                type : 'inside',
+                xAxisIndex : 2,
+                yAxisIndex : [4,5]
+            },
+            {
+                type : 'slider',
+                show : false,
+                xAxisIndex : 2,
+                yAxisIndex : [4,5]
+            },
+            {
+                type : 'inside',
+                xAxisIndex : 3,
+                yAxisIndex : [6,7]
+            },
+            {
+                type : 'slider',
+                show : false,
+                xAxisIndex : 3,
+                yAxisIndex : [6,7]
+            },
+            {
+                type : 'inside',
+                xAxisIndex : 4,
+                yAxisIndex : [8,9]
+            },
+            {
+                type : 'slider',
+                show : false,
+                xAxisIndex : 4,
+                yAxisIndex : [8,9]
+            },
+            {
+                type : 'inside',
+                xAxisIndex : 5,
+                yAxisIndex : [10,11]
+            },
+            {
+                type : 'slider',
+                show : false,
+                xAxisIndex : 5,
+                yAxisIndex : [10,11]
+            },
+
+        ],
+        xAxis: [
+            {
+                name : '时间',
+                data : timeList,
+                id : 0,
+                gridIndex : 0
+            },
+            {
+                name : '时间',
+                data : timeList,
+                id : 1,
+                gridIndex : 1
+            },
+            {
+                name : '时间',
+                data : timeList,
+                id : 2,
+                gridIndex : 2
+            },
+            {
+                name : '时间',
+                data : timeList,
+                id : 3,
+                gridIndex : 3
+            },
+            {
+                name : '时间',
+                data : timeList,
+                id : 4,
+                gridIndex : 4
+            },
+            {
+                name : '时间',
+                data : timeList,
+                id : 5,
+                gridIndex : 5
+            },
+
+        ],
+        yAxis: [
+            {
+                name : '应变',
+                id : 0,
+                min : 'dataMin',
+                max : 'dataMax',
+                gridIndex : 0
+            },{
+                name : '温度',
+                id : 1,
+                min : 'dataMin',
+                max : 'dataMax',
+                gridIndex : 0
+            },{
+                name : '应变',
+                id : 2,
+                min : 'dataMin',
+                max : 'dataMax',
+                gridIndex : 1
+            },{
+                name : '温度',
+                id : 3,
+                min : 'dataMin',
+                max : 'dataMax',
+                gridIndex : 1
+            },{
+                name : '应变',
+                id : 4,
+                min : 'dataMin',
+                max : 'dataMax',
+                gridIndex : 2
+            },{
+                name : '温度',
+                id : 5,
+                min : 'dataMin',
+                max : 'dataMax',
+                gridIndex : 2
+            },{
+                name : '应变',
+                id : 6,
+                min : 'dataMin',
+                max : 'dataMax',
+                gridIndex : 3
+            },{
+                name : '温度',
+                id : 7,
+                min : 'dataMin',
+                max : 'dataMax',
+                gridIndex : 3
+            },{
+                name : '应变',
+                id : 8,
+                min : 'dataMin',
+                max : 'dataMax',
+                gridIndex : 4
+            },{
+                name : '温度',
+                id : 9,
+                min : 'dataMin',
+                max : 'dataMax',
+                gridIndex : 4
+            },{
+                name : '应变',
+                id : 10,
+                min : 'dataMin',
+                max : 'dataMax',
+                gridIndex : 5
+            },{
+                name : '温度',
+                id : 11,
+                min : 'dataMin',
+                max : 'dataMax',
+                gridIndex : 5
+            },
+        ],
+        series : [
+            {
+                name : '应变',
+                type : 'line',
+                data : strain,
+                yAxisIndex : 0
+            },
+            {
+                name : '温度',
+                type : 'line',
+                data : temperature,
+                yAxisIndex : 1
+            },
+            {
+                name : '应变',
+                type : 'line',
+                data : sa4,
+                xAxisIndex : 1,
+                yAxisIndex : 2
+            },
+            {
+                name : '温度',
+                type : 'line',
+                data : ta4,
+                xAxisIndex : 1,
+                yAxisIndex : 3
+            },
+            {
+                name : '应变',
+                type : 'line',
+                data : sd1,
+                xAxisIndex : 2,
+                yAxisIndex : 4
+            },
+            {
+                name : '温度',
+                type : 'line',
+                data : td1,
+                xAxisIndex : 2,
+                yAxisIndex : 5
+            },
+            {
+                name : '应变',
+                type : 'line',
+                data : sd2,
+                xAxisIndex : 3,
+                yAxisIndex : 6
+            },
+            {
+                name : '温度',
+                type : 'line',
+                data : td2,
+                xAxisIndex : 3,
+                yAxisIndex : 7
+            },
+            {
+                name : '应变',
+                type : 'line',
+                data : sd3,
+                xAxisIndex : 4,
+                yAxisIndex : 8
+            },
+            {
+                name : '温度',
+                type : 'line',
+                data : td3,
+                xAxisIndex : 4,
+                yAxisIndex : 9
+            },
+            {
+                name : '应变',
+                type : 'line',
+                data : sd4,
+                xAxisIndex : 5,
+                yAxisIndex : 10
+            },
+            {
+                name : '温度',
+                type : 'line',
+                data : td4,
+                xAxisIndex : 5,
+                yAxisIndex : 11
+            },
+
+        ]
+    }
+    var chart = echarts.init(document.getElementById(figure_id));
+    chart.setOption(option);
+}
 function  showWaveletResultChart(figure_id, timeList, temperatureList, strainList) {
     console.log(timeList)
     console.log(temperatureList)

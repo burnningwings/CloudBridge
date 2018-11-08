@@ -44,6 +44,7 @@ public class Constants {
     public static String OVERWEIGHT_TRAINFILE_TARGET_DIR = null;
     public static String OVERWEIGHT_EVALUATEFILE_TARGET_DIR = null;
     public static String OVERWEIGHT_TESTFILE_TARGET_DIR = null;
+    public static String ASSOCIATION_TARGET_DIR = null;
 
     //传测试文件路径
     public static String OVERWEIGHT_UPLOAD_TEST_FILE_DIR = null;

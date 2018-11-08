@@ -18,36 +18,36 @@
 //     });
 // })
 
-function getAndshowPredictResult(figure_id, current_dialog, params) {
-    function successCaller(message) {
-        console.log(message)
-        current_dialog.button('reset').dequeue();
-        var status = message["status"];
-        if (status!=0) {
-            $("#" + figure_id).html("<img style='margin-top:120px;' src='assets/img/warning.png'/>");
-            showTransientDialog(message["msg"]);
-            return;
-        }else{
-            // var data = message["data"]["predictresult"];
-            // console.log(data);
-            // var index = [];
-            // for(var i=0; i<data.length;i++)
-            // {
-            //     index.push(i+1);
-            // }
-            // console.log(index);
-            // showPredictResultChart(figure_id, data, index);
-            var timelist = message["data"]["timelist"];
-            var locationlist = message["data"]["locationlist"];
-            var levellist = message["data"]["levellist"];
-            showPredictUDFResultChart(figure_id, timelist, locationlist, levellist);
-        }
-    }
-    var url = "/damage-detection/getPredictResult";
-    webRequest(url, "GET", true, params,successCaller);
-}
+// function getAndshowPredictResult(figure_id, current_dialog, params) {
+//     function successCaller(message) {
+//         console.log(message)
+//         current_dialog.button('reset').dequeue();
+//         var status = message["status"];
+//         if (status!=0) {
+//             $("#" + figure_id).html("<img style='margin-top:120px;' src='assets/img/warning.png'/>");
+//             showTransientDialog(message["msg"]);
+//             return;
+//         }else{
+//             // var data = message["data"]["predictresult"];
+//             // console.log(data);
+//             // var index = [];
+//             // for(var i=0; i<data.length;i++)
+//             // {
+//             //     index.push(i+1);
+//             // }
+//             // console.log(index);
+//             // showPredictResultChart(figure_id, data, index);
+//             var timelist = message["data"]["timelist"];
+//             var locationlist = message["data"]["locationlist"];
+//             var levellist = message["data"]["levellist"];
+//             showPredictUDFResultChart(figure_id, timelist, locationlist, levellist);
+//         }
+//     }
+//     var url = "/damage-detection/getPredictResult";
+//     webRequest(url, "GET", true, params,successCaller);
+// }
 
-    function  getAndshowPredictUDFResult(figure_id, current_dialog, params) {
+    function  getAndshowPredictResult(figure_id, current_dialog, params) {
 
     function successCaller(message) {
         console.log(message);
@@ -162,22 +162,22 @@ function updateDropdownListEvaluateModel(){
     $("#dd_evaluate_model_selected").selectpicker('refresh');
 }
 
-function updateDropdownListUdfTrainModel(){
-    $("#dd_udf_train_model_selected").empty();
-    var url = "/damage-detection/dropdown";
-    var response = webRequest(url, "GET", false, {"type" : "trainmodel"});
-    var options ="<option value=\'\' disabled selected>请选择训练模型</option>"
-    if(response!=null && response.status==0){
-        var data = response.data;
-        for(var key in data){
-            options = options + "<option>" + key + "</option>";
-        }
-    }
-    $("#dd_udf_train_model_selected").append(options);
-    $("#dd_udf_train_model_selected").selectpicker('refresh');
-}
+// function updateDropdownListUdfTrainModel(){
+//     $("#dd_udf_train_model_selected").empty();
+//     var url = "/damage-detection/dropdown";
+//     var response = webRequest(url, "GET", false, {"type" : "trainmodel"});
+//     var options ="<option value=\'\' disabled selected>请选择训练模型</option>"
+//     if(response!=null && response.status==0){
+//         var data = response.data;
+//         for(var key in data){
+//             options = options + "<option>" + key + "</option>";
+//         }
+//     }
+//     $("#dd_udf_train_model_selected").append(options);
+//     $("#dd_udf_train_model_selected").selectpicker('refresh');
+// }
 
-function updateDropdownListUdfTrainBridge(){
+function updateDropdownListTrainBridge(){
     $("#dd_train_bridge_selected").empty();
     var url = "/damage-detection/udf_bridge_dropdown";
     var response = webRequest(url, "GET", false, {});
@@ -192,22 +192,22 @@ function updateDropdownListUdfTrainBridge(){
     $("#dd_train_bridge_selected").selectpicker('refresh');
 }
 
-function updateDropdownListUdfEvaluateModel(){
-    $("#dd_udf_evaluate_model_selected").empty();
-    var url = "/damage-detection/dropdown";
-    var response = webRequest(url, "GET", false, {"type" : "savedmodel"});
-    var options ="<option value=\'\' disabled selected>请选择验证模型</option>"
-    if(response!=null && response.status==0){
-        var data = response.data;
-        for(var key in data){
-            options = options + "<option>" + key + "</option>";
-        }
-    }
-    $("#dd_udf_evaluate_model_selected").append(options);
-    $("#dd_udf_evaluate_model_selected").selectpicker('refresh');
-}
+// function updateDropdownListUdfEvaluateModel(){
+//     $("#dd_udf_evaluate_model_selected").empty();
+//     var url = "/damage-detection/dropdown";
+//     var response = webRequest(url, "GET", false, {"type" : "savedmodel"});
+//     var options ="<option value=\'\' disabled selected>请选择验证模型</option>"
+//     if(response!=null && response.status==0){
+//         var data = response.data;
+//         for(var key in data){
+//             options = options + "<option>" + key + "</option>";
+//         }
+//     }
+//     $("#dd_udf_evaluate_model_selected").append(options);
+//     $("#dd_udf_evaluate_model_selected").selectpicker('refresh');
+// }
 
-function updateDropdownListUdfEvaluateBridge(){
+function updateDropdownListEvaluateBridge(){
     $("#dd_evaluate_bridge_selected").empty();
     var url = "/damage-detection/udf_bridge_dropdown";
     var response = webRequest(url, "GET", false, {});
@@ -222,22 +222,22 @@ function updateDropdownListUdfEvaluateBridge(){
     $("#dd_evaluate_bridge_selected").selectpicker('refresh');
 }
 
-function updateDropdownListUdfTestModel(){
-    $("#dd_udf_test_model_selected").empty();
-    var url = "/damage-detection/dropdown";
-    var response = webRequest(url, "GET", false, {"type" : "savedmodel"});
-    var options ="<option value=\'\' disabled selected>请选择预测模型</option>"
-    if(response!=null && response.status==0){
-        var data = response.data;
-        for(var key in data){
-            options = options + "<option>" + key + "</option>";
-        }
-    }
-    $("#dd_udf_test_model_selected").append(options);
-    $("#dd_udf_test_model_selected").selectpicker('refresh');
-}
+// function updateDropdownListUdfTestModel(){
+//     $("#dd_udf_test_model_selected").empty();
+//     var url = "/damage-detection/dropdown";
+//     var response = webRequest(url, "GET", false, {"type" : "savedmodel"});
+//     var options ="<option value=\'\' disabled selected>请选择预测模型</option>"
+//     if(response!=null && response.status==0){
+//         var data = response.data;
+//         for(var key in data){
+//             options = options + "<option>" + key + "</option>";
+//         }
+//     }
+//     $("#dd_udf_test_model_selected").append(options);
+//     $("#dd_udf_test_model_selected").selectpicker('refresh');
+// }
 
-function updateDropdownListUdfTestBridge(){
+function updateDropdownListTestBridge(){
     $("#dd_test_bridge_selected").empty();
     var url = "/damage-detection/udf_bridge_dropdown";
     var response = webRequest(url, "GET", false, {});
@@ -278,48 +278,51 @@ $(function () {
     updateDropdownListSavedModel();
     updateDropdownListEvaluateFile();
     updateDropdownListEvaluateModel();
+    updateDropdownListTrainBridge();
+    updateDropdownListEvaluateBridge();
+    updateDropdownListTestBridge();
 
-    updateDropdownListUdfTrainModel();
-    updateDropdownListUdfTrainBridge();
-    updateDropdownListUdfEvaluateModel();
-    updateDropdownListUdfEvaluateBridge();
-    updateDropdownListUdfTestModel();
-    updateDropdownListUdfTestBridge();
+    // updateDropdownListUdfTrainModel();
+    // updateDropdownListUdfTrainBridge();
+    // updateDropdownListUdfEvaluateModel();
+    // updateDropdownListUdfEvaluateBridge();
+    // updateDropdownListUdfTestModel();
+    // updateDropdownListUdfTestBridge();
 
     var data_format_str = 'yyyy-MM-dd HH:mm:ss';
     var current_time = new Date().format(data_format_str);
-    $('#dd_train_udf_begin_time').datetimepicker({
+    $('#dd_train_begin_time').datetimepicker({
         timeFormat: "HH:mm:ss",
         dateFormat: "yy-mm-dd"
     });
-    $('#dd_train_udf_end_time').datetimepicker({
+    $('#dd_train_end_time').datetimepicker({
         timeFormat: "HH:mm:ss",
         dateFormat: "yy-mm-dd"
     });
-    $('#dd_train_udf_begin_time').val(current_time);
-    $('#dd_train_udf_end_time').val(current_time);
+    $('#dd_train_begin_time').val(current_time);
+    $('#dd_train_end_time').val(current_time);
 
-    $('#dd_evaluate_udf_begin_time').datetimepicker({
+    $('#dd_evaluate_begin_time').datetimepicker({
         timeFormat: "HH:mm:ss",
         dateFormat: "yy-mm-dd"
     });
-    $('#dd_evaluate_udf_end_time').datetimepicker({
+    $('#dd_evaluate_end_time').datetimepicker({
         timeFormat: "HH:mm:ss",
         dateFormat: "yy-mm-dd"
     });
-    $('#dd_evaluate_udf_begin_time').val(current_time);
-    $('#dd_evaluate_udf_end_time').val(current_time);
+    $('#dd_evaluate_begin_time').val(current_time);
+    $('#dd_evaluate_end_time').val(current_time);
 
-    $('#dd_test_udf_begin_time').datetimepicker({
+    $('#dd_test_begin_time').datetimepicker({
         timeFormat: "HH:mm:ss",
         dateFormat: "yy-mm-dd"
     });
-    $('#dd_test_udf_end_time').datetimepicker({
+    $('#dd_test_end_time').datetimepicker({
         timeFormat: "HH:mm:ss",
         dateFormat: "yy-mm-dd"
     });
-    $('#dd_test_udf_begin_time').val(current_time);
-    $('#dd_test_udf_end_time').val(current_time);
+    $('#dd_test_begin_time').val(current_time);
+    $('#dd_test_end_time').val(current_time);
 
     //$("#train_file_selected").on('shown.bs.select', updateDropdownListTrainFile());
     // $("#train_file_selected").click(function () {
@@ -532,298 +535,275 @@ $(function () {
     //     }
     // });
 
+    // $("#dd_train_start").click(function () {
+    //     var train_file = $("#dd_train_file_selected").val();
+    //     var train_model = $("#dd_train_model_selected").val();
+    //     var saved_model = $("#dd_saved_model").val();
+    //     //console.log(saved_model);
+    //     if (train_file == null){
+    //         showTransientDialog("请选择训练文件");
+    //         //showDialog("请选择训练文件");
+    //         return;
+    //     }
+    //     if(train_model == null){
+    //         showTransientDialog("请选择训练模型");
+    //         //showDialog("请选择训练模型");
+    //         return;
+    //     }
+    //     if(!saved_model){
+    //         showTransientDialog("请输入保存模型名称");
+    //         //showDialog("请输入保存模型名称");
+    //         return;
+    //     }
+    //     var response = null;
+    //     var d = null;
+    //     var token = $("meta[name='_csrf']").attr("content");
+    //     var header = $("meta[name='_csrf_header']").attr("content");
+    //     $(document).ajaxSend(function(e, xhr, options) {
+    //         xhr.setRequestHeader(header, token);
+    //     });
+    //     $.ajax({
+    //         url: "/damage-detection/train",
+    //         type: "POST",
+    //         async: true,
+    //         contentType: "application/json; charset=utf-8",
+    //         data: JSON.stringify({
+    //             "trainfile" : train_file,
+    //             "trainmodel" : train_model,
+    //             "savedmodel" : saved_model
+    //         }),
+    //         dataType: "json",
+    //         beforeSend: function () {
+    //             $("#dd_train_start").text('训练中...');
+    //             $("#dd_train_process").removeAttr("value");
+    //             // var content = '' +
+    //             //     ' <img alt="loadding" src="/assets/img/loading.gif" /> \
+    //             //     '
+    //             // d = dialog({
+    //             //     content: content
+    //             // });
+    //             // d.showModal();
+    //         },
+    //         success: function(response) {
+    //             var data = response.data;
+    //             var result = data['result'];
+    //             if (result == 'success') {
+    //                 //showTransientDialog('训练完成!')
+    //                 //showModalDialog("提示", "训练完成")
+    //                 //showAlertDialog('训练完成')
+    //                 showDialog("训练完成")
+    //             } else {
+    //                 showTransientDialog('训练失败！')
+    //             }
+    //         },
+    //         complete:function () {
+    //             $("#dd_train_start").text("开始训练");
+    //             $("#dd_train_process").attr("value", "100");
+    //             updateDropdownListSavedModel();
+    //             updateDropdownListEvaluateModel();
+    //             updateDropdownListUdfEvaluateModel();
+    //             updateDropdownListUdfTestModel();
+    //             // if (d != null) {
+    //             //     d.close().remove();
+    //             // }
+    //         },
+    //         error: function(response) {
+    //             //showTransientDialog('调用失败！')
+    //             alert("提交任务失败");
+    //         }
+    //
+    //     });
+    // });
+
+    // $("#dd_test_start").click(function () {
+    //     var test_file = $("#dd_test_file_selected").val();
+    //     var test_model = $("#dd_test_model_selected").val();
+    //     //console.log(saved_model);
+    //     if (test_file == null){
+    //         showTransientDialog("请选择预测文件");
+    //         //showDialog("请选择训练文件");
+    //         return;
+    //     }
+    //     if(test_model == null){
+    //         showTransientDialog("请选择预测模型");
+    //         //showDialog("请选择训练模型");
+    //         return;
+    //     }
+    //
+    //     var response = null;
+    //     var d = null;
+    //     var token = $("meta[name='_csrf']").attr("content");
+    //     var header = $("meta[name='_csrf_header']").attr("content");
+    //     $(document).ajaxSend(function(e, xhr, options) {
+    //         xhr.setRequestHeader(header, token);
+    //     });
+    //     $.ajax({
+    //         url: "/damage-detection/test",
+    //         type: "POST",
+    //         async: true,
+    //         contentType: "application/json; charset=utf-8",
+    //         data: JSON.stringify({
+    //             "testfile" : test_file,
+    //             "testmodel" : test_model
+    //         }),
+    //         dataType: "json",
+    //         beforeSend: function () {
+    //             $("#dd_test_start").text('预测中...');
+    //             $("#dd_test_process").removeAttr("value");
+    //             // var content = '' +
+    //             //     ' <img alt="loadding" src="/assets/img/loading.gif" /> \
+    //             //     '
+    //             // d = dialog({
+    //             //     content: content
+    //             // });
+    //             // d.showModal();
+    //         },
+    //         success: function(response) {
+    //             var data = response.data;
+    //             var result = data['result'];
+    //             if (result == 'success') {
+    //                 //showTransientDialog('训练完成!')
+    //                 //showModalDialog("提示", "训练完成")
+    //                 //showAlertDialog('训练完成')
+    //                 showDialog("预测完成")
+    //             } else {
+    //                 showTransientDialog('预测失败！')
+    //             }
+    //         },
+    //         complete:function () {
+    //             $("#dd_test_start").text("开始预测");
+    //             $("#dd_test_process").attr("value", "100");
+    //
+    //             // if (d != null) {
+    //             //     d.close().remove();
+    //             // }
+    //         },
+    //         error: function(response) {
+    //             //showTransientDialog('调用失败！')
+    //             alert("提交任务失败");
+    //         }
+    //
+    //     });
+    // });
+
+    // $("#dd_evaluate_start").click(function () {
+    //     var evaluate_file = $("#dd_evaluate_file_selected").val();
+    //     var evaluate_model = $("#dd_evaluate_model_selected").val();
+    //     //console.log(saved_model);
+    //     if (evaluate_file == null){
+    //         showTransientDialog("请选择测试文件");
+    //         //showDialog("请选择训练文件");
+    //         return;
+    //     }
+    //     if(evaluate_model == null){
+    //         showTransientDialog("请选择验证模型");
+    //         //showDialog("请选择训练模型");
+    //         return;
+    //     }
+    //
+    //     var response = null;
+    //     var d = null;
+    //     var token = $("meta[name='_csrf']").attr("content");
+    //     var header = $("meta[name='_csrf_header']").attr("content");
+    //     $(document).ajaxSend(function(e, xhr, options) {
+    //         xhr.setRequestHeader(header, token);
+    //     });
+    //     $.ajax({
+    //         url: "/damage-detection/evaluate",
+    //         type: "POST",
+    //         async: true,
+    //         contentType: "application/json; charset=utf-8",
+    //         data: JSON.stringify({
+    //             "evaluatefile" : evaluate_file,
+    //             "evaluatemodel" : evaluate_model
+    //         }),
+    //         dataType: "json",
+    //         beforeSend: function () {
+    //             $("#dd_evaluate_start").text('验证中...');
+    //             $("#dd_evaluate_process").removeAttr("value");
+    //             // var content = '' +
+    //             //     ' <img alt="loadding" src="/assets/img/loading.gif" /> \
+    //             //     '
+    //             // d = dialog({
+    //             //     content: content
+    //             // });
+    //             // d.showModal();
+    //         },
+    //         success: function(response) {
+    //             var data = response.data;
+    //             var result = data['result'];
+    //             if (result == 'success') {
+    //                 //showTransientDialog('训练完成!')
+    //                 //showModalDialog("提示", "训练完成")
+    //                 //showAlertDialog('训练完成')
+    //                 var p = data['precision'];
+    //                 var r = data['recall'];
+    //                 var f1 = data['f1'];
+    //                 // var p = 0.9;
+    //                 // var r = 0.9;
+    //                 // var f1 = 0.9;
+    //                 var content = "验证完成！<br/> 准确率为"+p+"<br/>召回率为"+r + "</br>f1值为"+f1;
+    //                 showDialog(content);
+    //             } else {
+    //                 showTransientDialog('验证失败！')
+    //             }
+    //         },
+    //         complete:function () {
+    //             $("#dd_evaluate_start").text("模型验证");
+    //             $("#dd_evaluate_process").attr("value", "100");
+    //
+    //             // if (d != null) {
+    //             //     d.close().remove();
+    //             // }
+    //         },
+    //         error: function(response) {
+    //             //showTransientDialog('调用失败！')
+    //             alert("提交任务失败");
+    //         }
+    //
+    //     });
+    // });
+
+    //  $("#train_file_selected").onclick(updateDropdownListTrainFile())
+    // $("#dd_result_damagedetection").click(function () {
+    //     var test_file = $("#dd_test_file_selected").val();
+    //     var test_model = $("#dd_test_model_selected").val();
+    //     if(test_file == null){
+    //         showTransientDialog("请选择预测文件");
+    //         return;
+    //     }
+    //     if(test_model == null){
+    //         showTransientDialog("请选择预测模型");
+    //         return;
+    //     }
+    //
+    //     var token = $("meta[name='_csrf']").attr("content");
+    //     var header = $("meta[name='_csrf_header']").attr("content");
+    //     $(document).ajaxSend(function(e, xhr, options) {
+    //         xhr.setRequestHeader(header, token);
+    //     });
+    //     var figure_id = "dd_show_result_figure";
+    //     $("#" + figure_id).html("<img style='margin-top:120px;' src='assets/img/loading.gif'/>");
+    //     $(this).button("loading").delay(1000).queue(function () {
+    //         var param ={
+    //             "testfile" : test_file,
+    //             "testmodel" : test_model
+    //         }
+    //         var current_dialog = $(this);
+    //         getAndshowPredictResult(figure_id, current_dialog, param);
+    //     })
+    //
+    // });
     $("#dd_train_start").click(function () {
         var train_file = $("#dd_train_file_selected").val();
         var train_model = $("#dd_train_model_selected").val();
-        var saved_model = $("#dd_saved_model").val();
-        //console.log(saved_model);
-        if (train_file == null){
-            showTransientDialog("请选择训练文件");
-            //showDialog("请选择训练文件");
-            return;
-        }
-        if(train_model == null){
-            showTransientDialog("请选择训练模型");
-            //showDialog("请选择训练模型");
-            return;
-        }
-        if(!saved_model){
-            showTransientDialog("请输入保存模型名称");
-            //showDialog("请输入保存模型名称");
-            return;
-        }
-        var response = null;
-        var d = null;
-        var token = $("meta[name='_csrf']").attr("content");
-        var header = $("meta[name='_csrf_header']").attr("content");
-        $(document).ajaxSend(function(e, xhr, options) {
-            xhr.setRequestHeader(header, token);
-        });
-        $.ajax({
-            url: "/damage-detection/train",
-            type: "POST",
-            async: true,
-            contentType: "application/json; charset=utf-8",
-            data: JSON.stringify({
-                "trainfile" : train_file,
-                "trainmodel" : train_model,
-                "savedmodel" : saved_model
-            }),
-            dataType: "json",
-            beforeSend: function () {
-                $("#dd_train_start").text('训练中...');
-                $("#dd_train_process").removeAttr("value");
-                // var content = '' +
-                //     ' <img alt="loadding" src="/assets/img/loading.gif" /> \
-                //     '
-                // d = dialog({
-                //     content: content
-                // });
-                // d.showModal();
-            },
-            success: function(response) {
-                var data = response.data;
-                var result = data['result'];
-                if (result == 'success') {
-                    //showTransientDialog('训练完成!')
-                    //showModalDialog("提示", "训练完成")
-                    //showAlertDialog('训练完成')
-                    showDialog("训练完成")
-                } else {
-                    showTransientDialog('训练失败！')
-                }
-            },
-            complete:function () {
-                $("#dd_train_start").text("开始训练");
-                $("#dd_train_process").attr("value", "100");
-                updateDropdownListSavedModel();
-                updateDropdownListEvaluateModel();
-                updateDropdownListUdfEvaluateModel();
-                updateDropdownListUdfTestModel();
-                // if (d != null) {
-                //     d.close().remove();
-                // }
-            },
-            error: function(response) {
-                //showTransientDialog('调用失败！')
-                alert("提交任务失败");
-            }
-
-        });
-    });
-
-    $("#dd_test_start").click(function () {
-        var test_file = $("#dd_test_file_selected").val();
-        var test_model = $("#dd_test_model_selected").val();
-        //console.log(saved_model);
-        if (test_file == null){
-            showTransientDialog("请选择预测文件");
-            //showDialog("请选择训练文件");
-            return;
-        }
-        if(test_model == null){
-            showTransientDialog("请选择预测模型");
-            //showDialog("请选择训练模型");
-            return;
-        }
-
-        var response = null;
-        var d = null;
-        var token = $("meta[name='_csrf']").attr("content");
-        var header = $("meta[name='_csrf_header']").attr("content");
-        $(document).ajaxSend(function(e, xhr, options) {
-            xhr.setRequestHeader(header, token);
-        });
-        $.ajax({
-            url: "/damage-detection/test",
-            type: "POST",
-            async: true,
-            contentType: "application/json; charset=utf-8",
-            data: JSON.stringify({
-                "testfile" : test_file,
-                "testmodel" : test_model
-            }),
-            dataType: "json",
-            beforeSend: function () {
-                $("#dd_test_start").text('预测中...');
-                $("#dd_test_process").removeAttr("value");
-                // var content = '' +
-                //     ' <img alt="loadding" src="/assets/img/loading.gif" /> \
-                //     '
-                // d = dialog({
-                //     content: content
-                // });
-                // d.showModal();
-            },
-            success: function(response) {
-                var data = response.data;
-                var result = data['result'];
-                if (result == 'success') {
-                    //showTransientDialog('训练完成!')
-                    //showModalDialog("提示", "训练完成")
-                    //showAlertDialog('训练完成')
-                    showDialog("预测完成")
-                } else {
-                    showTransientDialog('预测失败！')
-                }
-            },
-            complete:function () {
-                $("#dd_test_start").text("开始预测");
-                $("#dd_test_process").attr("value", "100");
-
-                // if (d != null) {
-                //     d.close().remove();
-                // }
-            },
-            error: function(response) {
-                //showTransientDialog('调用失败！')
-                alert("提交任务失败");
-            }
-
-        });
-    });
-
-    $("#dd_evaluate_start").click(function () {
-        var evaluate_file = $("#dd_evaluate_file_selected").val();
-        var evaluate_model = $("#dd_evaluate_model_selected").val();
-        //console.log(saved_model);
-        if (evaluate_file == null){
-            showTransientDialog("请选择测试文件");
-            //showDialog("请选择训练文件");
-            return;
-        }
-        if(evaluate_model == null){
-            showTransientDialog("请选择验证模型");
-            //showDialog("请选择训练模型");
-            return;
-        }
-
-        var response = null;
-        var d = null;
-        var token = $("meta[name='_csrf']").attr("content");
-        var header = $("meta[name='_csrf_header']").attr("content");
-        $(document).ajaxSend(function(e, xhr, options) {
-            xhr.setRequestHeader(header, token);
-        });
-        $.ajax({
-            url: "/damage-detection/evaluate",
-            type: "POST",
-            async: true,
-            contentType: "application/json; charset=utf-8",
-            data: JSON.stringify({
-                "evaluatefile" : evaluate_file,
-                "evaluatemodel" : evaluate_model
-            }),
-            dataType: "json",
-            beforeSend: function () {
-                $("#dd_evaluate_start").text('验证中...');
-                $("#dd_evaluate_process").removeAttr("value");
-                // var content = '' +
-                //     ' <img alt="loadding" src="/assets/img/loading.gif" /> \
-                //     '
-                // d = dialog({
-                //     content: content
-                // });
-                // d.showModal();
-            },
-            success: function(response) {
-                var data = response.data;
-                var result = data['result'];
-                if (result == 'success') {
-                    //showTransientDialog('训练完成!')
-                    //showModalDialog("提示", "训练完成")
-                    //showAlertDialog('训练完成')
-                    var p = data['precision'];
-                    var r = data['recall'];
-                    var f1 = data['f1'];
-                    // var p = 0.9;
-                    // var r = 0.9;
-                    // var f1 = 0.9;
-                    var content = "验证完成！<br/> 准确率为"+p+"<br/>召回率为"+r + "</br>f1值为"+f1;
-                    showDialog(content);
-                } else {
-                    showTransientDialog('验证失败！')
-                }
-            },
-            complete:function () {
-                $("#dd_evaluate_start").text("模型验证");
-                $("#dd_evaluate_process").attr("value", "100");
-
-                // if (d != null) {
-                //     d.close().remove();
-                // }
-            },
-            error: function(response) {
-                //showTransientDialog('调用失败！')
-                alert("提交任务失败");
-            }
-
-        });
-    });
-
-    //  $("#train_file_selected").onclick(updateDropdownListTrainFile())
-    $("#dd_result_damagedetection").click(function () {
-        var test_file = $("#dd_test_file_selected").val();
-        var test_model = $("#dd_test_model_selected").val();
-        if(test_file == null){
-            showTransientDialog("请选择预测文件");
-            return;
-        }
-        if(test_model == null){
-            showTransientDialog("请选择预测模型");
-            return;
-        }
-
-        var token = $("meta[name='_csrf']").attr("content");
-        var header = $("meta[name='_csrf_header']").attr("content");
-        $(document).ajaxSend(function(e, xhr, options) {
-            xhr.setRequestHeader(header, token);
-        });
-        var figure_id = "dd_show_result_figure";
-        $("#" + figure_id).html("<img style='margin-top:120px;' src='assets/img/loading.gif'/>");
-        $(this).button("loading").delay(1000).queue(function () {
-            var param ={
-                "testfile" : test_file,
-                "testmodel" : test_model
-            }
-            var current_dialog = $(this);
-            getAndshowPredictResult(figure_id, current_dialog, param);
-        })
-        // var response = null;
-        // var param ={
-        //     "testfile" : JSON.stringify(test_file),
-        //     "testmodel" : JSON.stringify(test_model)
-        // }
-
-        // $.ajax({
-        //     url: "/overweight-analysis/result_show",
-        //     type: "GET",
-        //     async: true,
-        //     contentType: "application/json; charset=utf-8",
-        //     data: JSON.stringify({
-        //         "testfile" : test_file,
-        //         "testmodel" : test_model
-        //     }),
-        //     dataType: "json",
-        //     beforeSend: function () {
-        //
-        //     },
-        //     success: function(response) {
-        //
-        //     },
-        //     complete:function () {
-        //
-        //     },
-        //     error: function(response) {
-        //         alert("提交任务失败");
-        //     }
-        // });
-    });
-    $("#dd_udf_train_start").click(function () {
-        var train_model = $("#dd_udf_train_model_selected").val();
         var bridge = $("#dd_train_bridge_selected").val();
-        var saved_model = $("#dd_udf_saved_model").val();
+        var saved_model = $("#dd_saved_model").val();
 
+        if(train_file == null){
+            showTransientDialog("请选择训练文件");
+            return;
+        }
         if(train_model == null){
             showTransientDialog("请选择训练模型");
             //showDialog("请选择训练模型");
@@ -838,8 +818,8 @@ $(function () {
             //showDialog("请输入保存模型名称");
             return;
         }
-        var begin_time = $("#dd_train_udf_begin_time").val();
-        var end_time = $("#dd_train_udf_end_time").val();
+        var begin_time = $("#dd_train_begin_time").val();
+        var end_time = $("#dd_train_end_time").val();
         if(begin_time >= end_time){
             showTransientDialog("开始时间必须小于截止时间");
             return;
@@ -851,12 +831,13 @@ $(function () {
         });
 
         $.ajax({
-            url: "/damage-detection/train-udf",
+            url: "/damage-detection/train",
             type: "POST",
             async: true,
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({
                 "bridge" : bridge,
+                "trainfile" : train_file,
                 "trainmodel" : train_model,
                 "savedmodel" : saved_model,
                 "begintime" : new Date(begin_time).format('yyyyMMddHHmmss'),
@@ -864,8 +845,8 @@ $(function () {
             }),
             dataType: "json",
             beforeSend: function () {
-                $("#dd_udf_train_start").text('训练中...');
-                $("#dd_udf_train_process").removeAttr("value");
+                $("#dd_train_start").text('训练中...');
+                $("#dd_train_process").removeAttr("value");
                 // var content = '' +
                 //     ' <img alt="loadding" src="/assets/img/loading.gif" /> \
                 //     '
@@ -889,12 +870,10 @@ $(function () {
                 }
             },
             complete:function () {
-                $("#dd_udf_train_start").text("开始训练");
-                $("#dd_udf_train_process").attr("value", "100");
+                $("#dd_train_start").text("开始训练");
+                $("#dd_train_process").attr("value", "100");
                 updateDropdownListSavedModel();
                 updateDropdownListEvaluateModel();
-                updateDropdownListUdfEvaluateModel();
-                updateDropdownListUdfTestModel();
                 // if (d != null) {
                 //     d.close().remove();
                 // }
@@ -909,10 +888,15 @@ $(function () {
 
     })
 
-    $("#dd_udf_evaluate_start").click(function () {
-        var evaluate_model = $("#dd_udf_evaluate_model_selected").val();
+    $("#dd_evaluate_start").click(function () {
+        var evaluate_file = $("#dd_evaluate_file_selected").val();
+        var evaluate_model = $("#dd_evaluate_model_selected").val();
         var bridge = $("#dd_evaluate_bridge_selected").val();
 
+        if(evaluate_file == null){
+            showTransientDialog("请选择验证文件");
+            return;
+        }
         if(evaluate_model == null){
             showTransientDialog("请选择验证模型");
             //showDialog("请选择训练模型");
@@ -922,8 +906,8 @@ $(function () {
             showTransientDialog("请选择分析桥梁");
             return;
         }
-        var begin_time = $("#dd_evaluate_udf_begin_time").val();
-        var end_time = $("#dd_evaluate_udf_end_time").val();
+        var begin_time = $("#dd_evaluate_begin_time").val();
+        var end_time = $("#dd_evaluate_end_time").val();
         if(begin_time >= end_time){
             showTransientDialog("开始时间必须小于截止时间");
             return;
@@ -934,11 +918,12 @@ $(function () {
             xhr.setRequestHeader(header, token);
         });
         $.ajax({
-            url: "/damage-detection/evaluate-udf",
+            url: "/damage-detection/evaluate",
             type: "POST",
             async: true,
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({
+                "evaluatefile" : evaluate_file,
                 "bridge" : bridge,
                 "evaluatemodel" : evaluate_model,
                 "begintime" : new Date(begin_time).format('yyyyMMddHHmmss'),
@@ -946,8 +931,8 @@ $(function () {
             }),
             dataType: "json",
             beforeSend: function () {
-                $("#dd_udf_evaluate_start").text('验证中...');
-                $("#dd_udf_evaluate_process").removeAttr("value");
+                $("#dd_evaluate_start").text('验证中...');
+                $("#dd_evaluate_process").removeAttr("value");
             },
             success: function(response) {
                 var data = response.data;
@@ -965,8 +950,8 @@ $(function () {
                 }
             },
             complete:function () {
-                $("#dd_udf_evaluate_start").text("开始训练");
-                $("#dd_udf_evaluate_process").attr("value", "100");
+                $("#dd_evaluate_start").text("开始训练");
+                $("#dd_evaluate_process").attr("value", "100");
                 //updateDropdownListSavedModel();
                 //updateDropdownListEvaluateModel();
                 //updateDropdownListUdfEvaluateModel();
@@ -977,12 +962,17 @@ $(function () {
             }
 
         });
-    })
+    });
 
-    $("#dd_udf_test_start").click(function () {
-        var test_model = $("#dd_udf_test_model_selected").val();
+    $("#dd_test_start").click(function () {
+        var test_file = $("#dd_test_file_selected").val();
+        var test_model = $("#dd_test_model_selected").val();
         var bridge = $("#dd_test_bridge_selected").val();
 
+        if(test_file == null){
+            showTransientDialog("请选择训练文件");
+            return;
+        }
         if(test_model == null){
             showTransientDialog("请选择预测模型");
             //showDialog("请选择训练模型");
@@ -992,8 +982,8 @@ $(function () {
             showTransientDialog("请选择分析桥梁");
             return;
         }
-        var begin_time = $("#dd_test_udf_begin_time").val();
-        var end_time = $("#dd_test_udf_end_time").val();
+        var begin_time = $("#dd_test_begin_time").val();
+        var end_time = $("#dd_test_end_time").val();
         if(begin_time >= end_time){
             showTransientDialog("开始时间必须小于截止时间");
             return;
@@ -1005,11 +995,12 @@ $(function () {
         });
 
         $.ajax({
-            url: "/damage-detection/test-udf",
+            url: "/damage-detection/test",
             type: "POST",
             async: true,
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({
+                "testfile" : test_file,
                 "bridge" : bridge,
                 "testmodel" : test_model,
                 "begintime" : new Date(begin_time).format('yyyyMMddHHmmss'),
@@ -1017,8 +1008,8 @@ $(function () {
             }),
             dataType: "json",
             beforeSend: function () {
-                $("#dd_udf_test_start").text('预测中...');
-                $("#dd_udf_test_process").removeAttr("value");
+                $("#dd_test_start").text('预测中...');
+                $("#dd_test_process").removeAttr("value");
             },
             success: function(response) {
                 var data = response.data;
@@ -1033,8 +1024,8 @@ $(function () {
 
             },
             complete:function () {
-                $("#dd_udf_test_start").text("开始预测");
-                $("#dd_udf_test_process").attr("value", "100");
+                $("#dd_test_start").text("开始预测");
+                $("#dd_test_process").attr("value", "100");
             },
             error: function(response) {
                 alert("提交任务失败");
@@ -1043,12 +1034,17 @@ $(function () {
         });
     })
 
-    $("#dd_udf_result_damagedetection").click(function () {
-        var test_model = $("#dd_udf_test_model_selected").val();
+    $("#dd_result_damagedetection").click(function () {
+        var test_file = $("#dd_test_file_selected").val();
+        var test_model = $("#dd_test_model_selected").val();
         var bridge = $("#dd_test_bridge_selected").val();
-        var begin_time = $("#dd_test_udf_begin_time").val();
-        var end_time = $("#dd_test_udf_end_time").val();
+        var begin_time = $("#dd_test_begin_time").val();
+        var end_time = $("#dd_test_end_time").val();
 
+        if(test_file == null){
+            showTransientDialog("请选择训练文件");
+            return;
+        }
         if(test_model == null){
             showTransientDialog("请选择预测模型");
             //showDialog("请选择训练模型");
@@ -1069,17 +1065,18 @@ $(function () {
             xhr.setRequestHeader(header, token);
         });
 
-        var figure_id = "dd_udf_show_result_figure";
+        var figure_id = "dd_show_result_figure";
         $("#" + figure_id).html("<img style='margin-top:120px;' src='assets/img/loading.gif'/>");
         $(this).button("loading").delay(1000).queue(function () {
             var param ={
+                "testfile" : test_file,
                 "testmodel" : test_model,
                 "bridge" : bridge,
                 "begintime" : new Date(begin_time).format('yyyyMMddHHmmss'),
                 "endtime" : new Date(end_time).format('yyyyMMddHHmmss')
             }
             var current_dialog = $(this);
-            getAndshowPredictUDFResult(figure_id, current_dialog, param);
+            getAndshowPredictResult(figure_id, current_dialog, param);
         })
     })
 });

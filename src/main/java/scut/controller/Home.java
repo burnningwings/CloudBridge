@@ -201,4 +201,12 @@ public class Home {
         return "watchbox_type";
     }
 
+    @RequestMapping("/watchpoint_para")
+    public String watchpoint_para(Model model) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
+        model.addAttribute(Constants.CURRENT_USER, currentUser);
+        return "watchpoint_para";
+    }
+
 }

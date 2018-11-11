@@ -58,9 +58,12 @@
                         <a class="sf-cogs">系统管理<span class="caret"></span></a>
                         <ul>
                             <li th:class="${seven_1}"><a href="/watchpoint_para.html">桥梁参数管理</a></li>
-                            <li th:class="${seven_2}"><a href="/log_option.html">日志选项</a></li>
-                            <li th:class="${seven_3}"><a href="/bridge_type.html">桥梁类型</a></li>
-                            <li th:class="${seven_4}"><a href="/watchbox_type.html">测控箱类型</a></li>
+                            <li th:if="${CurrentUser.userName} == 'admin'"
+                                th:class="${seven_2}"><a href="/log_option.html">日志选项</a></li>
+                            <li th:if="${CurrentUser.userName} == 'admin'"
+                                th:class="${seven_3}"><a href="/bridge_type.html">桥梁类型</a></li>
+                            <li th:if="${CurrentUser.userName} == 'admin'"
+                                th:class="${seven_4}"><a href="/watchbox_type.html">测控箱类型</a></li>
                         </ul>
                     </li>
                     <li><a th:href="@{/logout}" class="sf-lock-open">退出</a></li>

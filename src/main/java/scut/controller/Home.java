@@ -1,5 +1,6 @@
 package scut.controller;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -12,7 +13,8 @@ import scut.service.authority.CurrentUser;
 import scut.util.Constants;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Carrod on 2018/4/19.
@@ -33,45 +35,41 @@ public class Home {
         URLToName.put("watch-point", "监测点管理");
     }
 
-    @RequestMapping("/")
-    public String index(Model model) {
+    private void setUser(Model model) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
         model.addAttribute(Constants.CURRENT_USER, currentUser);
+    }
+
+    @RequestMapping("/")
+    public String index(Model model) {
+        setUser(model);
         return "index";
     }
 
     @RequestMapping("/test")
     public String test(Model model) {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
-        model.addAttribute(Constants.CURRENT_USER, currentUser);
+        setUser(model);
         return "test";
     }
 
     @RequestMapping("/bridge")
     public String bridge(Model model) {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
-        model.addAttribute(Constants.CURRENT_USER, currentUser);
+        setUser(model);
         return "bridge";
 
     }
 
     @RequestMapping("/section")
     public String section(Model model, Integer bridgeId) {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
-        model.addAttribute(Constants.CURRENT_USER, currentUser);
+        setUser(model);
         model.addAttribute("bridge_id", bridgeId == null ? 0 : bridgeId);
         return "section";
     }
 
     @RequestMapping("/watch-point")
     public String watchPoint(Model model, Integer bridgeId, Integer sectionId) {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
-        model.addAttribute(Constants.CURRENT_USER, currentUser);
+        setUser(model);
         bridgeId = bridgeId == null ? 0 : bridgeId;
         sectionId = bridgeId == 0 || sectionId == null ? 0 : sectionId;
         model.addAttribute("bridge_id", bridgeId);
@@ -81,59 +79,45 @@ public class Home {
 
     @RequestMapping("/watch-box")
     public String watchBox(Model model, Integer bridgeId) {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
-        model.addAttribute(Constants.CURRENT_USER, currentUser);
+        setUser(model);
         model.addAttribute("bridge_id", bridgeId == null ? 0 : bridgeId);
         return "watch-box";
     }
 
     @RequestMapping("/overweight-analysis")
     public String overweightAnalysis(Model model) {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
-        model.addAttribute(Constants.CURRENT_USER, currentUser);
+        setUser(model);
         return "overweight-analysis";
     }
 
     @RequestMapping("/damage-detection")
     public String damageDetection(Model model) {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
-        model.addAttribute(Constants.CURRENT_USER, currentUser);
+        setUser(model);
         return "damage-detection";
     }
 
     @RequestMapping("/association-analysis")
     public String associationAnalysis(Model model) {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
-        model.addAttribute(Constants.CURRENT_USER, currentUser);
+        setUser(model);
         return "association-analysis";
     }
 
     @RequestMapping("/wavelet-analysis")
     public String waveletAnalysis(Model model) {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
-        model.addAttribute(Constants.CURRENT_USER, currentUser);
+        setUser(model);
         return "wavelet-analysis";
     }
 
     @RequestMapping("/user-manager")
     public String userManager(Model model) {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
-        model.addAttribute(Constants.CURRENT_USER, currentUser);
+        setUser(model);
         return "user-manager";
     }
 
-    
+
     @RequestMapping("/role-manager")
     public String roleManager(Model model) {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
-        model.addAttribute(Constants.CURRENT_USER, currentUser);
+        setUser(model);
         return "role-manager";
     }
 
@@ -145,25 +129,19 @@ public class Home {
 
     @RequestMapping("/query-data")
     public String queryData(Model model) {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
-        model.addAttribute(Constants.CURRENT_USER, currentUser);
+        setUser(model);
         return "query-data";
     }
 
     @RequestMapping("/upload-data")
     public String uploadData(Model model) {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
-        model.addAttribute(Constants.CURRENT_USER, currentUser);
+        setUser(model);
         return "upload-data";
     }
 
     @RequestMapping("/sensor")
     public String sensor(Model model, Integer bridgeId, Integer sectionId, Integer watchPointId, Integer watchBoxId) {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
-        model.addAttribute(Constants.CURRENT_USER, currentUser);
+        setUser(model);
         bridgeId = bridgeId == null ? 0 : bridgeId;
         sectionId = bridgeId == 0 || sectionId == null ? 0 : sectionId;
         watchPointId = sectionId == 0 || watchPointId == null ? 0 : watchPointId;
@@ -178,49 +156,40 @@ public class Home {
 
     @RequestMapping("/log_bridge")
     public String log_gridge(Model model) {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
-        model.addAttribute(Constants.CURRENT_USER, currentUser);
+        setUser(model);
         return "log_bridge";
     }
 
     @RequestMapping("/log_system")
     public String log_system(Model model) {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
-        model.addAttribute(Constants.CURRENT_USER, currentUser);
+        setUser(model);
         return "log_system";
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping("/log_option")
     public String log_option(Model model) {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
-        model.addAttribute(Constants.CURRENT_USER, currentUser);
+        setUser(model);
         return "log_option";
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping("/bridge_type")
     public String bridge_type(Model model) {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
-        model.addAttribute(Constants.CURRENT_USER, currentUser);
+        setUser(model);
         return "bridge_type";
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping("/watchbox_type")
     public String watchbox_type(Model model) {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
-        model.addAttribute(Constants.CURRENT_USER, currentUser);
+        setUser(model);
         return "watchbox_type";
     }
 
     @RequestMapping("/watchpoint_para")
     public String watchpoint_para(Model model) {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
-        model.addAttribute(Constants.CURRENT_USER, currentUser);
+        setUser(model);
         return "watchpoint_para";
     }
 
@@ -232,9 +201,7 @@ public class Home {
         model.addAttribute("fromName", URLToName.get(from));
         model.addAttribute("objectId", objectId);
 
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
-        model.addAttribute(Constants.CURRENT_USER, currentUser);
+        setUser(model);
 
         return "image-upload";
     }
@@ -250,9 +217,7 @@ public class Home {
         model.addAttribute("ImageFilenames", imageService.getImageFilenames(from, objectId));
         model.addAttribute("imageURIs", imageService.getImageURIs(from, objectId));
 
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
-        model.addAttribute(Constants.CURRENT_USER, currentUser);
+        setUser(model);
 
         return "image";
     }

@@ -28,7 +28,6 @@ public class Organization {
                     name = "organization_id",
                     referencedColumnName = "id",
                     foreignKey = @ForeignKey(name = "fk_superior_organization_organization_id")))
-//    @LazyCollection(LazyCollectionOption.FALSE)
     private Set<Organization> directInferiorOrganizations;
 
     @Transient
@@ -74,6 +73,9 @@ public class Organization {
 
     private void fetchAllInferiorOrganizations(Set<Organization> result, Organization currentOrganization) {
         for (Organization o : currentOrganization.getDirectInferiorOrganizations()) {
+            if (o.getId() == currentOrganization.getId()) {
+                continue;
+            }
             result.add(o);
             fetchAllInferiorOrganizations(result, o);
         }

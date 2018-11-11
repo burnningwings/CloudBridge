@@ -1,15 +1,18 @@
 package scut.controller;
 
-import com.sun.org.apache.xpath.internal.operations.Mod;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import scut.service.ImageService;
 import scut.service.authority.CurrentUser;
 import scut.util.Constants;
+
+import javax.annotation.Resource;
+import java.util.*;
 
 /**
  * Created by Carrod on 2018/4/19.
@@ -17,6 +20,18 @@ import scut.util.Constants;
 
 @Controller
 public class Home {
+
+    @Resource
+    ImageService imageService;
+
+    private static Map<String, String> URLToName;
+
+    static {
+        URLToName = new HashMap<>();
+        URLToName.put("bridge", "桥梁信息");
+        URLToName.put("section", "截面管理");
+        URLToName.put("watch-point", "监测点管理");
+    }
 
     @RequestMapping("/")
     public String index(Model model) {
@@ -113,7 +128,7 @@ public class Home {
         return "user-manager";
     }
 
-    
+
     @RequestMapping("/role-manager")
     public String roleManager(Model model) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -123,7 +138,7 @@ public class Home {
     }
 
     @RequestMapping("/403")
-    public String failedView(){
+    public String failedView() {
 
         return "failedView";
     }
@@ -201,4 +216,36 @@ public class Home {
         return "watchbox_type";
     }
 
+    @GetMapping("/{from}/image-upload/{objectId}")
+    public String imageUpload(Model model,
+                              @PathVariable("from") String from,
+                              @PathVariable("objectId") long objectId) {
+        model.addAttribute("from", from);
+        model.addAttribute("fromName", URLToName.get(from));
+        model.addAttribute("objectId", objectId);
+
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
+        model.addAttribute(Constants.CURRENT_USER, currentUser);
+
+        return "image-upload";
+    }
+
+    @GetMapping("/{from}/image/{objectId}")
+    public String listImages(Model model,
+                             @PathVariable("from") String from,
+                             @PathVariable("objectId") long objectId) {
+        model.addAttribute("from", from);
+        model.addAttribute("fromName", URLToName.get(from));
+        model.addAttribute("objectId", objectId);
+        model.addAttribute("imageBaseURI", imageService.getImageBaseURI(from, objectId));
+        model.addAttribute("ImageFilenames", imageService.getImageFilenames(from, objectId));
+        model.addAttribute("imageURIs", imageService.getImageURIs(from, objectId));
+
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
+        model.addAttribute(Constants.CURRENT_USER, currentUser);
+
+        return "image";
+    }
 }

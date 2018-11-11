@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<th:block th:fragment="cssLinks">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/css/bootstrap-clearmin.min.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/css/roboto.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/css/material-design.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/css/small-n-flat.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/css/font-awesome.min.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/ext/artDialog-6.0.4/css/ui-dialog.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/ext/artDialog-6.0.4/css/custom.css}">
+    <link rel="stylesheet" type="text/css"
+          th:href="@{https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.3.0/viewer.min.css}"/>
+</th:block>
+
+<th:block th:fragment="jsLinks">
+    <script th:src="@{/assets/js/lib/jquery-2.1.3.min.js}"></script>
+    <script th:src="@{/assets/js/jquery.mousewheel.min.js}"></script>
+    <script th:src="@{/assets/js/jquery.cookie.min.js}"></script>
+    <script th:src="@{/assets/js/fastclick.min.js}"></script>
+    <script th:src="@{/assets/js/bootstrap.min.js}"></script>
+    <script th:src="@{/assets/js/clearmin.min.js}"></script>
+    <script th:src="@{/ext/artDialog-6.0.4/js/dialog-plus-min.js}"></script>
+    <script th:src="@{https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.3.0/viewer.min.js}"></script>
+    <script th:src="@{http://cdn.staticfile.org/webuploader/0.1.0/webuploader.min.js}"></script>
+    <script th:src="@{/udf/js/common.js}"></script>
+</th:block>
+
+<header th:fragment="navHead(activeTab)" id="cm-header">
+    <nav class="cm-navbar cm-navbar-primary">
+        <div class="btn btn-primary md-menu-white hidden-md hidden-lg" data-toggle="cm-menu"></div>
+        <div class="cm-flex">
+            <div class="cm-breadcrumb-container">
+                <ol class="breadcrumb">
+                    <li><a th:href="@{/bridge}">桥梁管理</a></li>
+                    <li><a th:href="@{'/' + ${from}}" th:text="${fromName}">桥梁信息</a></li>
+                    <li class="active">图片管理</li>
+                </ol>
+            </div>
+            <iframe id="tmp_downloadhelper_iframe" style="display: none;"></iframe>
+        </div>
+        <div th:replace="base/profile::profile"></div>
+    </nav>
+    <nav class="cm-navbar cm-navbar-default cm-navbar-slideup">
+        <div class="cm-flex">
+            <div class="nav-tabs-container">
+                <ul class="nav nav-tabs">
+                    <li th:class="${#strings.equals(activeTab, 'image')} ? 'active'">
+                        <a th:href="@{'/' + ${from} + '/image/' + ${objectId}}">查看图片</a>
+                    </li>
+                    <li th:class="${#strings.equals(activeTab, 'image-upload')} ? 'active'">
+                        <a sec:authorize="hasRole('ADMIN')"
+                           th:href="@{'/' + ${from} + '/image-upload/' + ${objectId}}">上传图片</a>
+                    </li>
+                </ul>
+                <iframe id="tmp_downloadhelper_iframe" style="display: none;"></iframe>
+            </div>
+        </div>
+    </nav>
+</header>
+
+</html>

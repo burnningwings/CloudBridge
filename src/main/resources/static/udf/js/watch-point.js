@@ -95,7 +95,7 @@ function updateWatchPointGrid(bridge_id, section_id) {
                 headerAttributes: {style: "text-align:center"},
                 attributes: {class: "text-center"}
             }, {
-                template: "<a class='btn btn-success' id='picture-#:watch_point_id#' onclick=''/>管理</a>",
+                template: "<a class='btn btn-success' id='picture-#:watch_point_id#' href='/watch-point/image/#:watch_point_id#'/>管理</a>",
                 title: "位置图片",
                 headerAttributes: {style: "text-align:center"},
                 attributes: {class: "text-center"}

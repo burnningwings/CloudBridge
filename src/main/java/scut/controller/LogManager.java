@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.log4j.Logger;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.ui.Model;
@@ -82,6 +83,7 @@ public class LogManager {
      * @param reqMsg 参数
      * @return
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping(value = "/log_bridge/delete", method = RequestMethod.POST, produces = "application/json")
     public JSONObject deleteBridge(@RequestBody JSONObject reqMsg) {
         HttpResponse response = new HttpResponse();
@@ -142,6 +144,7 @@ public class LogManager {
      * @param reqMsg 参数
      * @return
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping(value = "/log_system/delete", method = RequestMethod.POST, produces = "application/json")
     public JSONObject deleteSysttem(@RequestBody JSONObject reqMsg) {
         HttpResponse response = new HttpResponse();
@@ -202,6 +205,7 @@ public class LogManager {
      * @param reqMsg 参数
      * @return
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping(value = "/log_option/save", method = RequestMethod.POST, produces = "application/json")
     public JSONObject log_optionsave(@RequestBody JSONObject reqMsg) {
         HttpResponse response = new HttpResponse();

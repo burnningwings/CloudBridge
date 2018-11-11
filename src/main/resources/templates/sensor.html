@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml"
+       xmlns:th="http://www.thymeleaf.org"
+       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="utf-8">
     <meta name="_csrf" th:content="${_csrf.token}"/>
@@ -44,7 +46,7 @@
                 <select class="selectpicker" id="dropdownMenu4" th:attr="init-value=${watch_box_id}"></select>
                 <br><br>
                 <div id="sensor-grid"></div>
-                <div style="float:left;margin: 20px 0px 0px 0px">
+                <div style="float:left;margin: 20px 0px 0px 0px" sec:authorize="hasRole('ROLE_ADMIN')">
                     <button id="add_sensor" type="button" style="margin:.0em 1em 0em 0em"
                             class="btn btn-l btn-primary">
                         增加

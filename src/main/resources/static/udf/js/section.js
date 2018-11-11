@@ -89,7 +89,7 @@ function updateSectionInfoGrid(bridge_id) {
                 headerAttributes: {style: "text-align:center"},
                 attributes: {class: "text-center"}
             }, {
-                template: "<a class='btn btn-success' id='picture-#:section_id#' onclick=''/>管理</a>",
+                template: "<a class='btn btn-success' id='picture-#:section_id#' href='/section/image/#:section_id#'/>管理</a>",
                 title: "截面图片",
                 headerAttributes: {style: "text-align:center"},
                 attributes: {class: "text-center"}

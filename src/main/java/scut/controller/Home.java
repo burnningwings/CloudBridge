@@ -128,7 +128,7 @@ public class Home {
         return "user-manager";
     }
 
-
+    
     @RequestMapping("/role-manager")
     public String roleManager(Model model) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -214,6 +214,14 @@ public class Home {
         CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
         model.addAttribute(Constants.CURRENT_USER, currentUser);
         return "watchbox_type";
+    }
+
+    @RequestMapping("/watchpoint_para")
+    public String watchpoint_para(Model model) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
+        model.addAttribute(Constants.CURRENT_USER, currentUser);
+        return "watchpoint_para";
     }
 
     @GetMapping("/{from}/image-upload/{objectId}")

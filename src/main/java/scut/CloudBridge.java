@@ -78,6 +78,10 @@ public class CloudBridge implements EnvironmentAware {
             Constants.OVERWEIGHT_EVALUATEFILE_TARGET_DIR = env.getProperty("overweigh.evaluatefile.target.dir").toString();
             Constants.OVERWEIGHT_TEST_FILE_MERGED_DIR = env.getProperty("overweigh.testfile.merged.dir").toString();
             Constants.OVERWEIGHT_TESTFILE_TARGET_DIR = env.getProperty("overweigh.testfile.target.dir").toString();
+            Constants.RELIABILITY_ANALYSIS_FILE = env.getProperty("reliability.analysis.file.dir").toString();
+            Constants.RELIABILITY_ANALYSIS_PROGRAM = env.getProperty("reliability.analysis.program").toString();
+            Constants.RELIABILITY_TARGET_DIR = env.getProperty("reliability.analysis.target.dir").toString();
+            Constants.RELIABILITY_ANALYSIS_RESULT_DIR = env.getProperty("reliability.analysis.result.dir").toString();
         }catch (Exception e){
             logger.debug("当前MYSQL未配置.");
         }

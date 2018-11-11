@@ -317,12 +317,14 @@ $(function () {
         timeFormat: "HH:mm:ss",
         dateFormat: "yy-mm-dd"
     });
+    var t_begin_test = new Date(2018,08,11,00,00,00).format(data_format_str);
+    var t_end_test = new Date(2018,09,10,18,00,00).format(data_format_str);
     $('#dd_test_end_time').datetimepicker({
         timeFormat: "HH:mm:ss",
         dateFormat: "yy-mm-dd"
     });
-    $('#dd_test_begin_time').val(current_time);
-    $('#dd_test_end_time').val(current_time);
+    $('#dd_test_begin_time').val(t_begin_test);
+    $('#dd_test_end_time').val(t_end_test);
 
     //$("#train_file_selected").on('shown.bs.select', updateDropdownListTrainFile());
     // $("#train_file_selected").click(function () {

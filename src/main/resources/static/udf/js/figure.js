@@ -2094,3 +2094,235 @@ function  showWaveletResultChart(figure_id, timeList, temperatureList, strainLis
         var chart = echarts.init(document.getElementById(figure_id));
         chart.setOption(option);
 }
+
+function showReliabilityResultChart(figure_id, timeList, btcList, bttList, pfcList, pftList){
+    console.log(timeList);
+    var option = {
+        title : [
+            {
+                left : '22%',
+                top : '1%',
+                text : '抗压可靠度'
+            },
+            {
+                left : '72%',
+                top : '1%',
+                text : '抗拉可靠度'
+            },
+            {
+                left : '22%',
+                top : '51%',
+                text : '抗压失效概率'
+            },
+            {
+                left : '72%',
+                top : '51%',
+                text : '抗拉失效概率'
+            }
+        ],
+        tooltip: {},
+        grid : [
+            {
+                id : 0,
+                height : '40%',
+                width : '40%',
+                left : '4%'
+            },
+            {
+                id : 1,
+                height : '40%',
+                width : '40%',
+                left : '53%'
+            },
+            {
+                id : 2,
+                height : '40%',
+                width : '40%',
+                top : '54%',
+                left : '4%'
+            },
+            {
+                id : 3,
+                height : '40%',
+                width : '40%',
+                top : '54%',
+                left : '53%'
+            }
+        ],
+        dataZoom : [
+            {
+                type : 'inside',
+                xAxisIndex : 0,
+                yAxisIndex : 0
+            },
+            {
+                type : 'slider',
+                show : false,
+                xAxisIndex : 0,
+              //  yAxisIndex : 0
+            },
+            {
+                type : 'slider',
+                show : false,
+                //xAxisIndex : 0,
+                yAxisIndex : 0
+            },
+            {
+                type : 'inside',
+                xAxisIndex : 1,
+                yAxisIndex : 1
+            },
+            {
+                type : 'slider',
+                show : false,
+                xAxisIndex : 1,
+                yAxisIndex : 1
+            },
+            {
+                type : 'inside',
+                xAxisIndex : 2,
+                yAxisIndex : 2
+            },
+            {
+                type : 'slider',
+                show : false,
+                xAxisIndex : 2,
+                yAxisIndex : 2
+            },
+            {
+                type : 'inside',
+                xAxisIndex : 3,
+                yAxisIndex : 3
+            },
+            {
+                type : 'slider',
+                show : false,
+                xAxisIndex : 3,
+                yAxisIndex : 3
+            }
+        ],
+        toolbox : {
+            show : true,
+            right : '5%',
+            feature : {
+                dataView : {
+                    readOnly : true,
+                    optionToContent: function (opt) {
+                        var series = opt.series[0].data;
+                        var index = opt.xAxis[0].data;
+                        var tdHeads = '<td  style="padding: 0 10px">时间段</td>'
+                            +'<td  style="padding: 0 10px">抗压可靠度</td>'
+                            +'<td  style="padding: 0 10px">抗拉可靠度</td>'
+                            +'<td  style="padding: 0 10px">抗压失效概率</td>'
+                            +'<td  style="padding: 0 10px">抗拉失效概率</td>'; //表头
+                        var table = '<table border="1" style="margin-left:20px;border-collapse:collapse;font-size:14px;text-align:center"><tbody><tr>'+tdHeads+'</tr>';
+                        var tdBody = '';
+                        for(var i = 0; i < timeList.length;i++)
+                        {
+                            table += '<tr><td style="padding: 0 10px">'+timeList[i]+
+                                '</td><td style="padding: 0 10px">'+btcList[i]+
+                                '</td><td style="padding: 0 10px">'+bttList[i]+
+                                '</td><td style="padding: 0 10px">'+pfcList[i]+
+                                '</td><td style="padding: 0 10px">'+pftList[i]+'</td></tr>';
+                        }
+                        table += '</tbody></table>';
+                        return table;
+
+                    }
+                },
+                saveAsImage: {
+                    pixelRatio:2,
+                    show: true
+                },
+            }
+        },
+        xAxis: [
+            {
+                name : '时间段',
+                data : timeList,
+                id : 0,
+                gridIndex : 0
+            },
+            {
+                name : '时间段',
+                data : timeList,
+                id : 1,
+                gridIndex : 1
+            },
+            {
+                name : '时间段',
+                data : timeList,
+                id : 2,
+                gridIndex : 2
+            },
+            {
+                name : '时间段',
+                data : timeList,
+                id : 3,
+                gridIndex : 3
+            }
+        ],
+        yAxis:[
+            {
+                name : '抗压可靠度',
+                id : 0,
+                gridIndex : 0,
+               // min : 0,
+               // max : 1
+            },
+            {
+                name : "抗拉可靠度",
+                id : 1,
+                gridIndex : 1,
+               // min : 0,
+               // max : 1
+            },
+            {
+                name : '抗压失效概率',
+                id : 2,
+                gridIndex : 2,
+                //min : 0,
+                //max : 1
+            },
+            {
+                name : '抗拉失效概率',
+                id : 3,
+                gridIndex : 3,
+              //  min : 0,
+              //  max : 1
+            }
+        ],
+        series : [
+            {
+                name : '抗压可靠度',
+                type : 'line',
+                data : btcList,
+                xAxisIndex : 0,
+                yAxisIndex : 0
+            },
+            {
+                name : '抗拉可靠度',
+                type : 'line',
+                data : bttList,
+                xAxisIndex : 1,
+                yAxisIndex : 1
+            },
+            {
+                name : '抗压失效概率',
+                type : 'line',
+                data : pfcList,
+                xAxisIndex : 2,
+                yAxisIndex : 2
+            },
+            {
+                name : '抗拉失效概率',
+                type : 'line',
+                data : pftList,
+                xAxisIndex : 3,
+                yAxisIndex : 3
+            }
+        ]
+    }
+    var chart = echarts.init(document.getElementById(figure_id));
+    chart.setOption(option);
+}

@@ -190,8 +190,10 @@ public class AssociationAnalysis {
         File selectedFile = new File(Constants.ASSOCIATION_FILE_DIR + "/" + associationFile);
         if(!selectedFile.exists()){
             response.setStatus(HttpResponse.FAIL_STATUS);
-            response.setMsg("找不到预测文件！");
+            response.setMsg("找不到文件！");
         }else{
+            boolean startflag = false;
+            boolean endflag = false;
             try {
                 File targetFile = new File(Constants.ASSOCIATION_TARGET_DIR);
                 if(!targetFile.exists()){
@@ -221,6 +223,9 @@ public class AssociationAnalysis {
                         System.out.println(current_bridge);
                         System.out.println(current_section);
                         System.out.println(current_watechpoint);
+                        //检查已有数据是否能覆盖所选时间
+                        if(current_time >= endtime){  endflag = true;  }
+                        if(current_time <= begintime){   startflag = true; }
                         if(current_bridge.equals(bridge) && current_section.equals(section) && current_watechpoint.equals(watchpoint) && current_time >= begintime && current_time <= endtime){
                             System.out.println("ok");
                             bw.write(line + "\n");
@@ -236,7 +241,7 @@ public class AssociationAnalysis {
                 fis.close();
 
                 //调用外部程序
-                if(count != 0){
+                if(count != 0 && startflag && endflag){
                     String INPUT_FILE = Constants.ASSOCIATION_TARGET_DIR;
                     String WAVELET_PROGRAM = Constants.ASSOCIATION_ANALYSIS_PROGRAM;
                     String outputfileName = bridge + "_" + section + "_" + watchpoint + "_" + beginTime + "_" + endTime + "_result" + ".csv";

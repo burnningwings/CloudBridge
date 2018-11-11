@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import scut.base.HttpResponse;
+import scut.service.SysUserService;
 import scut.service.scheduler.AnalysisMessage;
 import scut.service.scheduler.LogEntity;
 import scut.service.scheduler.Message;
@@ -17,6 +18,7 @@ import scut.util.Constants;
 import scut.util.sql.SQLBaseDao;
 import scut.util.sql.SQLDaoFactory;
 
+import javax.annotation.Resource;
 import java.io.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -33,7 +35,8 @@ public class DamageDetection {
     int maxActive = 100;
     String druid_mysql_url = String.format(Constants.MYSQL_FORMAT,Constants.MYSQL_URL,Constants.MYSQL_USERNAME,Constants.MYSQL_PASSWORD) + "|" + maxActive;
     SQLBaseDao baseDao = SQLDaoFactory.getSQLDaoInstance(druid_mysql_url);
-
+    @Resource
+    SysUserService sysUserService;
 //    @RequestMapping(value = "/damage-detection/getPredictResult", method = RequestMethod.GET, produces = "application/json")
 //    public JSONObject getPredictResult(String testfile, String testmodel){
 //        HttpResponse response = new HttpResponse();
@@ -500,10 +503,15 @@ public class DamageDetection {
 
     @RequestMapping(value = "/damage-detection/udf_bridge_dropdown", method = RequestMethod.GET, produces = "application/json")
     public JSONObject UdfBridgeDropdown(){
+        long userOrganizationId = sysUserService.getUserOrganizationId();
         HttpResponse response = new HttpResponse();
         JSONObject data = new JSONObject();
 
-        String sql = "select b.bridge_id, b.bridge_name from bridge_info b";
+        //String sql = "select b.bridge_id, b.bridge_name from bridge_info b";
+        String sql = String.format("select b.bridge_id,b.bridge_name from bridge_info b " +
+                "where b.bridge_id in (" +
+                "select bo.bridge_id from bridge_organization bo " +
+                "where bo.organization_id = %d)", userOrganizationId);
         try {
             baseDao.querySingleObject(sql, new ResultSetHandler<String>() {
                 @Override

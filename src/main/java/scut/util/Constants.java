@@ -45,6 +45,7 @@ public class Constants {
     public static String OVERWEIGHT_EVALUATEFILE_TARGET_DIR = null;
     public static String OVERWEIGHT_TESTFILE_TARGET_DIR = null;
     public static String ASSOCIATION_TARGET_DIR = null;
+    public static String RELIABILITY_TARGET_DIR = null;
 
     //传测试文件路径
     public static String OVERWEIGHT_UPLOAD_TEST_FILE_DIR = null;
@@ -90,6 +91,17 @@ public class Constants {
 
     //小波分析文件路径
     public static String WAVELET_ANALYSIS_FILE = null;
+
+    //可靠度分析文件路径
+    public static String RELIABILITY_ANALYSIS_FILE = null;
+
+    //可靠度分析程序路径
+    public static String RELIABILITY_ANALYSIS_PROGRAM = null;
+
+    //可靠度分析结果保存路径
+    public static String RELIABILITY_ANALYSIS_RESULT_DIR = null;
+
+
 
   // 消息状态
     public final static String READY = "READY";

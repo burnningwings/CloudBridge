@@ -488,12 +488,14 @@ $(function () {
         timeFormat: "HH:mm:ss",
         dateFormat: "yy-mm-dd"
     });
+    var t_begin_test = new Date(2018,09,13,00,00,00).format(data_format_str);
+    var t_end_test = new Date(2018,09,14,00,00,00).format(data_format_str);
     $('#test_end_time').datetimepicker({
         timeFormat: "HH:mm:ss",
         dateFormat: "yy-mm-dd"
     });
-    $('#test_begin_time').val(current_time);
-    $('#test_end_time').val(current_time);
+    $('#test_begin_time').val(t_begin_test);
+    $('#test_end_time').val(t_end_test);
 
 
     $("#description_train_dataformat").click(function(){

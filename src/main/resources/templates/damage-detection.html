@@ -28,23 +28,23 @@
     <title>桥梁信息管理系统</title>
     <link rel="icon" type="image/x-icon" th:href="@{images/favicon.ico}"/>
     <!-- 避免日期选择框被覆盖，建议直接在css文件里改-->
-    <style>
-        .input-group {
-            z-index: 1;
-        }
-        .cm-flex {
-            z-index: 5;
-        }
-        .ui-datepicker table {
-            z-index: 10;
-        }
-        header {
-            z-index: 5;
-        }
-        .ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all {
-            z-index: 10;
-        }
-    </style>
+    <!--<style>-->
+        <!--.input-group {-->
+            <!--z-index: 1;-->
+        <!--}-->
+        <!--.cm-flex {-->
+            <!--z-index: 5;-->
+        <!--}-->
+        <!--.ui-datepicker table {-->
+            <!--z-index: 10;-->
+        <!--}-->
+        <!--header {-->
+            <!--z-index: 5;-->
+        <!--}-->
+        <!--.ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all {-->
+            <!--z-index: 10;-->
+        <!--}-->
+    <!--</style>-->
 </head>
 <body class="cm-no-transition cm-1-navbar">
     <div id="cm-menu" th:replace="base/menu::menu (one,two_1,two_2,three_1,three_2,four_1,active,four_3,four_4,five_1,five_2,six_1,six_2,six_3,seven_1,seven_2)"></div>

@@ -549,6 +549,8 @@ public class DamageDetection {
             response.setStatus(HttpResponse.FAIL_STATUS);
             response.setMsg("找不到训练文件！");
         }else{
+            boolean startflag = false;
+            boolean endflag = false;
             try {
                 File targetFile = new File(Constants.DAMAGE_TRAINFILE_TARGET_DIR);
                 if(!targetFile.exists()){
@@ -574,6 +576,9 @@ public class DamageDetection {
                             continue;
                         }
                         long current_time = Long.parseLong(split[13]);
+                        //检查已有数据是否能覆盖所选时间
+                        if(current_time >= endtime){  endflag = true;  }
+                        if(current_time <= begintime){   startflag = true; }
                         if(current_bridge.equals(bridge) && current_time >= begintime && current_time <= endtime){
                             bw.write(line+"\n");
                             count ++ ;
@@ -588,7 +593,7 @@ public class DamageDetection {
                 isr.close();
                 fis.close();
 
-                if(count != 0){
+                if(count != 0 && startflag && endflag){
                     //调用外部程序
                     String md5 = DigestUtils.md5Hex(trainfile + bridge + beginTime + endTime + trainmodel);
                     String TRAIN_FILE = Constants.DAMAGE_TRAINFILE_TARGET_DIR;
@@ -663,8 +668,10 @@ public class DamageDetection {
         File selectedFile = new File(Constants.DAMAGE_UPLOAD_EVALUATE_FILE_DIR + "/" + evaluatefile);
         if(!selectedFile.exists()){
             response.setStatus(HttpResponse.FAIL_STATUS);
-            response.setMsg("找不到训练数据！");
+            response.setMsg("找不到数据！");
         }else{
+            boolean startflag = false;
+            boolean endflag = false;
             try {
                 File targetFile = new File(Constants.DAMAGE_EVALUATEFILE_TARGET_DIR);
                 if(!targetFile.exists()){
@@ -690,6 +697,9 @@ public class DamageDetection {
                             continue;
                         }
                         long current_time = Long.parseLong(split[13]);
+                        //检查已有数据是否能覆盖所选时间
+                        if(current_time >= endtime){  endflag = true;  }
+                        if(current_time <= begintime){   startflag = true; }
                         if(current_bridge.equals(bridge) && current_time >= begintime && current_time <= endtime){
                             bw.write(line+"\n");
                             count ++ ;
@@ -704,7 +714,7 @@ public class DamageDetection {
                 isr.close();
                 fis.close();
 
-                if(count != 0){
+                if(count != 0 && startflag && endflag){
                     //调用外部程序
                     String md5 = DigestUtils.md5Hex(evaluatefile + bridge + beginTime + endTime + evaluatemodel);
                     String EVALUATE_FILE = Constants.DAMAGE_EVALUATEFILE_TARGET_DIR;
@@ -798,6 +808,8 @@ public class DamageDetection {
             response.setStatus(HttpResponse.FAIL_STATUS);
             response.setMsg("找不到预测数据！");
         }else{
+            boolean startflag = false;
+            boolean endflag = false;
             try {
                 File targetFile = new File(Constants.DAMAGE_TESTFILE_TARGET_DIR);
                 if(!targetFile.exists()){
@@ -823,6 +835,9 @@ public class DamageDetection {
                             continue;
                         }
                         long current_time = Long.parseLong(split[13]);
+                        //检查已有数据是否能覆盖所选时间
+                        if(current_time >= endtime){  endflag = true;  }
+                        if(current_time <= begintime){   startflag = true; }
                         if(current_bridge.equals(bridge) && current_time >= begintime && current_time <= endtime){
                             bw.write(line+"\n");
                             count ++ ;
@@ -836,7 +851,7 @@ public class DamageDetection {
                 isr.close();
                 fis.close();
 
-                if(count != 0){
+                if(count != 0 && startflag && endflag){
                     //调用外部程序
                     String TEST_FILE = Constants.DAMAGE_TESTFILE_TARGET_DIR;
                     String MODEL_TEST_PROGRAM = Constants.DAMAGE_PREDICT_PROGRAM;

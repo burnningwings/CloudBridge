@@ -2153,7 +2153,7 @@ function showReliabilityResultChart(figure_id, timeList, btcList, bttList, pfcLi
             {
                 type : 'inside',
                 xAxisIndex : 0,
-                yAxisIndex : 0
+                //yAxisIndex : 0
             },
             {
                 type : 'slider',
@@ -2163,43 +2163,69 @@ function showReliabilityResultChart(figure_id, timeList, btcList, bttList, pfcLi
             },
             {
                 type : 'slider',
-                show : false,
+                show : true,
                 //xAxisIndex : 0,
-                yAxisIndex : 0
+                yAxisIndex : 0,
+                left : '47%',
+                width : 10
             },
             {
                 type : 'inside',
                 xAxisIndex : 1,
-                yAxisIndex : 1
+               // yAxisIndex : 1
             },
             {
                 type : 'slider',
                 show : false,
                 xAxisIndex : 1,
-                yAxisIndex : 1
+               // yAxisIndex : 1
+            },
+            {
+                type : 'slider',
+                show : true,
+                //xAxisIndex : 0,
+                yAxisIndex : 1,
+                left : '96%',
+                width : 10
             },
             {
                 type : 'inside',
                 xAxisIndex : 2,
-                yAxisIndex : 2
+                //yAxisIndex : 2
             },
             {
                 type : 'slider',
                 show : false,
                 xAxisIndex : 2,
-                yAxisIndex : 2
+               // yAxisIndex : 2
+            },
+            {
+                type : 'slider',
+                show : true,
+                //xAxisIndex : 0,
+                yAxisIndex : 2,
+                left : '47%',
+                width : 10
             },
             {
                 type : 'inside',
                 xAxisIndex : 3,
-                yAxisIndex : 3
+
             },
             {
                 type : 'slider',
                 show : false,
                 xAxisIndex : 3,
-                yAxisIndex : 3
-            }
+              //  yAxisIndex : 3
+            },
+            {
+                type : 'slider',
+                show : true,
+                //xAxisIndex : 0,
+                yAxisIndex : 3,
+                left : '96%',
+                width : 10
+            },
         ],
         toolbox : {
             show : true,

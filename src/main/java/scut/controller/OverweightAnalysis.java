@@ -487,6 +487,8 @@ public class OverweightAnalysis {
             response.setStatus(HttpResponse.FAIL_STATUS);
             response.setMsg("找不到该训练文件！");
         }else{
+            boolean startflag = false;
+            boolean endflag = false;
             try {
                 File targetFile = new File(Constants.OVERWEIGHT_TRAINFILE_TARGET_DIR);
                 if(!targetFile.exists()){
@@ -512,6 +514,9 @@ public class OverweightAnalysis {
                             continue;
                         }
                         long current_time = Long.parseLong(split[17]);
+                        //检查已有数据是否能覆盖所选时间
+                        if(current_time >= endtime){  endflag = true;  }
+                        if(current_time <= begintime){   startflag = true; }
                         if(current_bridge.equals(bridge) && current_time >= begintime && current_time <= endtime){
                             bw.write(line+"\n");
                             count ++ ;
@@ -526,7 +531,7 @@ public class OverweightAnalysis {
                 isr.close();
                 fis.close();
 
-                if(count != 0){
+                if(count != 0 && endflag && startflag){
                     //调用外部程序
                     String md5 = DigestUtils.md5Hex(trainfile + bridge + beginTime + endTime + trainmodel);
                     String TRAIN_FILE = Constants.OVERWEIGHT_TRAINFILE_TARGET_DIR;
@@ -602,8 +607,10 @@ public class OverweightAnalysis {
         File selectFile = new File(Constants.OVERWEIGHT_UPLOAD_EVALUATE_FILE_DIR + "/" + evaluatefile);
         if(!selectFile.exists()){
             response.setStatus(HttpResponse.FAIL_STATUS);
-            response.setMsg("找不到训练数据！");
+            response.setMsg("找不到数据！");
         }else{
+            boolean startflag = false;
+            boolean endflag = false;
             try {
                 File targetFile = new File(Constants.OVERWEIGHT_EVALUATEFILE_TARGET_DIR);
                 if(!targetFile.exists()){
@@ -629,6 +636,8 @@ public class OverweightAnalysis {
                             continue;
                         }
                         long current_time = Long.parseLong(split[17]);
+                        if(current_time >= endtime){ endflag = true;}
+                        if(current_time <= begintime){ startflag = true;}
                         if(current_bridge.equals(bridge) && current_time >= begintime && current_time <= endtime){
                             bw.write(line+"\n");
                             count ++ ;
@@ -643,7 +652,7 @@ public class OverweightAnalysis {
                 isr.close();
                 fis.close();
 
-                if(count != 0){
+                if(count != 0 && startflag && endflag){
                     //调用外部程序
                     String md5 = DigestUtils.md5Hex(evaluatefile + beginTime + endTime + evaluatemodel);
                     String EVALUATE_FILE = Constants.OVERWEIGHT_EVALUATEFILE_TARGET_DIR;
@@ -741,6 +750,8 @@ public class OverweightAnalysis {
             response.setStatus(HttpResponse.FAIL_STATUS);
             response.setMsg("找不到预测文件！");
         }else{
+            boolean startflag = false;
+            boolean endflag = false;
             try {
                 File targetFile = new File(Constants.OVERWEIGHT_TESTFILE_TARGET_DIR);
                 if(!targetFile.exists()){
@@ -766,6 +777,8 @@ public class OverweightAnalysis {
                             continue;
                         }
                         long current_time = Long.parseLong(split[16]);
+                        if(current_time >= endtime){ endflag = true; };
+                        if(current_time <= begintime){startflag = true;};
                         if(current_bridge.equals(bridge) && current_time >= begintime && current_time <= endtime){
                             bw.write(line+"\n");
                             count ++ ;
@@ -779,7 +792,7 @@ public class OverweightAnalysis {
                 isr.close();
                 fis.close();
 
-                if(count != 0){
+                if(count != 0 && startflag && endflag){
                     //调用外部程序
                     String TEST_FILE = Constants.OVERWEIGHT_TESTFILE_TARGET_DIR;
                     String MODEL_TEST_PROGRAM = Constants.OVERWEIGHT_PREDICT_PROGRAM;

@@ -249,7 +249,8 @@ public class AssociationAnalysis {
                     String md5 = DigestUtils.md5Hex(associationFile + beginTime + endTime);
 
                     AnalysisMessage.getInstance().update(md5, bridge + "_" + section + "_" + watchpoint + "_" + beginTime + "_" + endTime,outputfileName, Constants.READY, "WAVELET",null);
-                    String execStr = "D:/os_environment/anaconda/python " + WAVELET_PROGRAM + " " + INPUT_FILE + " " + OUTPUT_FILE;
+                    String execStr = Constants.SCRIPT_EXEC_PREFIX + " " + WAVELET_PROGRAM + " " + INPUT_FILE + " " + OUTPUT_FILE;
+                    //String execStr = "D:/os_environment/anaconda/python " + WAVELET_PROGRAM + " " + INPUT_FILE + " " + OUTPUT_FILE;
                     //String execStr = "python D:/tmp/a.py";
                     logger.debug(execStr);
                     Executor executor = new CommandLineExecutor(md5, execStr);

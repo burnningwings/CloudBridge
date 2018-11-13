@@ -311,8 +311,10 @@ public class ReliabilityAnalysis {
                     String md5 = DigestUtils.md5Hex(reliabilityFile + beginTime + endTime);
 
                     AnalysisMessage.getInstance().update(md5, bridge + "_" + section + "_" + watchpoint + "_" + beginTime + "_" + endTime,outputfileName, Constants.READY, "RELIABILITY",null);
-                    String execStr = "D:/os_environment/anaconda/python " + RELIABILITY_PROGRAM + " " + INPUT_FILE + " "
+                    String execStr = Constants.SCRIPT_EXEC_PREFIX + " " + RELIABILITY_PROGRAM + " " + INPUT_FILE + " "
                             + mRc0 + " " + sRc0 + " " + mRt0 + " " + sRt0 + " " + E + " " + sc + " " + ParamTimeBegin + " " + ParamTimeEnd + " " + OUTPUT_FILE;
+                    //String execStr = "D:/os_environment/anaconda/python " + RELIABILITY_PROGRAM + " " + INPUT_FILE + " "
+                    //        + mRc0 + " " + sRc0 + " " + mRt0 + " " + sRt0 + " " + E + " " + sc + " " + ParamTimeBegin + " " + ParamTimeEnd + " " + OUTPUT_FILE;
                     //String execStr = "python D:/tmp/a.py";
                     logger.debug(execStr);
                     Executor executor = new CommandLineExecutor(md5, execStr);

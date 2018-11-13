@@ -578,7 +578,7 @@ $(function () {
         console.log(data);
         var msg = "仅支持csv且单文件大小不超过50MB！";
         if(response!=null && response.msg!="") msg = response.msg;
-        console(msg);
+        console.log(msg);
         showTransientDialog(msg);
     });
 
@@ -622,7 +622,7 @@ $(function () {
         maxFileCount: 1,
         autoReplace: true,
         showPreview: false,
-        maxFileSize: 512000, // KB,当前限制为50MB
+        maxFileSize: 512000, // KB,当前限制为50MB, 如果为0则不限制
         maxPreviewFileSize: 1
     }).on("fileuploaded",function (event, data, previewId, index) {
         var response = data.response;

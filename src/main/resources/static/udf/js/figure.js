@@ -713,13 +713,14 @@ function showPredictUDFResultChart_OVERWEIGHT(figure_id, timelist, overweightlis
                 type : 'slider',
                 show : true,
                 yAxisIndex : 0,
-                width : 10,
+                width : 15,
                 height : '37%',
                 handleSize : 8,
                 showDataShadow : false,
                 left : '90%',
                 start : 0,
-                end : 100
+                end : 100,
+
             },
             {
                 type : 'inside',
@@ -747,15 +748,16 @@ function showPredictUDFResultChart_OVERWEIGHT(figure_id, timelist, overweightlis
             {
                 type : 'slider',
                 show : true,
-                yAxisIndex : 0,
-                width : 10,
+                yAxisIndex : 1,
+                width : 15,
                 height : '37%',
                 handleSize : 8,
                 showDataShadow : false,
                 left : '90%',
                 top : '55%',
                 start : 0,
-                end : 100
+                end : 100,
+
             }
             // {
             //     type : 'slider',

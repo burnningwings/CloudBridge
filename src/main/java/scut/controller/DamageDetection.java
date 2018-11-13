@@ -602,7 +602,8 @@ public class DamageDetection {
 
                     AnalysisMessage.getInstance().update(md5, trainfile+bridge+beginTime+endTime+trainmodel, savedmodel, Constants.READY, "TRAIN", null);
 
-                    String execStr = "D:/os_environment/anaconda/python " + MODEL_TRAIN_PROGRAM + " " + TRAIN_FILE + " " + SAVED_MODE;
+                    String execStr = Constants.SCRIPT_EXEC_PREFIX + " " + MODEL_TRAIN_PROGRAM + " " + TRAIN_FILE + " " + SAVED_MODE;
+                    //String execStr = "D:/os_environment/anaconda/python " + MODEL_TRAIN_PROGRAM + " " + TRAIN_FILE + " " + SAVED_MODE;
                     //String execStr = "python D:/tmp/a.py";
                     logger.debug(execStr);
                     Executor executor = new CommandLineExecutor(md5, execStr);
@@ -724,7 +725,8 @@ public class DamageDetection {
                     String OUTPUT_FILE = Constants.DAMAGE_EVALUATE_MODEL_RESULT_DIR + "/" + outputFileName;
 
                     AnalysisMessage.getInstance().update(md5, evaluatefile+bridge+beginTime+endTime+evaluatemodel, outputFileName, Constants.READY, "EVALUATE", null);
-                    String execStr = "D:/os_environment/anaconda/python " + MODEL_EVALUATE_PROGRAM + " " + EVALUATE_FILE + " " + EVALUATE_MODEL + " " + OUTPUT_FILE;
+                    String execStr = Constants.SCRIPT_EXEC_PREFIX + " " + MODEL_EVALUATE_PROGRAM + " " + EVALUATE_FILE + " " + EVALUATE_MODEL + " " + OUTPUT_FILE;
+                    //String execStr = "D:/os_environment/anaconda/python " + MODEL_EVALUATE_PROGRAM + " " + EVALUATE_FILE + " " + EVALUATE_MODEL + " " + OUTPUT_FILE;
                     //String execStr = "python D:/tmp/a.py";
                     logger.debug(execStr);
                     Executor executor = new CommandLineExecutor(md5, execStr);
@@ -861,7 +863,8 @@ public class DamageDetection {
                     String md5 = DigestUtils.md5Hex(testfile + bridge + beginTime + endTime + testmodel);
 
                     AnalysisMessage.getInstance().update(md5, testfile+bridge+beginTime+endTime+testmodel, outputFileName, Constants.READY, "TEST",null);
-                    String execStr = "D:/os_environment/anaconda/python " + MODEL_TEST_PROGRAM + " " + TEST_FILE + " " + TEST_MODEL + " " + OUTPUT_FILE;
+                    String execStr = Constants.SCRIPT_EXEC_PREFIX + " " + MODEL_TEST_PROGRAM + " " + TEST_FILE + " " + TEST_MODEL + " " + OUTPUT_FILE;
+                    //String execStr = "D:/os_environment/anaconda/python " + MODEL_TEST_PROGRAM + " " + TEST_FILE + " " + TEST_MODEL + " " + OUTPUT_FILE;
                     //String execStr = "python D:/tmp/a.py";
                     logger.debug(execStr);
                     Executor executor = new CommandLineExecutor(md5, execStr);

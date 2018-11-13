@@ -2,22 +2,30 @@ package scut.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.log4j.Logger;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import scut.base.HttpResponse;
+import scut.service.ImageService;
 import scut.service.OrganizationService;
 import scut.service.SysUserService;
-import scut.domain.Organization;
+import scut.service.log.LogBase;
 import scut.util.Constants;
+import scut.util.ImageDataWrapper;
 import scut.util.StringUtil;
 import scut.util.sql.SQLBaseDao;
 import scut.util.sql.SQLDaoFactory;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by riverluo on 2018/5/10.
@@ -29,11 +37,16 @@ public class Section {
     String druid_mysql_url = String.format(Constants.MYSQL_FORMAT, Constants.MYSQL_URL, Constants.MYSQL_USERNAME, Constants.MYSQL_PASSWORD) + "|" + maxActive;
     SQLBaseDao baseDao = SQLDaoFactory.getSQLDaoInstance(druid_mysql_url);
 
+    public static Logger logger = Logger.getLogger(Section.class);
+
     @Resource
     SysUserService sysUserService;
 
     @Resource
     OrganizationService organizationService;
+
+    @Resource
+    ImageService imageService;
 
     /**
      * 截面信息列表
@@ -161,6 +174,8 @@ public class Section {
         String sectionNumber = reqMsg.getString("sectionNumber");
         String position = reqMsg.getString("position");
         String description = reqMsg.getString("description");
+        Integer old_bridgeId = reqMsg.getInteger("old_bridgeId");
+
 
         //检查必须参数
         if (operationType == null || StringUtil.isEmpty(sectionName) || StringUtil.isEmpty(sectionNumber) || bridgeId == null) {
@@ -202,6 +217,24 @@ public class Section {
             response.setCode(HttpResponse.FAIL_CODE);
             response.setMsg("操作失败！");
         }
+
+        LogBase logbase = new LogBase();
+        boolean logoption = logbase.sys_logoption(23);
+        if (logoption)
+        {
+            String bridgename = logbase.findBridgeName(bridgeId);
+            String old_bridgename = "";
+            if (old_bridgeId == null||old_bridgeId == 0) old_bridgename = "";
+            else old_bridgename = logbase.findBridgeName(old_bridgeId);
+            logger.info(bridgename);
+            logger.info(old_bridgename);
+            //section相关操作写进数据库
+            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String log_section_sql = LogBase.log_section(reqMsg, userDetails.getUsername(), bridgename, old_bridgename);
+            logger.info(log_section_sql);
+            baseDao.updateData(log_section_sql);
+
+        }
         return response.getHttpResponse();
     }
 
@@ -232,6 +265,19 @@ public class Section {
 //                return response.getHttpResponse();
 //            }
 //        }
+        if (checkedListStr != null)
+        {
+            LogBase logbase = new LogBase();
+            boolean logoption = logbase.sys_logoption(23);
+            if (logoption)
+            {
+                String sectionnames = logbase.findSectionNameList(checkedListStr);
+                UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                String res = logbase.log_del_section(userDetails.getUsername(), sectionnames);
+                baseDao.updateData(res);
+                logger.info(res);
+            }
+        }
 
         if (checkedListStr != null) {
             String sql = String.format("DELETE FROM section WHERE section_id IN (%s)", checkedListStr);
@@ -273,5 +319,41 @@ public class Section {
             response.put("data", data);
         }
         return response;
+    }
+
+    @GetMapping(value = "/section/image/{sectionId}/{imageBaseName}")
+    public void getImage(@PathVariable("sectionId") long sectionId,
+                         @PathVariable("imageBaseName") String imageBaseName,
+                         HttpServletResponse response) throws IOException {
+        ImageDataWrapper imageData = imageService.loadImage("section", sectionId, imageBaseName);
+        response.setContentType(imageData.getMIMEType());
+        OutputStream outputStream = response.getOutputStream();
+        outputStream.write(imageData.getData());
+        outputStream.flush();
+        outputStream.close();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping(value = "/section/image/{sectionId}")
+    public void uploadImage(@PathVariable("sectionId") long sectionId,
+                            @RequestParam("file") MultipartFile file,
+                            @RequestParam("type") String MIMEType) {
+        try {
+            imageService.saveImage("section", sectionId, MIMEType, file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping(value = "/section/image/{sectionId}/{imageBaseName}")
+    public void deleteImage(@PathVariable("sectionId") long sectionId,
+                            @PathVariable("imageBaseName") String imageBaseName) throws IOException {
+        imageService.deleteImage("section", sectionId, imageBaseName);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<String> handleImageException(IOException e) {
+        return ResponseEntity.notFound().build();
     }
 }

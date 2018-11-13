@@ -83,7 +83,7 @@ function updateBridgeInfoGrid() {
                 headerAttributes: {style: "text-align:center"},
                 attributes: {class: "text-center"}
             }, {
-                template: "<a class='btn btn-success' type='button' id='picture-#:bridge_id#' onclick=''/>管理</a>",
+                template: "<a class='btn btn-success' id='picture-#:bridge_id#' href='/bridge/image/#:bridge_id#'/>管理</a>",
                 title: "图片",
                 headerAttributes: {style: "text-align:center"},
                 attributes: {class: "text-center"}

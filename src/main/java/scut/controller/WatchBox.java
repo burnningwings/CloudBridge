@@ -3,7 +3,10 @@ package scut.controller;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.dbutils.ResultSetHandler;
+import org.apache.log4j.Logger;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -12,6 +15,7 @@ import scut.base.HttpResponse;
 import scut.domain.Organization;
 import scut.service.OrganizationService;
 import scut.service.SysUserService;
+import scut.service.log.LogBase;
 import scut.util.Constants;
 import scut.util.sql.SQLBaseDao;
 import scut.util.sql.SQLDaoFactory;
@@ -37,6 +41,8 @@ public class WatchBox {
     String druid_mysql_url = String.format(Constants.MYSQL_FORMAT,Constants.MYSQL_URL,Constants.MYSQL_USERNAME,Constants.MYSQL_PASSWORD) + "|" + maxActive;
     SQLBaseDao baseDao = SQLDaoFactory.getSQLDaoInstance(druid_mysql_url);
 
+    public static Logger logger = Logger.getLogger(WatchBox.class);
+
     @Resource
     SysUserService sysUserService;
 
@@ -47,18 +53,18 @@ public class WatchBox {
      * 异步翻页
      * @param page
      * @param pageSize 切换为All时需强制为null，因此必须为Integer
-     * @param bridgeName
+     * @param bridgeId
      * @return
      */
     @RequestMapping(value = "/watch-box/list", method = RequestMethod.GET, produces = "application/json")
-    public JSONObject tableList(int page, Integer pageSize, String bridgeName) {
+    public JSONObject tableList(int page, Integer pageSize, Integer bridgeId) {
         long userOrganizationId = sysUserService.getUserOrganizationId();
         // 获取数据
         String whereStr = String.format(" where b.bridge_id in (" +
                 "select bo.bridge_id from bridge_organization bo " +
                 "where bo.organization_id = %d) ", userOrganizationId);
-        if(!bridgeName.equals("全部")){
-            whereStr += " and b.bridge_name='" + bridgeName + "'";
+        if(!bridgeId.equals(0)){
+            whereStr += " and b.bridge_id='" + bridgeId + "'";
         }
         String sql = String.format(
                 "select w.*,b.bridge_name,w_t.name as box_type_name " +
@@ -206,6 +212,7 @@ public class WatchBox {
             }
         }
         data.put("watch_box",watchBox);
+
         response.setData(data);
         return response.getHttpResponse();
     }
@@ -322,6 +329,33 @@ public class WatchBox {
             response.setMsg("操作失败！");
         }
         response.setData(data);
+
+        LogBase logbase = new LogBase();
+        boolean logoption = logbase.sys_logoption(23);
+        if (logoption)
+        {
+            String bridgename = logbase.findBridgeName(Integer.parseInt(bridge_id.toString()));
+            String old_bridgename = "";
+            if (reqMsg.get("old_bridge_id") == null || reqMsg.get("old_bridge_id").equals(""))old_bridgename = "";
+            else{
+                Integer old_bridge_id =  Integer.parseInt(reqMsg.get("old_bridge_id").toString());
+                old_bridgename = logbase.findBridgeName(old_bridge_id);
+            }
+            String boxtypename = logbase.findBoxtypeName(Integer.parseInt(type_id.toString()));
+            String old_boxtypename = "";
+            if (reqMsg.get("old_watch_box_type_id") == null||reqMsg.get("old_watch_box_type_id").equals("")) old_boxtypename = "";
+            else {
+                Integer old_watch_box_type_id = Integer.parseInt(reqMsg.get("old_watch_box_type_id").toString());
+                old_boxtypename=logbase.findBoxtypeName(old_watch_box_type_id);
+            }
+            logger.info(old_bridgename+","+bridgename+","+old_boxtypename+","+boxtypename);
+
+            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String log_watchpoint_sql = LogBase.log_watchbox(reqMsg,userDetails.getUsername(),
+                    bridgename,old_bridgename,boxtypename,old_boxtypename);
+            logger.info(log_watchpoint_sql);
+            baseDao.updateData(log_watchpoint_sql);
+        }
         return response.getHttpResponse();
     }
 
@@ -347,6 +381,21 @@ public class WatchBox {
                 response.setMsg("删除控制箱失败，请检查要删除的控制箱是否都由您的单位或其下级单位管辖！");
                 return response.getHttpResponse();
             }
+        }
+
+        /*
+         *日志要在真是操作前，不然真是操作删掉了，怎么通过日志去找名字
+         */
+        LogBase logbase = new LogBase();
+        boolean logoption = logbase.sys_logoption(23);
+        if (logoption)
+        {
+            logger.info(String.join(",", watch_box_checked_list)+","+watch_box_checked_list.toString());
+            String watchboxnames = logbase.findBoxName(String.join(",", watch_box_checked_list));
+            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String res = logbase.log_del_watchbox(userDetails.getUsername(),watchboxnames);
+            baseDao.updateData(res);
+            logger.info(res);
         }
 
         String deleteWatchBoxSql = "delete from watch_box where box_id in (%s)";

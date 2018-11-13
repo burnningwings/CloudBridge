@@ -278,6 +278,7 @@ public class RoleManager {
 
 
 
+    @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping(value = "/role-manager/delete", method = RequestMethod.POST, produces = "application/json")
     public JSONObject DeleteWatchBox(@RequestBody Map<String,Object> reqMsg) {
         HttpResponse response = new HttpResponse();

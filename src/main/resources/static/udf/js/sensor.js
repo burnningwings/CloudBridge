@@ -107,12 +107,12 @@ function updateSensorGrid(bridge_id, section_id, watch_point_id, watch_box_id) {
 }
 
 //弹窗
-function showSensorDialog(title, operation_type, sensor_id, bridge_id, section_id, watch_point_id, watch_box_id) {
+function showSensorDialog(title, operationType, sensorId, bridgeId, sectionId, watchPointId, watchBoxId) {
     var url = '/sensor/info';
     var params = {
-        'sensorId': sensor_id,
-        'bridgeId': bridge_id,
-        'sectionId': section_id
+        'sensorId': sensorId,
+        'bridgeId': bridgeId,
+        'sectionId': sectionId
     };
     var response = webRequest(url, 'GET', false, params);
     var bridge_options = "";
@@ -131,10 +131,10 @@ function showSensorDialog(title, operation_type, sensor_id, bridge_id, section_i
         var data = response.data;
         if (data['sensor_info'] && data['sensor_info'].length > 0) {
             var si = data['sensor_info'][0];
-            bridge_id = si["bridge_id"];
-            section_id = si["section_id"];
-            watch_point_id = si["watch_point_id"];
-            watch_box_id = si["watch_box_id"];
+            bridgeId = si["bridge_id"];
+            sectionId = si["section_id"];
+            watchPointId = si["watch_point_id"];
+            watchBoxId = si["watch_box_id"];
             sensor_name = si["sensor_name"];
             sensor_number = si["sensor_number"];
             sensor_type_id = si["sensor_type_id"];
@@ -142,7 +142,7 @@ function showSensorDialog(title, operation_type, sensor_id, bridge_id, section_i
         //桥梁下拉框
         for (var i = 0; i < data['bridge_list'].length; i++) {
             var b = data['bridge_list'][i];
-            if (b['bridge_id'] == bridge_id) {
+            if (b['bridge_id'] == bridgeId) {
                 bridge_options += '<option value="' + b['bridge_id'] + '" selected="selected">' + b['bridge_name'] + '</option>';
             } else {
                 bridge_options += '<option value="' + b['bridge_id'] + '">' + b['bridge_name'] + '</option>';
@@ -151,7 +151,7 @@ function showSensorDialog(title, operation_type, sensor_id, bridge_id, section_i
         //截面下拉框
         for (i = 0; i < data['section_list'].length; i++) {
             var s = data['section_list'][i];
-            if (s['section_id'] == section_id) {
+            if (s['section_id'] == sectionId) {
                 section_options += '<option value="' + s['section_id'] + '" selected="selected">' + s['section_name'] + '</option>';
             } else {
                 section_options += '<option value="' + s['section_id'] + '">' + s['section_name'] + '</option>';
@@ -160,7 +160,7 @@ function showSensorDialog(title, operation_type, sensor_id, bridge_id, section_i
         //监测点下拉框
         for (i = 0; i < data['watch_point_list'].length; i++) {
             var wp = data['watch_point_list'][i];
-            if (wp['watch_point_id'] == watch_point_id) {
+            if (wp['watch_point_id'] == watchPointId) {
                 watch_point_options += '<option value="' + wp['watch_point_id'] + '" selected="selected">' + wp['watch_point_name'] + '</option>';
             } else {
                 watch_point_options += '<option value="' + wp['watch_point_id'] + '">' + wp['watch_point_name'] + '</option>';
@@ -169,7 +169,7 @@ function showSensorDialog(title, operation_type, sensor_id, bridge_id, section_i
         //控制箱下拉框
         for (i = 0; i < data['watch_box_list'].length; i++) {
             var wb = data['watch_box_list'][i];
-            if (wb['watch_box_id'] == watch_box_id) {
+            if (wb['watch_box_id'] == watchBoxId) {
                 watch_box_options += '<option value="' + wb['watch_box_id'] + '" selected="selected">' + wb['watch_box_name'] + '</option>';
             } else {
                 watch_box_options += '<option value="' + wb['watch_box_id'] + '">' + wb['watch_box_name'] + '</option>';
@@ -252,20 +252,427 @@ function showSensorDialog(title, operation_type, sensor_id, bridge_id, section_i
         full_content = sensorFullInfo();
     }
     content += full_content;
+    content = '<div id="sensor_form">' + content + '</div>';
     showModalDialog(title, content, function () {
         //必须参数
-        var bridge_id = $('#bridge_sel').val();
-        var section_id = $('#section_sel').val();
-        var watch_point_name = $('#watch_point_name').val();
-        var watch_point_number = $('#watch_point_number').val();
-        //非必须参数
+        var bridgeId = $('#bridge_sel').val();
+        var sectionId = $('#section_sel').val();
+        var watchPointId = $('#watch_point_sel').val();
+        var watchBoxId = $('#watch_box_sel').val();
+        var sensorName = $('#sensor_name').val();
+        var sensorNumber = $('#sensor_number').val();
+        var sensorTypeId = parseInt($('#sensor_type_sel').val());
+        var QLJBZBXYDWD = "";
+        var QLJBZBXYDJD = "";
+        var QLJBZBXYDGC = "";
+        var CGQZBX = "";
+        var CGQZBY = "";
+        var CGQZBZ = "";
+        var CGQJD = "";
+        var CSYB = "";
+        var CSSJ = "";
+        var CSWD = "";
+        var CSZBX = "";
+        var CSZBY = "";
+        var CSZBZ = "";
+        var JSDXS = "";
+        var SLXS = "";
+        var CSBC = "";
+        var BCXS = "";
+        var CGQSSMKLX = "";
+        var CGQSSMKBH = "";
+        var CGQSSMKTDH = "";
+        var CGQCDBH = "";
 
-        if (!watch_point_name || !watch_point_number || !bridge_id || !section_id) {
+        var float_10_3 = /^(0|[1-9]\d{0,6})(\.\d{1,3})?$/;
+        var varchar_200 = /^[^\s]{1,200}$/;
+
+        var QLJBZBXYDWDPattern = /^(0|[1-9]\d{0,10})(\.\d{1,2})?$/;
+        var QLJBZBXYDJDPattern = /^(0|[1-9]\d{0,11})(\.\d{1,2})?$/;
+        var QLJBZBXYDGCPattern = float_10_3;
+        var CGQZBXPattern = float_10_3;
+        var CGQZBYPattern = float_10_3;
+        var CGQZBZPattern = float_10_3;
+        var CGQJDPattern = varchar_200;
+        var CSYBPattern = float_10_3;
+        var CSSJPattern = /^(?:(?!0000)[0-9]{4}(?:(?:0[1-9]|1[0-2])(?:0[1-9]|1[0-9]|2[0-8])|(?:0[13-9]|1[0-2])(?:29|30)|(?:0[13578]|1[02])31)|(?:[0-9]{2}(?:0[48]|[2468][048]|[13579][26])|(?:0[48]|[2468][048]|[13579][26])00)0229)([01][0-9]|2[0-3])[0-5][0-9][0-5][0-9]\.\d{1,3}$/;
+        var CSWDPattern = float_10_3;
+        var CSZBXPattern = float_10_3;
+        var CSZBYPattern = float_10_3;
+        var CSZBZPattern = float_10_3;
+        var JSDXSPattern = float_10_3;
+        var SLXSPattern = float_10_3;
+        var CSBCPattern = float_10_3;
+        var BCXSPattern = float_10_3;
+        var CGQSSMKLXPattern = varchar_200;
+        var CGQSSMKBHPattern = varchar_200;
+        var CGQSSMKTDHPattern = varchar_200;
+        var CGQCDBHPattern = varchar_200;
+
+        switch (sensorTypeId) { // 传感器类型
+            case 1: // 正弦传感器
+                QLJBZBXYDWD = $('#QLJBZBXYDWD').val();
+                QLJBZBXYDJD = $('#QLJBZBXYDJD').val();
+                QLJBZBXYDGC = $('#QLJBZBXYDGC').val();
+                CGQZBX = $('#CGQZBX').val();
+                CGQZBY = $('#CGQZBY').val();
+                CGQZBZ = $('#CGQZBZ').val();
+                CGQJD = $('#CGQJD').val();
+                CSYB = $('#CSYB').val();
+                CSSJ = $('#CSSJ').val();
+                CSWD = $('#CSWD').val();
+                CGQSSMKLX = $('#CGQSSMKLX').val();
+                CGQSSMKBH = $('#CGQSSMKBH').val();
+                CGQSSMKTDH = $('#CGQSSMKTDH').val();
+
+                if (!QLJBZBXYDWDPattern.test(QLJBZBXYDWD)) {
+                    showTransientDialog('“桥梁局部坐标系原点纬度” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!QLJBZBXYDJDPattern.test(QLJBZBXYDJD)) {
+                    showTransientDialog('“桥梁局部坐标系原点经度” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!QLJBZBXYDGCPattern.test(QLJBZBXYDGC)) {
+                    showTransientDialog('“桥梁局部坐标系原点高程” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!CGQZBXPattern.test(CGQZBX)) {
+                    showTransientDialog('“传感器坐标X” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!CGQZBYPattern.test(CGQZBY)) {
+                    showTransientDialog('“传感器坐标Y” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!CGQZBZPattern.test(CGQZBZ)) {
+                    showTransientDialog('“传感器坐标Z” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!CGQJDPattern.test(CGQJD)) {
+                    showTransientDialog('“传感器精度” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!CSYBPattern.test(CSYB)) {
+                    showTransientDialog('“初始应变” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!CSSJPattern.test(CSSJ)) {
+                    showTransientDialog('“初始应变测量时间” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!CSWDPattern.test(CSWD)) {
+                    showTransientDialog('“初始温度” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!CGQSSMKLXPattern.test(CGQSSMKLX)) {
+                    showTransientDialog('“传感器所属模块类型” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!CGQSSMKBHPattern.test(CGQSSMKBH)) {
+                    showTransientDialog('“传感器所属模块编号” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!CGQSSMKTDHPattern.test(CGQSSMKTDH)) {
+                    showTransientDialog('“传感器所属模块通道号” 未填写或有误，请重新检查');
+                    return false;
+                }
+
+                break;
+            case 2: // 光纤应变传感器
+                QLJBZBXYDWD = $('#QLJBZBXYDWD').val();
+                QLJBZBXYDJD = $('#QLJBZBXYDJD').val();
+                QLJBZBXYDGC = $('#QLJBZBXYDGC').val();
+                CGQZBX = $('#CGQZBX').val();
+                CGQZBY = $('#CGQZBY').val();
+                CGQZBZ = $('#CGQZBZ').val();
+                CGQJD = $('#CGQJD').val();
+                CSBC = $('#CSBC').val();
+                CSSJ = $('#CSSJ').val();
+                CGQSSMKLX = $('#CGQSSMKLX').val();
+                CGQSSMKBH = $('#CGQSSMKBH').val();
+                CGQSSMKTDH = $('#CGQSSMKTDH').val();
+                BCXS = $('#BCXS').val();
+
+                if (!QLJBZBXYDWDPattern.test(QLJBZBXYDWD)) {
+                    showTransientDialog('“桥梁局部坐标系原点纬度” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!QLJBZBXYDJDPattern.test(QLJBZBXYDJD)) {
+                    showTransientDialog('“桥梁局部坐标系原点经度” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!QLJBZBXYDGCPattern.test(QLJBZBXYDGC)) {
+                    showTransientDialog('“桥梁局部坐标系原点高程” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!CGQZBXPattern.test(CGQZBX)) {
+                    showTransientDialog('“传感器坐标X” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!CGQZBYPattern.test(CGQZBY)) {
+                    showTransientDialog('“传感器坐标Y” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!CGQZBZPattern.test(CGQZBZ)) {
+                    showTransientDialog('“传感器坐标Z” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!CGQJDPattern.test(CGQJD)) {
+                    showTransientDialog('“传感器精度” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!CSBCPattern.test(CSBC)) {
+                    showTransientDialog('“初始波长” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!CSSJPattern.test(CSSJ)) {
+                    showTransientDialog('“初始测量时间” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!CGQSSMKLXPattern.test(CGQSSMKLX)) {
+                    showTransientDialog('“传感器所属模块类型” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!CGQSSMKBHPattern.test(CGQSSMKBH)) {
+                    showTransientDialog('“传感器所属模块编号” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!CGQSSMKTDHPattern.test(CGQSSMKTDH)) {
+                    showTransientDialog('“传感器所属模块通道号” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!BCXSPattern.test(BCXS)) {
+                    showTransientDialog('“波长系数” 未填写或有误，请重新检查');
+                    return false;
+                }
+
+                break;
+            case 3: // GPS传感器
+                CGQCDBH = $('#CGQCDBH').val();
+                QLJBZBXYDWD = $('#QLJBZBXYDWD').val();
+                QLJBZBXYDJD = $('#QLJBZBXYDJD').val();
+                QLJBZBXYDGC = $('#QLJBZBXYDGC').val();
+                CGQJD = $('#CGQJD').val();
+                CSZBX = $('#CSZBX').val();
+                CSZBY = $('#CSZBY').val();
+                CSZBZ = $('#CSZBZ').val();
+                CSSJ = $('#CSSJ').val();
+
+                if (!CGQCDBHPattern.test(CGQCDBH)) {
+                    showTransientDialog('“传感器测点编号” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!QLJBZBXYDWDPattern.test(QLJBZBXYDWD)) {
+                    showTransientDialog('“桥梁局部坐标系原点纬度” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!QLJBZBXYDJDPattern.test(QLJBZBXYDJD)) {
+                    showTransientDialog('“桥梁局部坐标系原点经度” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!QLJBZBXYDGCPattern.test(QLJBZBXYDGC)) {
+                    showTransientDialog('“桥梁局部坐标系原点高程” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!CGQJDPattern.test(CGQJD)) {
+                    showTransientDialog('“传感器精度” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!CSZBXPattern.test(CSZBX)) {
+                    showTransientDialog('“初始坐标X” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!CSZBYPattern.test(CSZBY)) {
+                    showTransientDialog('“初始坐标Y” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!CSZBZPattern.test(CSZBZ)) {
+                    showTransientDialog('“初始坐标Z” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!CSSJPattern.test(CSSJ)) {
+                    showTransientDialog('“初始值测量时间” 未填写或有误，请重新检查');
+                    return false;
+                }
+
+                break;
+            case 4: // 加速度传感器
+                QLJBZBXYDWD = $('#QLJBZBXYDWD').val();
+                QLJBZBXYDJD = $('#QLJBZBXYDJD').val();
+                QLJBZBXYDGC = $('#QLJBZBXYDGC').val();
+                CGQZBX = $('#CGQZBX').val();
+                CGQZBY = $('#CGQZBY').val();
+                CGQZBZ = $('#CGQZBZ').val();
+                CGQJD = $('#CGQJD').val();
+                CSSJ = $('#CSSJ').val();
+                CGQSSMKLX = $('#CGQSSMKLX').val();
+                CGQSSMKBH = $('#CGQSSMKBH').val();
+                CGQSSMKTDH = $('#CGQSSMKTDH').val();
+                JSDXS = $('#JSDXS').val();
+
+                if (!QLJBZBXYDWDPattern.test(QLJBZBXYDWD)) {
+                    showTransientDialog('“桥梁局部坐标系原点纬度” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!QLJBZBXYDJDPattern.test(QLJBZBXYDJD)) {
+                    showTransientDialog('“桥梁局部坐标系原点经度” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!QLJBZBXYDGCPattern.test(QLJBZBXYDGC)) {
+                    showTransientDialog('“桥梁局部坐标系原点高程” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!CGQZBXPattern.test(CGQZBX)) {
+                    showTransientDialog('“传感器坐标X” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!CGQZBYPattern.test(CGQZBY)) {
+                    showTransientDialog('“传感器坐标Y” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!CGQZBZPattern.test(CGQZBZ)) {
+                    showTransientDialog('“传感器坐标Z” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!CGQJDPattern.test(CGQJD)) {
+                    showTransientDialog('“传感器精度” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!CSSJPattern.test(CSSJ)) {
+                    showTransientDialog('“初始测量时间” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!CGQSSMKLXPattern.test(CGQSSMKLX)) {
+                    showTransientDialog('“传感器所属模块类型” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!CGQSSMKBHPattern.test(CGQSSMKBH)) {
+                    showTransientDialog('“传感器所属模块编号” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!CGQSSMKTDHPattern.test(CGQSSMKTDH)) {
+                    showTransientDialog('“传感器所属模块通道号” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!JSDXSPattern.test(JSDXS)) {
+                    showTransientDialog('“加速度系数” 未填写或有误，请重新检查');
+                    return false;
+                }
+
+                break;
+            case 5: // 索力传感器
+                QLJBZBXYDWD = $('#QLJBZBXYDWD').val();
+                QLJBZBXYDJD = $('#QLJBZBXYDJD').val();
+                QLJBZBXYDGC = $('#QLJBZBXYDGC').val();
+                CGQZBX = $('#CGQZBX').val();
+                CGQZBY = $('#CGQZBY').val();
+                CGQZBZ = $('#CGQZBZ').val();
+                CGQJD = $('#CGQJD').val();
+                CSSJ = $('#CSSJ').val();
+                CGQSSMKLX = $('#CGQSSMKLX').val();
+                CGQSSMKBH = $('#CGQSSMKBH').val();
+                CGQSSMKTDH = $('#CGQSSMKTDH').val();
+                SLXS = $('#SLXS').val();
+                JSDXS = $('#JSDXS').val();
+
+                if (!QLJBZBXYDWDPattern.test(QLJBZBXYDWD)) {
+                    showTransientDialog('“桥梁局部坐标系原点纬度” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!QLJBZBXYDJDPattern.test(QLJBZBXYDJD)) {
+                    showTransientDialog('“桥梁局部坐标系原点经度” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!QLJBZBXYDGCPattern.test(QLJBZBXYDGC)) {
+                    showTransientDialog('“桥梁局部坐标系原点高程” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!CGQZBXPattern.test(CGQZBX)) {
+                    showTransientDialog('“传感器坐标X” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!CGQZBYPattern.test(CGQZBY)) {
+                    showTransientDialog('“传感器坐标Y” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!CGQZBZPattern.test(CGQZBZ)) {
+                    showTransientDialog('“传感器坐标Z” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!CGQJDPattern.test(CGQJD)) {
+                    showTransientDialog('“传感器精度” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!CSSJPattern.test(CSSJ)) {
+                    showTransientDialog('“初始测量时间” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!CGQSSMKLXPattern.test(CGQSSMKLX)) {
+                    showTransientDialog('“传感器所属模块类型” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!CGQSSMKBHPattern.test(CGQSSMKBH)) {
+                    showTransientDialog('“传感器所属模块编号” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!CGQSSMKTDHPattern.test(CGQSSMKTDH)) {
+                    showTransientDialog('“传感器所属模块通道号” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!SLXSPattern.test(SLXS)) {
+                    showTransientDialog('“索力系数” 未填写或有误，请重新检查');
+                    return false;
+                }
+                if (!JSDXSPattern.test(JSDXS)) {
+                    showTransientDialog('“加速度系数” 未填写或有误，请重新检查');
+                    return false;
+                }
+
+                break;
+            default:
+                break;
+        }
+
+        if (!operationType || !sensorTypeId || !bridgeId ||
+            !sensorName || !sensorNumber || !sectionId ||
+            !watchPointId || !watchBoxId) {
             showTransientDialog("必填项不能为空！");
             return false;
         } else {
             var url = '/sensor/create-or-update';
-            var params = {};
+            var params = {
+                "operationType": operationType,
+                "sensorId": sensorId,
+                "sensorTypeId": sensorTypeId,
+                "watchPointId": watchPointId,
+                "watchBoxId": watchBoxId,
+                "sensorName": sensorName,
+                "sensorNumber": sensorNumber,
+                "QLJBZBXYDWD": QLJBZBXYDWD,
+                "QLJBZBXYDJD": QLJBZBXYDJD,
+                "QLJBZBXYDGC": QLJBZBXYDGC,
+                "CGQZBX": CGQZBX,
+                "CGQZBY": CGQZBY,
+                "CGQZBZ": CGQZBZ,
+                "CGQJD": CGQJD,
+                "CSYB": CSYB,
+                "CSSJ": CSSJ,
+                "CSWD": CSWD,
+                "CSZBX": CSZBX,
+                "CSZBY": CSZBY,
+                "CSZBZ": CSZBZ,
+                "JSDXS": JSDXS,
+                "SLXS": SLXS,
+                "CSBC": CSBC,
+                "BCXS": BCXS,
+                "CGQSSMKLX": CGQSSMKLX,
+                "CGQSSMKBH": CGQSSMKBH,
+                "CGQSSMKTDH": CGQSSMKTDH,
+                "CGQCDBH": CGQCDBH
+            };
+            console.log(params);
+
             var response = webRequest(url, 'POST', false, params);
             if (response != null && response.status == 0) {
                 refreshData();

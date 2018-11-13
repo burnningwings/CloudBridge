@@ -2,21 +2,29 @@ package scut.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.log4j.Logger;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import scut.base.HttpResponse;
 import scut.domain.Organization;
+import scut.service.ImageService;
 import scut.service.OrganizationService;
 import scut.service.SysUserService;
+import scut.service.log.LogBase;
 import scut.util.Constants;
+import scut.util.ImageDataWrapper;
 import scut.util.StringUtil;
 import scut.util.sql.SQLBaseDao;
 import scut.util.sql.SQLDaoFactory;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -32,11 +40,16 @@ public class WatchPoint {
     String druid_mysql_url = String.format(Constants.MYSQL_FORMAT, Constants.MYSQL_URL, Constants.MYSQL_USERNAME, Constants.MYSQL_PASSWORD) + "|" + maxActive;
     SQLBaseDao baseDao = SQLDaoFactory.getSQLDaoInstance(druid_mysql_url);
 
+    public static Logger logger = Logger.getLogger(WatchPoint.class);
+
     @Resource
     SysUserService sysUserService;
 
     @Resource
     OrganizationService organizationService;
+
+    @Resource
+    ImageService imageService;
 
     /**
      * 获取监测点列表
@@ -52,7 +65,7 @@ public class WatchPoint {
         long userOrganizationId = sysUserService.getUserOrganizationId();
         JSONObject response = new JSONObject();
         String whereStr = String.format(
-                "WHERE\n" +
+            "WHERE\n" +
                 "   b.bridge_id IN (\n" +
                 "      SELECT\n" +
                 "         bo.bridge_id\n" +
@@ -69,33 +82,33 @@ public class WatchPoint {
         }
 
         String sql = String.format("SELECT\n" +
-                "	wp.point_id AS watch_point_id,\n" +
-                "	wp.description,\n" +
-                "	wp.`name` AS watch_point_name,\n" +
-                "	wp.position,\n" +
-                "	wp.watch_point_number,\n" +
-                "	s.section_id,\n" +
-                "	s.`name` AS section_name,\n" +
-                "	b.bridge_id,\n" +
-                "	b.bridge_name\n" +
-                "FROM\n" +
-                "	watch_point AS wp\n" +
-                "INNER JOIN section AS s ON wp.section_id = s.section_id\n" +
-                "INNER JOIN bridge_info AS b ON s.bridge_id = b.bridge_id\n" +
-                " %s LIMIT %s,%s", whereStr, (page - 1) * pageSize, pageSize);
+            "	wp.point_id AS watch_point_id,\n" +
+            "	wp.description,\n" +
+            "	wp.`name` AS watch_point_name,\n" +
+            "	wp.position,\n" +
+            "	wp.watch_point_number,\n" +
+            "	s.section_id,\n" +
+            "	s.`name` AS section_name,\n" +
+            "	b.bridge_id,\n" +
+            "	b.bridge_name\n" +
+            "FROM\n" +
+            "	watch_point AS wp\n" +
+            "INNER JOIN section AS s ON wp.section_id = s.section_id\n" +
+            "INNER JOIN bridge_info AS b ON s.bridge_id = b.bridge_id\n" +
+            " %s LIMIT %s,%s", whereStr, (page - 1) * pageSize, pageSize);
 
         String[] fields = new String[]{"watch_point_id", "watch_point_name", "watch_point_number", "position", "description",
-                "section_id", "section_name", "bridge_id", "bridge_name"};
+            "section_id", "section_name", "bridge_id", "bridge_name"};
         JSONArray data = baseDao.queryData(sql, fields);
         response.put("data", data);
 
         sql = String.format("SELECT\n" +
-                "	Count(*) AS total\n" +
-                "FROM\n" +
-                "	watch_point AS wp\n" +
-                "INNER JOIN section AS s ON wp.section_id = s.section_id\n" +
-                "INNER JOIN bridge_info AS b ON s.bridge_id = b.bridge_id\n" +
-                " %s ", whereStr);
+            "	Count(*) AS total\n" +
+            "FROM\n" +
+            "	watch_point AS wp\n" +
+            "INNER JOIN section AS s ON wp.section_id = s.section_id\n" +
+            "INNER JOIN bridge_info AS b ON s.bridge_id = b.bridge_id\n" +
+            " %s ", whereStr);
         fields = new String[]{"total"};
         data = baseDao.queryData(sql, fields);
         response.put("total", data.getJSONObject(0).get("total"));
@@ -117,38 +130,38 @@ public class WatchPoint {
         JSONObject data = new JSONObject();
         if (watchPointId != null) {
             String sql = String.format("SELECT\n" +
-                    "	wp.point_id AS watch_point_id,\n" +
-                    "	wp.description,\n" +
-                    "	wp.`name` AS watch_point_name,\n" +
-                    "	wp.position,\n" +
-                    "	wp.watch_point_number,\n" +
-                    "	wp.position_x,\n" +
-                    "	wp.relative_pos,\n" +
-                    "	wp.wave_length,\n" +
-                    "	wp.wave_length_t,\n" +
-                    "	wp.positive_gain,\n" +
-                    "	wp.negative_gain,\n" +
-                    "	wp.negative_t_gain,\n" +
-                    "	wp.positive_t_gain,\n" +
-                    "	wp.section_id,\n" +
-                    "	s.bridge_id\n" +
-                    "FROM\n" +
-                    "	watch_point AS wp\n" +
-                    "INNER JOIN section AS s ON wp.section_id = s.section_id\n" +
-                    "WHERE\n" +
-                    "	wp.point_id = %s\n" +
-                    "AND\n"+
-                    "   s.bridge_id IN (\n" +
-                    "      SELECT\n" +
-                    "         bo.bridge_id\n" +
-                    "      FROM\n" +
-                    "         bridge_organization bo\n" +
-                    "      WHERE\n" +
-                    "         bo.organization_id = %d\n" +
-                    "   )", watchPointId, userOrganizationId);
+                "	wp.point_id AS watch_point_id,\n" +
+                "	wp.description,\n" +
+                "	wp.`name` AS watch_point_name,\n" +
+                "	wp.position,\n" +
+                "	wp.watch_point_number,\n" +
+                "	wp.position_x,\n" +
+                "	wp.relative_pos,\n" +
+                "	wp.wave_length,\n" +
+                "	wp.wave_length_t,\n" +
+                "	wp.positive_gain,\n" +
+                "	wp.negative_gain,\n" +
+                "	wp.negative_t_gain,\n" +
+                "	wp.positive_t_gain,\n" +
+                "	wp.section_id,\n" +
+                "	s.bridge_id\n" +
+                "FROM\n" +
+                "	watch_point AS wp\n" +
+                "INNER JOIN section AS s ON wp.section_id = s.section_id\n" +
+                "WHERE\n" +
+                "	wp.point_id = %s\n" +
+                "AND\n" +
+                "   s.bridge_id IN (\n" +
+                "      SELECT\n" +
+                "         bo.bridge_id\n" +
+                "      FROM\n" +
+                "         bridge_organization bo\n" +
+                "      WHERE\n" +
+                "         bo.organization_id = %d\n" +
+                "   )", watchPointId, userOrganizationId);
             String[] fields = new String[]{"watch_point_id", "watch_point_name", "watch_point_number", "position", "description",
-                    "position_x", "relative_pos", "wave_length", "wave_length_t", "positive_gain", "negative_gain", "negative_t_gain",
-                    "positive_t_gain", "section_id", "bridge_id"};
+                "position_x", "relative_pos", "wave_length", "wave_length_t", "positive_gain", "negative_gain", "negative_t_gain",
+                "positive_t_gain", "section_id", "bridge_id"};
             JSONArray watchPointInfo = baseDao.queryData(sql, fields);
             bridgeId = watchPointInfo.getJSONObject(0).getInteger("bridge_id"); //所属桥梁 TODO:列表为空处理
             data.put("watch_point_info", watchPointInfo);
@@ -156,19 +169,19 @@ public class WatchPoint {
 
         //查询桥梁列表
         String sql = String.format("SELECT\n" +
-                "	b.bridge_id,\n" +
-                "	b.bridge_name\n" +
-                "FROM\n" +
-                "	bridge_info AS b\n" +
-                "WHERE\n" +
-                "   b.bridge_id IN (\n" +
-                "      SELECT\n" +
-                "         bo.bridge_id\n" +
-                "      FROM\n" +
-                "         bridge_organization bo\n" +
-                "      WHERE\n" +
-                "         bo.organization_id = %d\n" +
-                "   )", userOrganizationId);
+            "	b.bridge_id,\n" +
+            "	b.bridge_name\n" +
+            "FROM\n" +
+            "	bridge_info AS b\n" +
+            "WHERE\n" +
+            "   b.bridge_id IN (\n" +
+            "      SELECT\n" +
+            "         bo.bridge_id\n" +
+            "      FROM\n" +
+            "         bridge_organization bo\n" +
+            "      WHERE\n" +
+            "         bo.organization_id = %d\n" +
+            "   )", userOrganizationId);
         String[] fields = new String[]{"bridge_id", "bridge_name"};
         JSONArray bridgeList = baseDao.queryData(sql, fields);
         data.put("bridge_list", bridgeList);
@@ -178,21 +191,21 @@ public class WatchPoint {
 
         //查询截面列表
         sql = String.format("SELECT\n" +
-                "	s.section_id,\n" +
-                "	s.`name` AS section_name\n" +
-                "FROM\n" +
-                "	section AS s\n" +
-                "WHERE\n" +
-                "	s.bridge_id = %s\n" +
-                "AND\n" +
-                "   s.bridge_id IN (\n" +
-                "      SELECT\n" +
-                "         bo.bridge_id\n" +
-                "      FROM\n" +
-                "         bridge_organization bo\n" +
-                "      WHERE\n" +
-                "         bo.organization_id = %d\n" +
-                "   )", bridgeId, userOrganizationId);
+            "	s.section_id,\n" +
+            "	s.`name` AS section_name\n" +
+            "FROM\n" +
+            "	section AS s\n" +
+            "WHERE\n" +
+            "	s.bridge_id = %s\n" +
+            "AND\n" +
+            "   s.bridge_id IN (\n" +
+            "      SELECT\n" +
+            "         bo.bridge_id\n" +
+            "      FROM\n" +
+            "         bridge_organization bo\n" +
+            "      WHERE\n" +
+            "         bo.organization_id = %d\n" +
+            "   )", bridgeId, userOrganizationId);
         fields = new String[]{"section_id", "section_name"};
         JSONArray sectionList = baseDao.queryData(sql, fields);
         data.put("section_list", sectionList);
@@ -228,6 +241,9 @@ public class WatchPoint {
         Double negativeTGain = reqMsg.getDouble("negativeTGain");
         Double positiveTGain = reqMsg.getDouble("positiveTGain");
 
+        Integer old_bridgeId = reqMsg.getInteger("old_bridge_id");
+        Integer old_sectionId = reqMsg.getInteger("old_section_id");
+
         //检查必须参数
         if (operationType == null || StringUtil.isEmpty(watchPointName) || StringUtil.isEmpty(watchPointNumber) || bridgeId == null || sectionId == null) {
             response.setStatus(HttpResponse.FAIL_STATUS);
@@ -238,7 +254,7 @@ public class WatchPoint {
 
         long bridgeDirectOrganizationId = organizationService.getBridgeDirectOrganizationId(bridgeId.longValue());
         if (!sysUserService.getUserOrganizationId().equals(bridgeDirectOrganizationId) &&
-                !sysUserService.userInferiorOrganizationContains(bridgeDirectOrganizationId)) {
+            !sysUserService.userInferiorOrganizationContains(bridgeDirectOrganizationId)) {
             response.setStatus(HttpResponse.FAIL_STATUS);
             response.setCode(HttpResponse.FAIL_CODE);
             response.setMsg("您没有权限新建或修改属于此桥梁的监测点！");
@@ -250,16 +266,16 @@ public class WatchPoint {
         String sql = null;
         if ("insert".equals(operationType)) {
             sql = String.format("INSERT INTO watch_point(name,watch_point_number,position,description,section_id,last_update," +
-                            "position_x,relative_pos,wave_length,wave_length_t,positive_gain,negative_gain,positive_t_gain,negative_t_gain)" +
-                            " VALUES('%s','%s','%s','%s',%d,'%s',%f,'%s',%f,%f,%f,%f,%f,%f)", watchPointName, watchPointNumber, position,
-                    description, sectionId, curTime, positionX, relativePos, waveLength, waveLengthT, positiveGain, negativeGain, positiveTGain, negativeTGain);
+                    "position_x,relative_pos,wave_length,wave_length_t,positive_gain,negative_gain,positive_t_gain,negative_t_gain)" +
+                    " VALUES('%s','%s','%s','%s',%d,'%s',%f,'%s',%f,%f,%f,%f,%f,%f)", watchPointName, watchPointNumber, position,
+                description, sectionId, curTime, positionX, relativePos, waveLength, waveLengthT, positiveGain, negativeGain, positiveTGain, negativeTGain);
         }
         //更新数据语句
         if ("update".equals(operationType) && watchPointId != null) {
             sql = String.format("UPDATE watch_point SET name='%s',watch_point_number='%s',position='%s',description='%s',section_id=%d,last_update='%s'," +
-                            "position_x=%f,relative_pos='%s',wave_length=%f,wave_length_t=%f,positive_gain=%f,negative_gain=%f,positive_t_gain=%f,negative_t_gain=%f" +
-                            " WHERE point_id=%d", watchPointName, watchPointNumber, position, description, sectionId, curTime, positionX, relativePos, waveLength,
-                    waveLengthT, positiveGain, negativeGain, positiveTGain, negativeTGain, watchPointId);
+                    "position_x=%f,relative_pos='%s',wave_length=%f,wave_length_t=%f,positive_gain=%f,negative_gain=%f,positive_t_gain=%f,negative_t_gain=%f" +
+                    " WHERE point_id=%d", watchPointName, watchPointNumber, position, description, sectionId, curTime, positionX, relativePos, waveLength,
+                waveLengthT, positiveGain, negativeGain, positiveTGain, negativeTGain, watchPointId);
         }
 
         //执行操作
@@ -271,6 +287,27 @@ public class WatchPoint {
             response.setStatus(HttpResponse.FAIL_STATUS);
             response.setCode(HttpResponse.FAIL_CODE);
             response.setMsg("操作失败！");
+        }
+
+        logger.info(sectionId + "," + old_sectionId + "," + bridgeId + "," + old_bridgeId);
+        LogBase logbase = new LogBase();
+        boolean logoption = logbase.sys_logoption(23);
+        if (logoption) {
+            String bridgename = logbase.findBridgeName(bridgeId);
+            String old_bridgename = "";
+            if (old_bridgeId == null || old_bridgeId == 0) old_bridgename = "";
+            else old_bridgename = logbase.findBridgeName(old_bridgeId);
+            String sectionname = logbase.findSectionName(sectionId);
+            String old_sectionname = "";
+            if (old_sectionId == null || old_sectionId == 0) old_sectionname = "";
+            else old_sectionname = logbase.findSectionName(old_sectionId);
+            logger.info(old_bridgename + "," + bridgename + "," + old_sectionname + "," + sectionname);
+
+            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String log_watchpoint_sql = LogBase.log_watchpoint(reqMsg, userDetails.getUsername(),
+                bridgename, old_bridgename, sectionname, old_sectionname);
+            logger.info(log_watchpoint_sql);
+            baseDao.updateData(log_watchpoint_sql);
         }
 
         return response.getHttpResponse();
@@ -293,14 +330,26 @@ public class WatchPoint {
             watchPointIds.add(Long.valueOf(id));
         }
         List<Organization> directOrganizations =
-                organizationService.getBridgeDirectOrganizationsByWatchPointIds(watchPointIds);
+            organizationService.getBridgeDirectOrganizationsByWatchPointIds(watchPointIds);
         for (Organization o : directOrganizations) {
             if (!sysUserService.getUserOrganizationId().equals(o.getId()) &&
-                    !sysUserService.userInferiorOrganizationContains(o)) {
+                !sysUserService.userInferiorOrganizationContains(o)) {
                 response.setStatus(HttpResponse.FAIL_STATUS);
                 response.setCode(HttpResponse.FAIL_CODE);
                 response.setMsg("删除测点失败，请检查要删除的测点是否都由您的单位或其下级单位管辖！");
                 return response.getHttpResponse();
+            }
+        }
+
+        if (checkedListStr != null) {
+            LogBase logbase = new LogBase();
+            boolean logoption = logbase.sys_logoption(23);
+            if (logoption) {
+                String watchpointnames = logbase.findWatchPointNameList(checkedListStr);
+                UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                String res = logbase.log_del_watchpoint(userDetails.getUsername(), watchpointnames);
+                baseDao.updateData(res);
+                logger.info(res);
             }
         }
 
@@ -324,28 +373,64 @@ public class WatchPoint {
         JSONObject response = new JSONObject();
         if (sectionId != null) {
             String sql = String.format("SELECT\n" +
-                    "	wp.point_id AS watch_point_id,\n" +
-                    "	wp.`name` AS watch_point_name\n" +
-                    "FROM\n" +
-                    "	watch_point AS wp\n" +
-                    "INNER JOIN\n" +
-                    "   section AS s\n" +
-                    "ON s.section_id = wp.section_id\n" +
-                    "WHERE\n" +
-                    "	wp.section_id = %s\n" +
-                    "AND\n" +
-                    "   s.bridge_id IN (\n" +
-                    "      SELECT\n" +
-                    "         bo.bridge_id\n" +
-                    "      FROM\n" +
-                    "         bridge_organization bo\n" +
-                    "      WHERE\n" +
-                    "         bo.organization_id = %d\n" +
-                    "   )", sectionId, userOrganizationId);
+                "	wp.point_id AS watch_point_id,\n" +
+                "	wp.`name` AS watch_point_name\n" +
+                "FROM\n" +
+                "	watch_point AS wp\n" +
+                "INNER JOIN\n" +
+                "   section AS s\n" +
+                "ON s.section_id = wp.section_id\n" +
+                "WHERE\n" +
+                "	wp.section_id = %s\n" +
+                "AND\n" +
+                "   s.bridge_id IN (\n" +
+                "      SELECT\n" +
+                "         bo.bridge_id\n" +
+                "      FROM\n" +
+                "         bridge_organization bo\n" +
+                "      WHERE\n" +
+                "         bo.organization_id = %d\n" +
+                "   )", sectionId, userOrganizationId);
             String[] fields = new String[]{"watch_point_id", "watch_point_name"};
             JSONArray data = baseDao.queryData(sql, fields);
             response.put("data", data);
         }
         return response;
+    }
+
+    @GetMapping(value = "/watch-point/image/{watchPointId}/{imageBaseName}")
+    public void getImage(@PathVariable("watchPointId") long watchPointId,
+                         @PathVariable("imageBaseName") String imageBaseName,
+                         HttpServletResponse response) throws IOException {
+        ImageDataWrapper imageData = imageService.loadImage("watch-point", watchPointId, imageBaseName);
+        response.setContentType(imageData.getMIMEType());
+        OutputStream outputStream = response.getOutputStream();
+        outputStream.write(imageData.getData());
+        outputStream.flush();
+        outputStream.close();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping(value = "/watch-point/image/{watchPointId}")
+    public void uploadImage(@PathVariable("watchPointId") long watchPointId,
+                            @RequestParam("file") MultipartFile file,
+                            @RequestParam("type") String MIMEType) {
+        try {
+            imageService.saveImage("watch-point", watchPointId, MIMEType, file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping(value = "/watch-point/image/{watchPointId}/{imageBaseName}")
+    public void deleteImage(@PathVariable("watchPointId") long watchPointId,
+                            @PathVariable("imageBaseName") String imageBaseName) throws IOException {
+        imageService.deleteImage("watch-point", watchPointId, imageBaseName);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<String> handleImageException(IOException e) {
+        return ResponseEntity.notFound().build();
     }
 }

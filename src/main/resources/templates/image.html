@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+       xmlns:th="http://www.thymeleaf.org"
+       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+
+    <th:block th:replace="base/imageheader::cssLinks"/>
+
+    <style>
+        #msg-no-images {
+            text-align: center;
+            color: #cccccc;
+            font-size: 18px;
+            height: 550px;
+            line-height: 550px;
+            margin: 0 0 10px;
+        }
+
+        .viewer-delete::before {
+            background: url(data:image/png;base64,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) no-repeat;
+            background-size: cover;
+            color: transparent;
+            display: block;
+            font-size: 0;
+            height: 20px;
+            line-height: 0;
+            width: 20px;
+            content: 'Delete image';
+        }
+    </style>
+
+    <title>桥梁信息管理系统</title>
+</head>
+
+<body class="cm-2-navbar">
+<div id="cm-menu"
+     th:replace="base/menu::menu (one,active,two_2,three_1,three_2,four_1,four_2,four_3,four_4,five_1,five_2,six_1,six_2,six_3,seven_1,seven_2,seven_3,seven_4)"></div>
+
+<header id="cm-header" th:replace="base/imageheader::navHead('image')"></header>
+
+<div id="global">
+    <div class="container-fluid">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <ul id="images" style="height: 500px;" th:if="${not #lists.isEmpty(ImageFilenames)}">
+                    <li th:each="imageName, iterStat : ${ImageFilenames}" style="display: none">
+                        <img th:src="${imageBaseURI} + ${imageName}"
+                             th:alt="${iterStat.count}"
+                             th:id="${imageName}"/>
+                    </li>
+                </ul>
+                <p id="msg-no-images" th:if="${#lists.isEmpty(ImageFilenames)}">
+                    暂无图片
+                </p>
+            </div>
+            <iframe id="tmp_downloadhelper_iframe" style="display: none;"></iframe>
+        </div>
+    </div>
+    <footer th:replace="base/footer::footer"></footer>
+</div>
+
+<th:block th:replace="base/imageheader::jsLinks"/>
+<script th:src="@{/udf/js/image.js}"></script>
+
+<div id="cm-menu-backdrop" class="visible-xs-block visible-sm-block"></div>
+<div id="cm-submenu-popover" class="dropdown">
+    <div data-toggle="dropdown"></div>
+    <div class="popover cm-popover right">
+        <div class="arrow"></div>
+        <div class="popover-content">
+            <ul></ul>
+        </div>
+    </div>
+</div>
+</body>
+</html>

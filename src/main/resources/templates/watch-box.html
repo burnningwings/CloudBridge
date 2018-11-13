@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" >
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <head>
         <meta charset="utf-8">
         <meta name="_csrf" th:content="${_csrf.token}"/>
@@ -25,7 +27,7 @@
     </head>
     <body class="cm-no-transition cm-1-navbar">
 
-        <div id="cm-menu" th:replace="base/menu::menu (one,two_1,active,three_1,three_2,four_1,four_2,four_3,four_4,five_1,five_2,six_1,six_2,six_3,seven_1,seven_2)"></div>
+        <div id="cm-menu" th:replace="base/menu::menu (one,two_1,active,three_1,three_2,four_1,four_2,four_3,four_4,five_1,five_2,six_1,six_2,six_3,seven_1,seven_2,seven_3,seven_4)"></div>
 
         <div th:replace="base/header::header"></div>
 
@@ -38,14 +40,13 @@
                         </h3>
                     </div>
                     <div class="panel-body">
-                        <select class="selectpicker" id="bridge_menu" onchange="selectBridgeOnchange(this)"></select>
+                        <select class="selectpicker" id="bridge_menu" onchange="selectBridgeOnchange(this)" th:attr="init-value=${bridge_id}"></select>
                         <br>
                         <br>
                         <div id="watch-box-grid"></div>
-                        <div style="float:left;margin: 20px 0px 0px 0px">
+                        <div style="float:left;margin: 20px 0px 0px 0px" sec:authorize="hasRole('ROLE_ADMIN')">
                             <button id="add_box" type="button" style="margin:.0em 1em 0em 0em" class="btn btn-l btn-primary">增加</button>
                             <button id="delete_box" type="button" style="margin:.0em 1em 0em 0em" class="btn btn-l btn-success">删除</button>
-                            <button id="measure_box" type="button" style="margin:.0em 1em 0em 0em" class="btn btn-l btn-warning">测量</button>
                         </div>
                     </div>
                 </div>

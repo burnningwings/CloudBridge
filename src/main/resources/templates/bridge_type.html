@@ -26,9 +26,9 @@
     <link rel="icon" type="image/x-icon" th:href="@{images/favicon.ico}"/>
 </head>
 <body class="cm-no-transition cm-1-navbar">
-
+<!--在这里设置menu的active的项，log——bridge是six_3-->
 <div id="cm-menu"
-     th:replace="base/menu::menu (one,active,two_2,three_1,three_2,four_1,four_2,four_3,four_4,five_1,five_2,six_1,six_2,six_3,seven_1,seven_2,seven_3,seven_4)"></div>
+     th:replace="base/menu::menu (one,two_1,two_2,three_1,three_2,four_1,four_2,four_3,four_4,five_1,five_2,six_1,six_2,six_3,seven_1,seven_2,active,seven_4)"></div>
 <div th:replace="base/header::header"></div>
 
 <div id="global">
@@ -36,24 +36,18 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title">
-                    传感器列表
+                    桥梁类型列表
                 </h3>
             </div>
             <div class="panel-body">
-                <select class="selectpicker" id="dropdownMenu1" th:attr="init-value=${bridge_id}"></select>
-                <select class="selectpicker" id="dropdownMenu2" th:attr="init-value=${section_id}"></select>
-                <select class="selectpicker" id="dropdownMenu3" th:attr="init-value=${watch_point_id}"></select>
-                <select class="selectpicker" id="dropdownMenu4" th:attr="init-value=${watch_box_id}"></select>
+                <!--select class="selectpicker" id="bridge_menu" onchange="selectBridgeOnchange(this)"></--select>-->
                 <br><br>
-                <div id="sensor-grid"></div>
-                <div style="float:left;margin: 20px 0px 0px 0px" sec:authorize="hasRole('ROLE_ADMIN')">
-                    <button id="add_sensor" type="button" style="margin:.0em 1em 0em 0em"
-                            class="btn btn-l btn-primary">
-                        增加
-                    </button>
-                    <button id="delete_sensor" type="button" style="margin:0em 1em 0em 0em"
+                <div id="system-grid"></div>
+                <div style="float:left;margin: 20px 0px 0px 0px">
+                    <!--add_bridgetype与js中的dom相对应-->
+                    <button id="add_bridge_type" type="button" style="margin:0em 1em 0em 0em"
                             class="btn btn-l btn-danger">
-                        删除
+                        增加
                     </button>
                 </div>
             </div>
@@ -78,6 +72,7 @@
 <!-- table相关 -->
 <script src="assets/js/kendo.web.min.js"></script>
 <script src="udf/js/common.js"></script>
-<script src="udf/js/sensor.js"></script>
+<script src="udf/js/bridge_type.js"></script>  <!--这里的脚本要记得替换成自己写的-->
+
 </body>
 </html>

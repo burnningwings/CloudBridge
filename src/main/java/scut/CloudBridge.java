@@ -82,6 +82,7 @@ public class CloudBridge implements EnvironmentAware {
             Constants.RELIABILITY_ANALYSIS_PROGRAM = env.getProperty("reliability.analysis.program").toString();
             Constants.RELIABILITY_TARGET_DIR = env.getProperty("reliability.analysis.target.dir").toString();
             Constants.RELIABILITY_ANALYSIS_RESULT_DIR = env.getProperty("reliability.analysis.result.dir").toString();
+            Constants.SCRIPT_EXEC_PREFIX = env.getProperty("program.exec.prefix").toString();
         }catch (Exception e){
             logger.debug("当前MYSQL未配置.");
         }

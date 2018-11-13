@@ -101,6 +101,9 @@ public class Constants {
     //可靠度分析结果保存路径
     public static String RELIABILITY_ANALYSIS_RESULT_DIR = null;
 
+    //python程序执行脚本前缀
+    public static String SCRIPT_EXEC_PREFIX = null;
+
 
 
   // 消息状态

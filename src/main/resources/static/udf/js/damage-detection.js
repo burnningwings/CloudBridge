@@ -446,14 +446,14 @@ $(function () {
             showModalDialog("提示", "<div style='text-align:center;'>文件正在上传...</div>",function(){},120,40);
         }
         updateDropdownListTrainModel();
-        updateDropdownListUdfTrainModel();
+       // updateDropdownListUdfTrainModel();
     }).on('fileuploaderror', function (event, data, msg) {
         var response = data.response;
         console.log("data");
         console.log(data);
         var msg = "仅支持py且单文件大小不超过50MB！";
         if(response!=null && response.msg!="") msg = response.msg;
-        console(msg);
+        console.log(msg);
         showTransientDialog(msg);
     });
 
@@ -946,13 +946,13 @@ $(function () {
                     var content = "验证完成！<br/> 准确率为"+p+"<br/>召回率为"+r + "</br>f1值为"+f1;
                     showDialog(content);
                 }else if(result == 'failed'){
-                    showTransientDialog('训练失败！')
+                    showTransientDialog('验证失败！')
                 }else{
                     showTransientDialog("没有符合条件的数据！")
                 }
             },
             complete:function () {
-                $("#dd_evaluate_start").text("开始训练");
+                $("#dd_evaluate_start").text("模型验证");
                 $("#dd_evaluate_process").attr("value", "100");
                 //updateDropdownListSavedModel();
                 //updateDropdownListEvaluateModel();

@@ -63,7 +63,7 @@ public class CloudBridge implements EnvironmentAware {
             Constants.ASSOCIATION_TARGET_DIR = env.getProperty("association.analysis.target.dir").toString();
             Constants.ASSOCIATION_ANALYSIS_RESULT_DIR = env.getProperty("association.analysis.result.dir").toString();
             Constants.ASSOCIATION_ANALYSIS_PROGRAM = env.getProperty("association.analysis.program").toString();
-            Constants.WAVELET_ANALYSIS_FILE = env.getProperty("wavelet.analysis.file.dir").toString();
+            //Constants.WAVELET_ANALYSIS_FILE = env.getProperty("wavelet.analysis.file.dir").toString();
             //Constants.DAMAGE_TRAIN_FILE_MERGED_DIR = env.getProperty("damage.trainfile.merged.dir").toString();
             Constants.DAMAGE_TRAINFILE_TARGET_DIR = env.getProperty("damage.trainfile.target.dir").toString();
             //Constants.DAMAGE_EVALUATE_FILE_MERGED_DIR = env.getProperty("damage.evaluatefile.merged.dir").toString();

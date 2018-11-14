@@ -122,6 +122,21 @@ $(function () {
 
     updateDropdownListAssociationFile();
 
+    $("#association_file_dataformat").click(function(){
+        var popoverEl = $("#association_file_dataformat");
+        popoverEl.popover("destroy");
+        // var content = "{<br/>"+
+        //     "feature1,feature2,feature3<br/>"+
+        //     "}";
+        var content = "time : string<br/>" + "bridge : string<br/>" + "section : string<br/>" + "watch_point : point<br/>" +
+                    "unknow1 : float<br/>" + "通道 : string<br/>" + "传感器编号 : string<br/>" + "measure_strain : float<br/>" +
+                    "unknow2 : float<br/>" + "单位1 : string<br/>" + "数据 : float<br/>" + "单位2 : string<br/>" +
+                    "电阻值 : float<br/>" + "T : float<br/>" + "unknow3 : float<br/>" + "S : float"
+        popoverEl.attr("data-content", content);
+        popoverEl.popover("show");
+
+    });
+
     var url ="/association-analysis/updtate_bridgedroplist";
     var response = webRequest(url, "GET", false, {"bridge_id" : "all"})
     var data1 = updateDropdownMenu(response);

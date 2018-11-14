@@ -80,9 +80,16 @@ function webRequest(url,requestType,async,data,callback){
                     d.close().remove();
                 }
             },
-            error: function (message) {
-                console.log(message);
-                alert("提交数据失败！");
+            // error: function (message) {
+            //     console.log(message);
+            //     alert("提交数据失败！");
+            // }
+            error: function (xhr) {
+                if(xhr.status == 403){
+                    alert("对不起，您没有权限");
+                }else{
+                    alert("提交数据失败");
+                }
             }
         });
     } else {
@@ -95,8 +102,14 @@ function webRequest(url,requestType,async,data,callback){
             }
         }).done(function() {
 
-        }).fail(function() {
-            alert( "请求失败！" );
+            // }).fail(function() {
+            //     alert( "请求失败！" );
+        }).fail(function (xhr) {
+            if(xhr.status == 403){
+                alert("对不起，您没有权限");
+            }else{
+                alert("提交数据失败");
+            }
         }).always(function() {
 
         });

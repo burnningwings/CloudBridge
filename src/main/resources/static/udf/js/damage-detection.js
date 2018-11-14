@@ -291,6 +291,8 @@ $(function () {
 
     var data_format_str = 'yyyy-MM-dd HH:mm:ss';
     var current_time = new Date().format(data_format_str);
+    var t_begin_train = new Date(2014,05,14,00,00,00).format(data_format_str);
+    var t_end_train = new Date(2018,05,12,18,00,00).format(data_format_str);
     $('#dd_train_begin_time').datetimepicker({
         timeFormat: "HH:mm:ss",
         dateFormat: "yy-mm-dd"
@@ -299,8 +301,8 @@ $(function () {
         timeFormat: "HH:mm:ss",
         dateFormat: "yy-mm-dd"
     });
-    $('#dd_train_begin_time').val(current_time);
-    $('#dd_train_end_time').val(current_time);
+    $('#dd_train_begin_time').val(t_begin_train);
+    $('#dd_train_end_time').val(t_end_train);
 
     $('#dd_evaluate_begin_time').datetimepicker({
         timeFormat: "HH:mm:ss",
@@ -310,8 +312,10 @@ $(function () {
         timeFormat: "HH:mm:ss",
         dateFormat: "yy-mm-dd"
     });
-    $('#dd_evaluate_begin_time').val(current_time);
-    $('#dd_evaluate_end_time').val(current_time);
+    var t_begin_evaluate = new Date(2018,05,13,00,00,00).format(data_format_str);
+    var t_end_evaluate = new Date(2018,08,10,18,00,00).format(data_format_str);
+    $('#dd_evaluate_begin_time').val(t_begin_evaluate);
+    $('#dd_evaluate_end_time').val(t_end_evaluate);
 
     $('#dd_test_begin_time').datetimepicker({
         timeFormat: "HH:mm:ss",
@@ -345,9 +349,12 @@ $(function () {
     $("#dd_description_train_dataformat").click(function(){
         var popoverEl = $("#dd_description_train_dataformat");
         popoverEl.popover("destroy");
-        var content = "{<br/>"+
-            "feature1,feature2,feature3,label<br/>"+
-            "}";
+        // var content = "{<br/>"+
+        //     "feature1,feature2,feature3,label<br/>"+
+        //     "}";
+        var content = "data1 : float<br/>" + "data2 : float<br/>" + "data3 : float<br/>" + "data4 : float<br/>" + "data5 : float<br/>"+
+                      "data6 : float<br/>" + "data7 : float<br/>" + "data8 : float<br/>" + "data9 : float<br/>" + "data10 : float<br/>"+
+                      "location : integer<br/>" + "level : integer<br/>" + "bridge : string<br/>" + "time : string";
         popoverEl.attr("data-content", content);
         popoverEl.popover("show");
 
@@ -356,9 +363,12 @@ $(function () {
     $("#dd_description_evaluate_dataformat").click(function(){
         var popoverEl = $("#dd_description_evaluate_dataformat");
         popoverEl.popover("destroy");
-        var content = "{<br/>"+
-            "feature1,feature2,feature3,label<br/>"+
-            "}";
+        // var content = "{<br/>"+
+        //     "feature1,feature2,feature3,label<br/>"+
+        //     "}";
+        var content = "data1 : float<br/>" + "data2 : float<br/>" + "data3 : float<br/>" + "data4 : float<br/>" + "data5 : float<br/>"+
+            "data6 : float<br/>" + "data7 : float<br/>" + "data8 : float<br/>" + "data9 : float<br/>" + "data10 : float<br/>"+
+            "location : integer<br/>" + "level : integer<br/>" + "bridge : string<br/>" + "time : string";
         popoverEl.attr("data-content", content);
         popoverEl.popover("show");
 
@@ -367,9 +377,12 @@ $(function () {
     $("#dd_description_test_dataformat").click(function(){
         var popoverEl = $("#dd_description_test_dataformat");
         popoverEl.popover("destroy");
-        var content = "{<br/>"+
-            "feature1,feature2,feature3<br/>"+
-            "}";
+        // var content = "{<br/>"+
+        //     "feature1,feature2,feature3<br/>"+
+        //     "}";
+        var content = "data1 : float<br/>" + "data2 : float<br/>" + "data3 : float<br/>" + "data4 : float<br/>" + "data5 : float<br/>"+
+            "data6 : float<br/>" + "data7 : float<br/>" + "data8 : float<br/>" + "data9 : float<br/>" + "data10 : float<br/>"+
+            "bridge : string<br/>" + "time : string";
         popoverEl.attr("data-content", content);
         popoverEl.popover("show");
 
@@ -422,7 +435,7 @@ $(function () {
         console.log(data);
         var msg = "仅支持csv且单文件大小不超过50MB！";
         if(response!=null && response.msg!="") msg = response.msg;
-        console(msg);
+        console.log(msg);
         showTransientDialog(msg);
     });
 

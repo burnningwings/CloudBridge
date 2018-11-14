@@ -158,9 +158,11 @@ $(function () {
     $("#reliability_file_dataformat").click(function(){
         var popoverEl = $("#reliability_file_dataformat");
         popoverEl.popover("destroy");
-        var content = "{<br/>"+
-            "time, bridge, section, point, measure_data....<br/>"+
-            "}";
+        // var content = "{<br/>"+
+        //     "time, bridge, section, point, measure_data....<br/>"+
+        //     "}";
+        var content = "time : string<br/>" + "bridge : string<br/>" + "section : string" + "watch_point : string" +
+                        "sensor_num : string<br/>" + "s : float";
         popoverEl.attr("data-content", content);
         popoverEl.popover("show");
 

@@ -29,18 +29,16 @@
     <link rel="icon" type="image/x-icon" th:href="@{images/favicon.ico}"/>
     <!-- 避免日期选择框被覆盖，建议直接在css文件里改-->
     <style>
+        /*.ui-datepicker {*/
+            /*z-index : 200;*/
+        /*}*/
+        /*#ui-datepicker-div {*/
+            /*z-index: 500;*/
+        /*}*/
         .input-group {
-            z-index: 1;
+            z-index: 0;
         }
-        .cm-flex {
-            z-index: 1;
-        }
-        .ui-datepicker table {
-            z-index: 10;
-        }
-        header {
-            z-index: 1;
-        }
+
     </style>
 </head>
 <body class="cm-no-transition cm-1-navbar">

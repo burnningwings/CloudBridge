@@ -462,6 +462,10 @@ $(function () {
 
     var data_format_str = 'yyyy-MM-dd HH:mm:ss';
     var current_time = new Date().format(data_format_str);
+
+    var t_begin_train = new Date(2018,09,11,00,00,00).format(data_format_str);
+    var t_end_train = new Date(2018,09,11,23,59,59).format(data_format_str);
+
     $('#train_begin_time').datetimepicker({
         timeFormat: "HH:mm:ss",
         dateFormat: "yy-mm-dd"
@@ -470,9 +474,11 @@ $(function () {
         timeFormat: "HH:mm:ss",
         dateFormat: "yy-mm-dd"
     });
-    $('#train_begin_time').val(current_time);
-    $('#train_end_time').val(current_time);
+    $('#train_begin_time').val(t_begin_train);
+    $('#train_end_time').val(t_end_train);
 
+    var t_begin_evaluate = new Date(2018,09,12,00,00,00).format(data_format_str);
+    var t_end_evaluate = new Date(2018,09,12,23,59,59).format(data_format_str);
     $('#evaluate_begin_time').datetimepicker({
         timeFormat: "HH:mm:ss",
         dateFormat: "yy-mm-dd"
@@ -481,15 +487,15 @@ $(function () {
         timeFormat: "HH:mm:ss",
         dateFormat: "yy-mm-dd"
     });
-    $('#evaluate_begin_time').val(current_time);
-    $('#evaluate_end_time').val(current_time);
+    $('#evaluate_begin_time').val(t_begin_evaluate);
+    $('#evaluate_end_time').val(t_end_evaluate);
 
     $('#test_begin_time').datetimepicker({
         timeFormat: "HH:mm:ss",
         dateFormat: "yy-mm-dd"
     });
     var t_begin_test = new Date(2018,09,13,00,00,00).format(data_format_str);
-    var t_end_test = new Date(2018,09,14,00,00,00).format(data_format_str);
+    var t_end_test = new Date(2018,09,13,23,59,59).format(data_format_str);
     $('#test_end_time').datetimepicker({
         timeFormat: "HH:mm:ss",
         dateFormat: "yy-mm-dd"
@@ -501,9 +507,13 @@ $(function () {
     $("#description_train_dataformat").click(function(){
         var popoverEl = $("#description_train_dataformat");
         popoverEl.popover("destroy");
-        var content = "{<br/>"+
-            "feature1,feature2,feature3,label<br/>"+
-            "}";
+        // var content = "{<br/>"+
+        //     "feature1,feature2,feature3,label<br/>"+
+        //     "}";
+        var content = "data1 : float<br/>" + "data2 : float<br/>" + "data3 : float<br/>" + "data4 : float<br/>" + "data5 : float<br/>"
+                    + "data6 : float<br/>" + "data7 : float<br/>" + "data8 : float<br/>" + "data9 : float<br/>" + "data10 : float<br/>"
+                    + "data11 : float<br/>" + "data12 : float<br/>" + "data13 : float<br/>" + "data14 : float<br/>" + "data15 : float<br/>"
+                    + "label : integer<br/>" + "bridge : string<br/>" + "time : string"
         popoverEl.attr("data-content", content);
         popoverEl.popover("show");
 
@@ -512,9 +522,13 @@ $(function () {
     $("#description_evaluate_dataformat").click(function(){
         var popoverEl = $("#description_evaluate_dataformat");
         popoverEl.popover("destroy");
-        var content = "{<br/>"+
-            "feature1,feature2,feature3,label<br/>"+
-            "}";
+        // var content = "{<br/>"+
+        //     "feature1,feature2,feature3,label<br/>"+
+        //     "}";
+        var content = "data1 : float<br/>" + "data2 : float<br/>" + "data3 : float<br/>" + "data4 : float<br/>" + "data5 : float<br/>"
+            + "data6 : float<br/>" + "data7 : float<br/>" + "data8 : float<br/>" + "data9 : float<br/>" + "data10 : float<br/>"
+            + "data11 : float<br/>" + "data12 : float<br/>" + "data13 : float<br/>" + "data14 : float<br/>" + "data15 : float<br/>"
+            + "label : integer<br/>" + "bridge : string<br/>" + "time : string";
         popoverEl.attr("data-content", content);
         popoverEl.popover("show");
 
@@ -523,9 +537,13 @@ $(function () {
     $("#description_test_dataformat").click(function(){
         var popoverEl = $("#description_test_dataformat");
         popoverEl.popover("destroy");
-        var content = "{<br/>"+
-            "feature1,feature2,feature3<br/>"+
-            "}";
+        // var content = "{<br/>"+
+        //     "feature1,feature2,feature3<br/>"+
+        //     "}";
+        var content = "data1 : float<br/>" + "data2 : float<br/>" + "data3 : float<br/>" + "data4 : float<br/>" + "data5 : float<br/>"
+            + "data6 : float<br/>" + "data7 : float<br/>" + "data8 : float<br/>" + "data9 : float<br/>" + "data10 : float<br/>"
+            + "data11 : float<br/>" + "data12 : float<br/>" + "data13 : float<br/>" + "data14 : float<br/>" + "data15 : float<br/>"
+            + "bridge : string<br/>" + "time : string";
         popoverEl.attr("data-content", content);
         popoverEl.popover("show");
 
@@ -534,11 +552,10 @@ $(function () {
     $("#description_modelformat").click(function(){
         var popoverEl = $("#description_modelformat");
         popoverEl.popover("destroy");
-        var content = "{<br/>"+
+        var content =
             "python文件<br/>"+
             "param1 : 训练文件路径<br/>"+
-            "param2 : 模型保存路径<br/>"+
-            "}";
+            "param2 : 模型保存路径<br/>";
         popoverEl.attr("data-content", content);
         popoverEl.popover("show");
 

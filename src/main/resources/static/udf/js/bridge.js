@@ -1,5 +1,10 @@
 //更新桥梁列表
 function updateBridgeInfoGrid() {
+    var detailCol = getDetailCol(getUserRole()),
+        detailTitle = detailCol['title'],
+        detailBtnText = detailCol['buttonText'],
+        detailBtnClass = detailCol['buttonClass'];
+
     var dataSource = new kendo.data.DataSource({
         transport: {
             read: {
@@ -88,8 +93,8 @@ function updateBridgeInfoGrid() {
                 headerAttributes: {style: "text-align:center"},
                 attributes: {class: "text-center"}
             }, {
-                template: "<a class='btn btn-warning' id='modify-#:bridge_id#' onclick='modifyBridgeInfo(#:bridge_id#)'/>修改</a>",
-                title: "修改",
+                template: "<a class='" + detailBtnClass + "' id='modify-#:bridge_id#' onclick='modifyBridgeInfo(#:bridge_id#)'/>" + detailBtnText + "</a>",
+                title: detailTitle,
                 headerAttributes: {style: "text-align:center"},
                 attributes: {class: "text-center"}
             }, {
@@ -119,7 +124,7 @@ function updateBridgeInfoGrid() {
 
 //修改桥梁信息
 function modifyBridgeInfo(bridge_id) {
-    showBridgeDialog("修改桥梁信息", 'update', bridge_id);
+    showBridgeDialog("桥梁信息", 'update', bridge_id);
 }
 
 //弹窗
@@ -201,7 +206,12 @@ function showBridgeDialog(title, operation_type, bridge_id) {
         <br>\
         ';
 
-    showModalDialog(title, content, ok_callback, 605, 330);
+    if (!isAdminRole(getUserRole())) {
+        showModalDialogWithoutOK(title, content, 605, 330);
+        $('div.form-inline-custom').find('input,select,textarea').attr('disabled', 'disabled');
+    } else {
+        showModalDialog(title, content, ok_callback, 605, 330);
+    }
 
     //回调函数
     function ok_callback() {

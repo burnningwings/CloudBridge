@@ -1,8 +1,13 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-       xmlns:th="http://www.thymeleaf.org"
-       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <body>
+<th:block th:fragment="metaHead">
+    <meta name="role" content="ROLE_USER" th:content="${userRole}"/>
+</th:block>
+
 <header th:fragment="header" id="cm-header">
     <nav class="cm-navbar cm-navbar-primary">
         <div class="btn btn-primary md-menu-white hidden-md hidden-lg" data-toggle="cm-menu"></div>

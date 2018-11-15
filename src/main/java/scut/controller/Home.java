@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import scut.service.ImageService;
 import scut.service.authority.CurrentUser;
+import scut.service.authority.user.SysUser;
 import scut.util.Constants;
 
 import javax.annotation.Resource;
@@ -36,9 +37,10 @@ public class Home {
     }
 
     private void setUser(Model model) {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
+        SysUser sysUser = (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        CurrentUser currentUser = new CurrentUser(sysUser.getUsername());
         model.addAttribute(Constants.CURRENT_USER, currentUser);
+        model.addAttribute(Constants.USER_ROLE, sysUser.getRoles().get(0).getName());
     }
 
     @RequestMapping("/")

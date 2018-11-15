@@ -14,6 +14,7 @@ public class Constants {
 
 
     public final static String CURRENT_USER = "CurrentUser";
+    public final static String USER_ROLE = "userRole";
     public final static String ACCESS_TOKEN = "token";
 
     // 传感器数据保存根目录

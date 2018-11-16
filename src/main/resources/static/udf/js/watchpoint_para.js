@@ -52,6 +52,11 @@ function sectionListDropdown(bridgeId, init_value) {
 
 }
 function updateWatchPointGrid(bridge_id, section_id){
+    var detailCol = getDetailCol(getUserRole()),
+        detailTitle = detailCol['title'],
+        detailBtnText = detailCol['buttonText'],
+        detailBtnClass = detailCol['buttonClass'];
+
     var dataSource = new kendo.data.DataSource({
         transport: {
             read: {
@@ -132,8 +137,8 @@ function updateWatchPointGrid(bridge_id, section_id){
                 headerAttributes:{ style:"text-align:center"},
                 attributes:{ class:"text-center" }
             } , {
-                title: "修改",
-                template: "<button class='btn btn-success' type='button' id='modify-#: point_id #' onclick='modifyWatchPointPara(#: point_id #)'/>修改</button>",
+                title: detailTitle,
+                template: "<button class='" + detailBtnClass + "' type='button' id='modify-#: point_id #' onclick='modifyWatchPointPara(#: point_id #)'/>" + detailBtnText + "</button>",
                 headerAttributes:{ style:"text-align:center"},
                 attributes:{ class:"text-center" }
             }
@@ -146,7 +151,7 @@ function updateWatchPointGrid(bridge_id, section_id){
 //修改监测点参数信息
 function modifyWatchPointPara(watch_point_id) {
     //alert(watch_point_id);
-    showWatchPointParaDialog("修改监测点参数信息", 'update', watch_point_id);
+    showWatchPointParaDialog("监测点参数信息", 'update', watch_point_id);
 }
 
 //弹窗
@@ -180,7 +185,12 @@ function showWatchPointParaDialog(title, operation_type, watch_point_id) {
         <br>\
         ';
 
-    showModalDialog(title, content, ok_callback, 605, 330);
+    if (!isAdminRole(getUserRole())) {
+        showModalDialogWithoutOK(title, content, 605, 330);
+        $('div.form-inline-custom').find('input,select,textarea').attr('disabled', 'disabled');
+    } else {
+        showModalDialog(title, content, ok_callback, 605, 330);
+    }
 
     //回调函数
     function ok_callback() {
@@ -219,7 +229,7 @@ function showWatchPointParaDialog(title, operation_type, watch_point_id) {
 //修改监测点参数信息
 function modifyBridgePara(bridge_id) {
     //alert(watch_point_id);
-    showBridgeParaDialog("修改桥梁参数信息", 'update', bridge_id);
+    showBridgeParaDialog("桥梁参数信息", 'update', bridge_id);
 }
 
 //弹窗
@@ -288,7 +298,12 @@ function showBridgeParaDialog(title, operation_type, bridge_id) {
         <br>\
         ';
 
-    showModalDialog(title, content, ok_callback, 605, 330);
+    if (!isAdminRole(getUserRole())) {
+        showModalDialogWithoutOK(title, content, 605, 330);
+        $('div.form-inline-custom').find('input,select,textarea').attr('disabled', 'disabled');
+    } else {
+        showModalDialog(title, content, ok_callback, 605, 330);
+    }
 
     //回调函数
     function ok_callback() {
@@ -329,6 +344,11 @@ function showBridgeParaDialog(title, operation_type, bridge_id) {
 }
 //桥梁参数
 function updateBridgeParaGrid(){
+    var detailCol = getDetailCol(getUserRole()),
+        detailTitle = detailCol['title'],
+        detailBtnText = detailCol['buttonText'],
+        detailBtnClass = detailCol['buttonClass'];
+
     var dataSource = new kendo.data.DataSource({
         transport: {
             read: {
@@ -419,8 +439,8 @@ function updateBridgeParaGrid(){
                   headerAttributes:{ style:"text-align:center"},
                   attributes:{ class:"text-center" }
             },{
-                title: "修改",
-                template: "<button class='btn btn-success' type='button' id='modify-#: bridge_id #' onclick='modifyBridgePara(#: bridge_id #)'/>修改</button>",
+                title: detailTitle,
+                template: "<button class='" + detailBtnClass + "' type='button' id='modify-#: bridge_id #' onclick='modifyBridgePara(#: bridge_id #)'/>" + detailBtnText + "</button>",
                 headerAttributes:{ style:"text-align:center"},
                 attributes:{ class:"text-center" }
             }

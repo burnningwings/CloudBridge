@@ -3,6 +3,7 @@ package scut.controller;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.log4j.Logger;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.ui.Model;
@@ -109,6 +110,7 @@ public class TypeControl {
      * @param
      * @return
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping(value = "/bridge_type/create-or-update", method = RequestMethod.POST, produces = "application/json")
     public JSONObject createOrupdatebridge_type(@RequestBody JSONObject reqMsg) {
         long userOrganizationId = sysUserService.getUserOrganizationId();
@@ -240,6 +242,7 @@ public class TypeControl {
      * @param
      * @return
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping(value = "/watchbox_type/create-or-update", method = RequestMethod.POST, produces = "application/json")
     public JSONObject createOrupdateWatchBox_type(@RequestBody JSONObject reqMsg) {
         long userOrganizationId = sysUserService.getUserOrganizationId();

@@ -1,5 +1,10 @@
 //更新截面信息列表
 function updateSectionInfoGrid(bridge_id) {
+    var detailCol = getDetailCol(getUserRole()),
+        detailTitle = detailCol['title'],
+        detailBtnText = detailCol['buttonText'],
+        detailBtnClass = detailCol['buttonClass'];
+
     var dataSource = new kendo.data.DataSource({
         transport: {
             read: {
@@ -84,12 +89,12 @@ function updateSectionInfoGrid(bridge_id) {
                 headerAttributes: {style: "text-align:center"},
                 attributes: {class: "text-center"}
             }, {
-                template: "<a class='btn btn-warning' id='modify-#:section_id#' onclick='modifySectionInfo(#:section_id#)'/>修改</a>",
-                title: "修改",
+                template: "<a class='" + detailBtnClass + "' id='modify-#:section_id#' onclick='modifySectionInfo(#:section_id#)'/>" + detailBtnText + "</a>",
+                title: detailTitle,
                 headerAttributes: {style: "text-align:center"},
                 attributes: {class: "text-center"}
             }, {
-                template: "<a class='btn btn-success' id='picture-#:section_id#' onclick=''/>管理</a>",
+                template: "<a class='btn btn-success' id='picture-#:section_id#' href='/section/image/#:section_id#'/>管理</a>",
                 title: "截面图片",
                 headerAttributes: {style: "text-align:center"},
                 attributes: {class: "text-center"}
@@ -185,7 +190,12 @@ function showSectionDialog(title, operation_type, section_id) {
         <br>\
         ';
 
-    showModalDialog(title, content, ok_callback, 605, 330);
+    if (!isAdminRole(getUserRole())) {
+        showModalDialogWithoutOK(title, content, 605, 330);
+        $('div.form-inline-custom').find('input,select,textarea').attr('disabled', 'disabled');
+    } else {
+        showModalDialog(title, content, ok_callback, 605, 330);
+    }
 
     //回调函数
     function ok_callback() {
@@ -230,7 +240,7 @@ function showSectionDialog(title, operation_type, section_id) {
 
 //修改截面信息
 function modifySectionInfo(section_id) {
-    showSectionDialog("修改截面信息", 'update', section_id);
+    showSectionDialog("截面信息", 'update', section_id);
 }
 
 //重新读取并刷新数据

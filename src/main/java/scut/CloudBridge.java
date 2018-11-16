@@ -2,6 +2,7 @@ package scut;
 
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.log4j.Logger;
+import org.apache.tomcat.util.bcel.Const;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.EnvironmentAware;
@@ -53,15 +54,35 @@ public class CloudBridge implements EnvironmentAware {
             Constants.DAMAGE_UPLOAD_TRAIN_MODEL_DIR = env.getProperty("damage.upload.trainmodel.dir").toString();
             Constants.OVERWEIGHT_SAVE_TRAIN_MODEL_DIR = env.getProperty("overweight.saved.trainmodel.dir").toString();
             Constants.DAMAGE_SAVE_TRAIN_MODEL_DIR = env.getProperty("damage.saved.trainmodel.dir").toString();
-            Constants.TEST_MODEL_PROGRAM = env.getProperty("model.test.program").toString();
+            Constants.TEST_MODEL_PROGRAM = env.getProperty("damage.model.test.program").toString();
             Constants.DAMAGE_EVALUATE_MODEL_PROGRAM = env.getProperty("damage.model.evaluate.program").toString();
             Constants.OVERWEIGHT_EVALUATE_MODEL_PROGRAM = env.getProperty("overweight.model.evaluate.program").toString();
             Constants.OVERWEIGHT_PREDICT_FILE_DIR = env.getProperty("overweight.predict.output.dir").toString();
             Constants.DAMAGE_PREDICT_FILE_DIR = env.getProperty("damage.predict.output.dir").toString();
             Constants.ASSOCIATION_FILE_DIR = env.getProperty("association.analysis.dir").toString();
+            Constants.ASSOCIATION_TARGET_DIR = env.getProperty("association.analysis.target.dir").toString();
             Constants.ASSOCIATION_ANALYSIS_RESULT_DIR = env.getProperty("association.analysis.result.dir").toString();
             Constants.ASSOCIATION_ANALYSIS_PROGRAM = env.getProperty("association.analysis.program").toString();
-            Constants.WAVELET_ANALYSIS_FILE = env.getProperty("wavelet.analysis.file.dir").toString();
+            //Constants.WAVELET_ANALYSIS_FILE = env.getProperty("wavelet.analysis.file.dir").toString();
+            //Constants.DAMAGE_TRAIN_FILE_MERGED_DIR = env.getProperty("damage.trainfile.merged.dir").toString();
+            Constants.DAMAGE_TRAINFILE_TARGET_DIR = env.getProperty("damage.trainfile.target.dir").toString();
+            //Constants.DAMAGE_EVALUATE_FILE_MERGED_DIR = env.getProperty("damage.evaluatefile.merged.dir").toString();
+            Constants.DAMAGE_EVALUATEFILE_TARGET_DIR = env.getProperty("damage.evaluatefile.target.dir").toString();
+            //Constants.DAMAGE_TEST_FILE_MERGED_DIR = env.getProperty("damage.testfile.merged.dir").toString();
+            Constants.DAMAGE_TESTFILE_TARGET_DIR = env.getProperty("damage.testfile.target.dir").toString();
+            Constants.OVERWEIGHT_PREDICT_PROGRAM = env.getProperty("overweight.model.test.program").toString();
+            Constants.DAMAGE_PREDICT_PROGRAM = env.getProperty("damage.model.test.program").toString();
+            //Constants.OVERWEIGHT_TRAIN_FILE_MERGED_DIR = env.getProperty("overweight.trainfile.merged.dir").toString();
+            Constants.OVERWEIGHT_TRAINFILE_TARGET_DIR = env.getProperty("overweigh.trainfile.target.dir").toString();
+            //Constants.OVERWEIGHT_EVALUATE_FILE_MERGED_DIR = env.getProperty("overweigh.evaluatefile.merged.dir").toString();
+            Constants.OVERWEIGHT_EVALUATEFILE_TARGET_DIR = env.getProperty("overweigh.evaluatefile.target.dir").toString();
+            //Constants.OVERWEIGHT_TEST_FILE_MERGED_DIR = env.getProperty("overweigh.testfile.merged.dir").toString();
+            Constants.OVERWEIGHT_TESTFILE_TARGET_DIR = env.getProperty("overweigh.testfile.target.dir").toString();
+            Constants.RELIABILITY_ANALYSIS_FILE = env.getProperty("reliability.analysis.file.dir").toString();
+            Constants.RELIABILITY_ANALYSIS_PROGRAM = env.getProperty("reliability.analysis.program").toString();
+            Constants.RELIABILITY_TARGET_DIR = env.getProperty("reliability.analysis.target.dir").toString();
+            Constants.RELIABILITY_ANALYSIS_RESULT_DIR = env.getProperty("reliability.analysis.result.dir").toString();
+            Constants.SCRIPT_EXEC_PREFIX = env.getProperty("program.exec.prefix").toString();
         }catch (Exception e){
             logger.debug("当前MYSQL未配置.");
         }

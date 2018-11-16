@@ -7,6 +7,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.log4j.Logger;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import scut.base.HttpResponse;
@@ -250,7 +251,7 @@ public class DataManager {
                                 while(rs.next()){
                                     String boxId = rs.getString("box_id");
                                     JSONObject boxItem = (JSONObject) bridgeItem.getOrDefault(boxId,new JSONObject());
-                                    JSONObject sensorItem= (JSONObject) boxItem.getOrDefault("sensor",new JSONObject());
+                                    JSONObject sensorItem= (JSONObject) boxItem.getOrDefault("sensor",  new JSONObject());
                                     boxItem.put("name",rs.getString("box_name"));
                                     String sensorId = rs.getString("sensor_id");
                                     if(sensorId!=null) {
@@ -640,6 +641,7 @@ public class DataManager {
             return response.getHttpResponse();
         }
     }
+    @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping(value = "/query-data/delete", method = RequestMethod.POST)
     public JSONObject deletesdSensordata(@RequestBody Map<String,Object> reqMsg){
         HttpResponse response = new HttpResponse();

@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.log4j.Logger;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -49,25 +50,24 @@ public class WatchPointPara {
         long userOrganizationId = sysUserService.getUserOrganizationId();
         // 获取数据
         JSONObject response = new JSONObject();
-        String whereStr = "";
+        String whereStr = String.format(" where d.bridge_id in ( " +
+            "select bo.bridge_id " +
+            "from bridge_organization bo " +
+            "where bo.organization_id = %d " +
+            ") ", userOrganizationId);
         if (bridgeId != 0 && sectionId == 0)
-            whereStr = String.format(" where c.bridge_id = %d" , bridgeId);
+            whereStr += String.format(" and c.bridge_id = %d" , bridgeId);
         if (bridgeId == 0 && sectionId != 0)
-            whereStr = String.format(" where a.section_id = %d" , sectionId);
+            whereStr += String.format(" and a.section_id = %d" , sectionId);
         if (sectionId != 0 && bridgeId != 0)
-            whereStr = String.format(" where c.bridge_id = %d and a.section_id = %d", bridgeId, sectionId);
-//        String sql = String.format( "select a.watch_point_id,b.name,a.sc "+
-//                        "from watch_point_para as a left join watch_point as b on a.watch_point_id = b.point_id " +
-//                        "left join section as c on b.section_id = c.section_id "+
-//                        "left join bridge_info as d on c.bridge_id = d.bridge_id "+
-//                        "%s limit %s offset %s",
-//                whereStr, pageSize, (page-1)*pageSize
-//        );
+            whereStr += String.format(" and c.bridge_id = %d and a.section_id = %d", bridgeId, sectionId);
 
-        String sql = String.format( " select c.bridge_id,d.bridge_name,a.section_id,c.name as section_name,a.point_id,a.name as point_name,b.sc from watch_point as a left join watch_point_para as b on a.point_id = b.watch_point_id " +
-                        " left join section as c on c.section_id = a.section_id left join bridge_info as d on d.bridge_id = c.bridge_id " +
-                        "%s limit %s offset %s",
-                whereStr, pageSize, (page-1)*pageSize
+        String sql = String.format(" select c.bridge_id,d.bridge_name,a.section_id,c.name as section_name,a.point_id,a.name as point_name,b.sc from watch_point as a " +
+                "left join watch_point_para as b on a.point_id = b.watch_point_id " +
+                "left join section as c on c.section_id = a.section_id " +
+                "left join bridge_info as d on d.bridge_id = c.bridge_id " +
+                "%s limit %s offset %s",
+            whereStr, pageSize, (page - 1) * pageSize
         );
 
         logger.info(bridgeId+","+sectionId);
@@ -80,10 +80,12 @@ public class WatchPointPara {
 
         // 获取总数
         sql = String.format(
-                "select count(*) as total " +
-                " from watch_point as a left join watch_point_para as b on a.point_id = b.watch_point_id " +
-                " left join section as c on c.section_id = a.section_id left join bridge_info as d on d.bridge_id = c.bridge_id " +
-                "%s",whereStr);
+            "select count(*) as total " +
+                "from watch_point as a " +
+                "left join watch_point_para as b on a.point_id = b.watch_point_id " +
+                "left join section as c on c.section_id = a.section_id " +
+                "left join bridge_info as d on d.bridge_id = c.bridge_id " +
+                "%s", whereStr);
 
         fields = new String[]{"total"};
         data = baseDao.queryData(sql, fields);
@@ -93,6 +95,7 @@ public class WatchPointPara {
 
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping(value = "/watch-point-para/update", method = RequestMethod.POST, produces = "application/json")
     public JSONObject updateWatchPointPara(@RequestBody JSONObject reqMsg) {
         long userOrganizationId = sysUserService.getUserOrganizationId();
@@ -148,10 +151,16 @@ public class WatchPointPara {
         // 获取数据
         JSONObject response = new JSONObject();
 
-        String sql = String.format( "select bridge_info.bridge_id,bridge_name,mRc0,sRc0,mRt0,sRt0,E " +
-                        "from bridge_info left join bridge_para on bridge_info.bridge_id = bridge_para.bridge_id "+
-                        " limit %s offset %s",
-                 pageSize, (page-1)*pageSize
+        String sql = String.format("select bridge_info.bridge_id,bridge_name,mRc0,sRc0,mRt0,sRt0,E " +
+                "from bridge_info " +
+                "left join bridge_para on bridge_info.bridge_id = bridge_para.bridge_id " +
+                "where bridge_info.bridge_id in ( " +
+                "   select bo.bridge_id " +
+                "   from bridge_organization bo " +
+                "   where bo.organization_id = %d " +
+                ") " +
+                "limit %s offset %s",
+            userOrganizationId, pageSize, (page - 1) * pageSize
         );
         logger.info(sql);
         String[] fields = new String[]{"bridge_id","bridge_name","mRc0","sRc0","mRt0","sRt0","E"};
@@ -161,8 +170,15 @@ public class WatchPointPara {
 
         // 获取总数
         sql = String.format(
-                "select count(*) as total " +
-                        "from bridge_info left join bridge_para on bridge_info.bridge_id = bridge_para.bridge_id "
+            "select count(*) as total " +
+                "from bridge_info " +
+                "left join bridge_para on bridge_info.bridge_id = bridge_para.bridge_id " +
+                "where bridge_info.bridge_id in ( " +
+                "   select bo.bridge_id " +
+                "   from bridge_organization bo " +
+                "   where bo.organization_id = %d " +
+                ") ",
+            userOrganizationId
         );
 
         fields = new String[]{"total"};
@@ -188,6 +204,7 @@ public class WatchPointPara {
         return response.getHttpResponse();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping(value = "/bridge-para/update", method = RequestMethod.POST, produces = "application/json")
     public JSONObject updateBridgePara(@RequestBody JSONObject reqMsg) {
         long userOrganizationId = sysUserService.getUserOrganizationId();

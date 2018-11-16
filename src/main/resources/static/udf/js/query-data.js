@@ -1194,6 +1194,7 @@ function updateDropdownMenu2(response){
 
 // 其它初始化
 $(function () {
+
     // begin
     // 表格操作
     var url = "/query-data/dropdown";
@@ -1449,6 +1450,7 @@ $(function () {
                 // 根据选择条件获取查询条件
                 var end_row_key = new Date().format('yyyyMMddHHmmssSS');
                 console.log(new Date(begin_time).format('yyyyMMddHHmmssSS'));
+                console.log(new Date(begin_time).format('yyyyMMddHHmmss'));
                 var params = {
                     "sensorList": JSON.stringify(sensor_id_array),
                     "columnList": JSON.stringify([metric]),

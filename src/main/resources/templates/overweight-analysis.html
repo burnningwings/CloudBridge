@@ -20,10 +20,26 @@
     <!-- 对话框 -->
     <link rel="stylesheet" type="text/css" href="ext/artDialog-6.0.4/css/ui-dialog.css">
     <link rel="stylesheet" type="text/css" href="ext/artDialog-6.0.4/css/custom.css">
+    <!-- 时间选择器 -->
+    <link rel="stylesheet" href="ext/jquery-ui-1.12.1/css/jquery-ui.min.css">
+    <link rel="stylesheet" href="ext/jQuery-Timepicker-Addon-1.6.3/css/jquery-ui-timepicker-addon.min.css">
     <!-- 文件上传插件 -->
     <link rel="stylesheet" type="text/css" href="ext/bootstrap-fileinput-4.4.8/css/fileinput.min.css">
     <title>桥梁信息管理系统</title>
     <link rel="icon" type="image/x-icon" th:href="@{images/favicon.ico}"/>
+    <!-- 避免日期选择框被覆盖，建议直接在css文件里改-->
+    <style>
+        /*.ui-datepicker {*/
+            /*z-index : 200;*/
+        /*}*/
+        /*#ui-datepicker-div {*/
+            /*z-index: 500;*/
+        /*}*/
+        .input-group {
+            z-index: 0;
+        }
+
+    </style>
 </head>
 <body class="cm-no-transition cm-1-navbar">
     <div id="cm-menu" th:replace="base/menu::menu (one,two_1,two_2,three_1,three_2,active,four_2,four_3,four_4,five_1,five_2,six_1,six_2,six_3,seven_1,seven_2,seven_3,seven_4)"></div>
@@ -48,27 +64,25 @@
                     <input id="trainmodel_upload" name="trainmodel_upload" type="file" class="file file-loading" data-preview-file-type="text"/>
                 </div>
                 <div class="panel-body" style="padding:0 20px 20px 20px">
-                    <select class="selectpicker" id="train_file_selected" data-width="20%">
-                        <!--<option value="" disabled selected>请选择训练文件</option>-->
-                    </select>
-                    &nbsp;&nbsp;
-                    <select class="selectpicker" id="train_model_selected" data-width="20%">
-                        <!--<option value="" disabled selected>请选择训练模型</option>-->
-                        <!--<option value="bayes">贝叶斯网络</option>-->
-                        <!--<option value="BN">神经网络</option>-->
-                    </select>
-                    <!--<button id="description_model" title="模型介绍" data-html="true" data-toggle="popover" data-container="body" type="button" class="btn btn-default"><i class="fa fa-fw fa-eye"></i></button>-->
+                    <select class="selectpicker" id="train_file_selected" data-width="20%"></select>&nbsp;&nbsp;
+                    <select class="selectpicker" id="train_model_selected" data-width="20%"></select>&nbsp;&nbsp;
+                    <select class="selectpicker" id="train_bridge_selected" data-width="20%"></select>&nbsp;&nbsp;
                 </div>
                 <div class="panel-body" style="padding:0 20px 20px 20px">
-                    <label style="font-size:18px">保存模型：</label>
+                    <label style="font-weight:normal;font-size:16px;margin-left: 7px">时段选择&nbsp;&nbsp;</label>
+                    <input size="17" type="text" id="train_begin_time"  class="btn btn-default" value="" readonly="readonly" >
+                    <span style="line-height: 30px;">&nbsp;&nbsp;<label class="form-label">至</label>&nbsp;&nbsp;</span>
+                    <input size="17" type="text" id="train_end_time" class="btn btn-default" value="" readonly="readonly">
+                </div>
+                <div class="panel-body" style="padding:0 20px 20px 20px">
+                    <label style="font-weight:normal;font-size:16px;margin-left: 7px">保存模型&nbsp;&nbsp;</label>
                     <input type="text" id="saved_model" placeholder="请输入保存模型名称" style="height:33px">
                     <span class="text-danger mt5 fl">*</span>
                 </div>
                 <div class="panel-body" style="padding: 0 20px 20px 20px">
-                    <!--<div class="row">-->
-                        <button id="train_start" type="button" data-switch-color="success" class="btn btn-l btn-success" style="width:120px;height:40px;font-size:18px">开始训练</button>
-                        <label style="font-weight:normal;font-size:16px;margin-left: 50px">进度条&nbsp;&nbsp;</label>
-                        <progress id="train_process" value="0" max="100"></progress>
+                    <button id="train_start" type="button" data-switch-color="success" class="btn btn-l btn-success" style="width:120px;height:40px;font-size:18px">开始训练</button>
+                    <label style="font-weight:normal;font-size:16px;margin-left: 50px">进度条&nbsp;&nbsp;</label>
+                    <progress id="train_process" value="0" max="100"></progress>
                 </div>
             </div>
 
@@ -83,24 +97,23 @@
                     <button id="description_evaluate_dataformat" title="数据格式" data-html="true" data-toggle="popover" data-container="body" type="button" class="btn btn-default"><i class="fa fa-fw fa-eye"></i></button>
                     <input id="evaluatefile_upload" name="evaluatefile_upload" type="file" class="file file-loading" data-preview-file-type="text"/>
                 </div>
-                <div class="panel-body" style="padding: 0 20px 20px 20px">
-                    <select class="selectpicker" id="evaluate_file_selected" data-width="20%">
-                    </select>
-                    &nbsp;&nbsp;
-                    <select class="selectpicker" id="evaluate_model_selected" data-width="20%">
-                        <!--<option value="" disabled selected>请选择已训练模型</option>-->
-                        <!--<option value="bayes">贝叶斯网络</option>-->
-                        <!--<option value="BN">神经网络</option>-->
-                    </select>
+                <div class="panel-body" style="padding:0 20px 20px 20px">
+                    <select class="selectpicker" id="evaluate_file_selected" data-width="20%"></select>&nbsp;&nbsp;
+                    <select class="selectpicker" id="evaluate_model_selected" data-width="20%"></select>&nbsp;&nbsp;
+                    <select class="selectpicker" id="evaluate_bridge_selected" data-width="20%"></select>&nbsp;&nbsp;
+                </div>
+                <div class="panel-body" style="padding:0 20px 20px 20px">
+                    <label style="font-weight:normal;font-size:16px;margin-left: 7px">时段选择&nbsp;&nbsp;</label>
+                    <input size="17" type="text" id="evaluate_begin_time"  class="btn btn-default" value="" readonly="readonly" >
+                    <span style="line-height: 30px;">&nbsp;&nbsp;<label class="form-label">至</label>&nbsp;&nbsp;</span>
+                    <input size="17" type="text" id="evaluate_end_time" class="btn btn-default" value="" readonly="readonly">
                 </div>
                 <div class="panel-body" style="padding: 0 20px 20px 20px">
-                    <!--<div class="row">-->
                     <button id="evaluate_start" type="button" data-switch-color="success" class="btn btn-l btn-success" style="width:120px;height:40px;font-size:18px">验证模型</button>
                     <label style="font-weight:normal;font-size:16px;margin-left: 50px">进度条&nbsp;&nbsp;</label>
                     <progress id="evaluate_process" value="0" max="100"></progress>
-                    <!--<button id="dd_result_damagedetection" type="button" data-switch-color="yellow" class="btn btn-l btn-yellow" style="width:150px;height:40px;font-size:18px; margin-left:350px">预测结果展示</button>-->
-                    <!--<div align="center" id="dd_show_result_figure" height="400" data-width="60%" style="position:relative;margin-top:20px; height:400px;">-->
                 </div>
+
             </div>
 
             <div class="panel panel-default">
@@ -114,29 +127,25 @@
                     <button id="description_test_dataformat" title="数据格式" data-html="true" data-toggle="popover" data-container="body" type="button" class="btn btn-default"><i class="fa fa-fw fa-eye"></i></button>
                     <input id="testfile_upload" name="testfile_upload" type="file" class="file file-loading" data-preview-file-type="text"/>
                 </div>
-                <div class="panel-body" style="padding: 0 20px 20px 20px">
-                    <select class="selectpicker" id="test_file_selected" data-width="20%">
-                        <!--<option value="" disabled selected>请选择待预测文件</option>-->
-                        <!--<option value="1">001001212122.csv</option>-->
-                        <!--<option value="2">833998323233.csv</option>-->
-                    </select>
-                    &nbsp;&nbsp;
-                    <select class="selectpicker" id="test_model_selected" data-width="20%">
-                        <!--<option value="" disabled selected>请选择已训练模型</option>-->
-                        <!--<option value="bayes">贝叶斯网络</option>-->
-                        <!--<option value="BN">神经网络</option>-->
-                    </select>
+                <div class="panel-body" style="padding:0 20px 20px 20px">
+                    <select class="selectpicker" id="test_file_selected" data-width="20%"></select>&nbsp;&nbsp;
+                    <select class="selectpicker" id="test_model_selected" data-width="20%"></select>&nbsp;&nbsp;
+                    <select class="selectpicker" id="test_bridge_selected" data-width="20%"></select>&nbsp;&nbsp;
+                </div>
+                <div class="panel-body" style="padding:0 20px 20px 20px">
+                    <label style="font-weight:normal;font-size:16px;margin-left: 7px">时段选择&nbsp;&nbsp;</label>
+                    <input size="17" type="text" id="test_begin_time"  class="btn btn-default" value="" readonly="readonly" >
+                    <span style="line-height: 30px;">&nbsp;&nbsp;<label class="form-label">至</label>&nbsp;&nbsp;</span>
+                    <input size="17" type="text" id="test_end_time" class="btn btn-default" value="" readonly="readonly">
                 </div>
                 <div class="panel-body" style="padding: 0 20px 20px 20px">
-                    <!--<div class="row">-->
                     <button id="test_start" type="button" data-switch-color="success" class="btn btn-l btn-success" style="width:120px;height:40px;font-size:18px">开始预测</button>
                     <label style="font-weight:normal;font-size:16px;margin-left: 50px">进度条&nbsp;&nbsp;</label>
                     <progress id="test_process" value="0" max="100"></progress>
                     <button id="result_overweight" type="button" data-switch-color="yellow" class="btn btn-l btn-yellow" style="width:150px;height:40px;font-size:18px; margin-left:350px">预测结果展示</button>
-                    <div align="center" id="show_result_figure" height="400" data-width="60%" style="position:relative;margin-top:20px; height:400px;">
+                    <div align="center" id="show_result_figure" height="800" data-width="60%" style="position:relative;margin-top:20px; height:800px;">
                 </div>
-            </div>
-        </div>
+
         <div th:replace="base/footer::footer"></div>
     </div>
     </div>
@@ -184,6 +193,11 @@
     <!--画图-->
     <script src="ext/echarts/echarts.min.js"></script>
     <script src="udf/js/figure.js"></script>
+    <!-- 时间选择器 -->
+    <script src="ext/jquery-ui-1.12.1/js/jquery-ui.min.js"></script>
+    <script src="ext/jQuery-Timepicker-Addon-1.6.3/js/jquery-ui-timepicker-addon.min.js"></script>
+    <script src="ext/jQuery-Timepicker-Addon-1.6.3/js/i18n/jquery-ui-timepicker-zh-CN.js"></script>
+    <script src="ext/jQuery-Timepicker-Addon-1.6.3/js/i18n/jquery-ui-timepicker-addon-i18n.min.js"></script>
     <!-- 滚动条 -->
     <script src="ext/mCustomScrollbar-3.0.9/js/jquery.mCustomScrollbar.concat.min.js"></script>
     <!-- bootstrap脚本必须放在jquery-ui之后，否则某些操作会冲突 -->

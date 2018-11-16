@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
 <div th:fragment="profile" class="dropdown pull-right">
     <button class="btn btn-primary md-account-circle-white" data-toggle="dropdown"></button>
@@ -9,13 +11,7 @@
         </li>
         <li class="divider"></li>
         <li>
-            <a href="#"><i class="fa fa-fw fa-user"></i> Profile</a>
-        </li>
-        <li>
-            <a href="#"><i class="fa fa-fw fa-cog"></i> Settings</a>
-        </li>
-        <li>
-            <a href="/logout"><i class="fa fa-fw fa-sign-out"></i> Sign out</a>
+            <a href="/logout"><i class="fa fa-fw fa-sign-out"></i> 退出</a>
         </li>
     </ul>
 </div>

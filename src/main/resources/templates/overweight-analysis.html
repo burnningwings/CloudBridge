@@ -81,8 +81,10 @@
                 </div>
                 <div class="panel-body" style="padding: 0 20px 20px 20px">
                     <button id="train_start" type="button" data-switch-color="success" class="btn btn-l btn-success" style="width:120px;height:40px;font-size:18px">开始训练</button>
-                    <label style="font-weight:normal;font-size:16px;margin-left: 50px">进度条&nbsp;&nbsp;</label>
-                    <progress id="train_process" value="0" max="100"></progress>
+                    <span id="ov_train_computing" style="display: none">
+                        <label style="font-weight:normal;font-size:16px;margin-left: 50px;">计算中&nbsp;&nbsp;</label>
+                        <progress id="train_process" value="0" max="100"></progress>
+                    </span>
                 </div>
             </div>
 
@@ -110,8 +112,10 @@
                 </div>
                 <div class="panel-body" style="padding: 0 20px 20px 20px">
                     <button id="evaluate_start" type="button" data-switch-color="success" class="btn btn-l btn-success" style="width:120px;height:40px;font-size:18px">验证模型</button>
-                    <label style="font-weight:normal;font-size:16px;margin-left: 50px">进度条&nbsp;&nbsp;</label>
-                    <progress id="evaluate_process" value="0" max="100"></progress>
+                    <span id="ov_evaluate_computing" style="display: none">
+                        <label style="font-weight:normal;font-size:16px;margin-left: 50px;">计算中&nbsp;&nbsp;</label>
+                        <progress id="evaluate_process" value="0" max="100"></progress>
+                    </span>
                 </div>
 
             </div>
@@ -140,8 +144,10 @@
                 </div>
                 <div class="panel-body" style="padding: 0 20px 20px 20px">
                     <button id="test_start" type="button" data-switch-color="success" class="btn btn-l btn-success" style="width:120px;height:40px;font-size:18px">开始预测</button>
-                    <label style="font-weight:normal;font-size:16px;margin-left: 50px">进度条&nbsp;&nbsp;</label>
-                    <progress id="test_process" value="0" max="100"></progress>
+                    <span id="ov_test_computing" style="display: none">
+                        <label style="font-weight:normal;font-size:16px;margin-left: 50px;">计算中&nbsp;&nbsp;</label>
+                        <progress id="test_process" value="0" max="100"></progress>
+                    </span>
                     <button id="result_overweight" type="button" data-switch-color="yellow" class="btn btn-l btn-yellow" style="width:150px;height:40px;font-size:18px; margin-left:350px">预测结果展示</button>
                     <div align="center" id="show_result_figure" height="800" data-width="60%" style="position:relative;margin-top:20px; height:800px;">
                 </div>

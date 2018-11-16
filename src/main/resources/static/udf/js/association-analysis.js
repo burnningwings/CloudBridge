@@ -268,8 +268,10 @@ $(function () {
             }),
             dataType: "json",
             beforeSend: function () {
+
                 $("#association_analysis_start").text('分析中...');
                 $("#association_analysis_process").removeAttr("value");
+                $("#association_analysis_computing").show();
                 // var content = '' +
                 //     ' <img alt="loadding" src="/assets/img/loading.gif" /> \
                 //     '
@@ -279,6 +281,7 @@ $(function () {
                 // d.showModal();
             },
             success: function(response) {
+                $("#association_analysis_computing").hide();
                 var data = response.data;
                 var result = data['result'];
                 if (result == 'success') {

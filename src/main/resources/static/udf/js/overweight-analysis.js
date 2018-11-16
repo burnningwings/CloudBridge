@@ -18,6 +18,25 @@
 //     });
 // })
 
+
+
+function set_progress(flag) {
+    var current = $("#train_process").val();
+    // if (current == 100){
+    //     $("#train_process").attr("value", "0");
+    // }
+    console.log(typeof (current))
+    console.log(current);
+    $("#train_process").val(current + 1);
+}
+
+function sleep(delay) {
+    var start = (new Date()).getTime();
+    while ((new Date()).getTime() - start < delay) {
+        continue;
+    }
+}
+
 function countNumOverweight(timelist, overweightlist) {
     if(timelist.length == 0){
         return;
@@ -398,6 +417,7 @@ function updateDropdownListTestBridge(){
 // }
 //初始化
 $(function () {
+    var timer;
     // $("#train_file_selected").selectpicker({
     //     noneSelectedText: "请选择训练数据"
     // });
@@ -766,8 +786,17 @@ $(function () {
             beforeSend: function () {
                 $("#train_start").text('训练中...');
                 $("#train_process").removeAttr("value");
+                $("#ov_train_computing").show();
+
+                // set_progress();
+                // timer = setInterval("set_progress()", 10000);
+
+                // function set_progress() {
+                //     var current = $("#train_process").val();
+                //     $("#train_process").val(current + 5);
+                // }
                 // var content = '' +
-                //     ' <img alt="loadding" src="/assets/img/loading.gif" /> \
+                //     ' <div style="width: 200px; text-align:center;"><img alt="loadding" src="/assets/img/loading.gif" style="margin-bottom: 20px;"/><p>计算中，请耐心等待...</p></div> \
                 //     '
                 // d = dialog({
                 //     content: content
@@ -775,6 +804,12 @@ $(function () {
                 // d.showModal();
             },
             success: function(response) {
+                $("#ov_train_computing").hide();
+                // d.close();
+                // window.clearInterval(timer);
+                // timer = setInterval("set_progress()", 10);
+                // // // sleep(2000);
+                // window.clearInterval(timer);
                 var data = response.data;
                 var result = data['result'];
                 if (result == 'success') {
@@ -1148,8 +1183,10 @@ $(function () {
             beforeSend: function () {
                 $("#evaluate_start").text('验证中...');
                 $("#evaluate_process").removeAttr("value");
+                $("#ov_evaluate_computing").show();
             },
             success: function(response) {
+                $("#ov_evaluate_computing").hide();
                 var data = response.data;
                 var result = data['result'];
                 if(result == 'success'){
@@ -1225,8 +1262,10 @@ $(function () {
             beforeSend: function () {
                 $("#test_start").text('预测中...');
                 $("#test_process").removeAttr("value");
+                $("#ov_test_computing").show();
             },
             success: function(response) {
+                $("#ov_test_computing").hide();
                 var data = response.data;
                 var result = data['result'];
                 if (result == 'success') {

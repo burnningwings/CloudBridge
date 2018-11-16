@@ -6,6 +6,8 @@ import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.log4j.Logger;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import scut.base.HttpResponse;
 import scut.service.OrganizationService;
 import scut.service.SysUserService;
+import scut.service.log.LogPara;
 import scut.util.Constants;
 import scut.util.sql.SQLBaseDao;
 import scut.util.sql.SQLDaoFactory;
@@ -120,6 +123,11 @@ public class WatchPointPara {
             response.setStatus(HttpResponse.FAIL_STATUS);
             response.setCode(HttpResponse.FAIL_CODE);
             response.setMsg("操作失败！");
+        }
+        else
+        {
+            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            new LogPara().log_watch_point_para(reqMsg, userDetails.getUsername());
         }
         return response.getHttpResponse();
     }

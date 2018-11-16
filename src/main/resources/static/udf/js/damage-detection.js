@@ -862,6 +862,7 @@ $(function () {
             beforeSend: function () {
                 $("#dd_train_start").text('训练中...');
                 $("#dd_train_process").removeAttr("value");
+                $("#dd_train_computing").show();
                 // var content = '' +
                 //     ' <img alt="loadding" src="/assets/img/loading.gif" /> \
                 //     '
@@ -871,6 +872,7 @@ $(function () {
                 // d.showModal();
             },
             success: function(response) {
+                $("#dd_train_computing").hide();
                 var data = response.data;
                 var result = data['result'];
                 if (result == 'success') {
@@ -948,8 +950,10 @@ $(function () {
             beforeSend: function () {
                 $("#dd_evaluate_start").text('验证中...');
                 $("#dd_evaluate_process").removeAttr("value");
+                $("#dd_evaluate_computing").show();
             },
             success: function(response) {
+                $("#dd_evaluate_computing").hide();
                 var data = response.data;
                 var result = data['result'];
                 if(result == 'success'){
@@ -1025,8 +1029,10 @@ $(function () {
             beforeSend: function () {
                 $("#dd_test_start").text('预测中...');
                 $("#dd_test_process").removeAttr("value");
+                $("#dd_test_computing").show();
             },
             success: function(response) {
+                $("#dd_test_computing").hide();
                 var data = response.data;
                 var result = data['result'];
                 if (result == 'success') {

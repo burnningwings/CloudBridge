@@ -65,8 +65,10 @@
             <div class="panel-body" style="padding: 0 20px 20px 20px">
                 <!--<div class="row">-->
                 <button id="association_analysis_start" type="button" data-switch-color="success" class="btn btn-l btn-success" style="width:120px;height:40px;font-size:18px">小波分析</button>
-                <label style="font-weight:normal;font-size:16px;margin-left: 50px">进度条&nbsp;&nbsp;</label>
-                <progress id="association_analysis_process" value="0" max="100"></progress>
+                <span id="association_analysis_computing" style="display: none">
+                    <label style="font-weight:normal;font-size:16px;margin-left: 50px;">计算中&nbsp;&nbsp;</label>
+                    <progress id="association_analysis_process" value="0" max="100"></progress>
+                </span>
                 <button id="result_association_analysis" type="button" data-switch-color="yellow" class="btn btn-l btn-yellow" style="width:150px;height:40px;font-size:18px; margin-left:350px">分析结果展示</button>
                 <div align="center" id="association_show_result_figure" height="3000" data-width="60%" style="position:relative;margin-top:20px; height:3000px;">
                 </div>

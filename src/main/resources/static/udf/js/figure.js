@@ -1115,6 +1115,7 @@ function showAnalysisResultChart_sevenlayer(figure_id, timeList, strain, sa7, sd
                 text : '小波d7层温度/小波d7层应变'
             }
         ],
+        tooltip: {},
         grid : [
             {
                 id : 0,
@@ -1705,6 +1706,7 @@ function showAnalysisResultChart_fourlayer(figure_id, timeList, strain, sa4, sd1
                 text : '小波d4层温度/小波d4层应变'
             }
         ],
+        tooltip: {},
         grid : [
             {
                 id : 0,

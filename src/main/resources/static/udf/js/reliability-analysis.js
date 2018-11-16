@@ -237,6 +237,7 @@ $(function () {
             beforeSend: function () {
                 $("#reliability_analysis_start").text('分析中...');
                 $("#reliability_analysis_process").removeAttr("value");
+                $("#reliability_analysis_computing").show();
                 // var content = '' +
                 //     ' <img alt="loadding" src="/assets/img/loading.gif" /> \
                 //     '
@@ -246,6 +247,7 @@ $(function () {
                 // d.showModal();
             },
             success: function(response) {
+                $("#reliability_analysis_computing").hide();
                 var data = response.data;
                 var result = data['result'];
                 if (result == 'success') {

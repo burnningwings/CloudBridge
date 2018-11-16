@@ -26,7 +26,7 @@ import java.text.SimpleDateFormat;
  */
 @RestController
 public class WatchPointPara {
-    public static org.apache.log4j.Logger logger = Logger.getLogger(TypeControl.class);
+    public static org.apache.log4j.Logger logger = Logger.getLogger(WatchPointPara.class);
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     int maxActive = 100;
     String druid_mysql_url = String.format(Constants.MYSQL_FORMAT, Constants.MYSQL_URL, Constants.MYSQL_USERNAME, Constants.MYSQL_PASSWORD) + "|" + maxActive;

@@ -425,7 +425,7 @@ $(function () {
         if(response.status != 0){
             showTransientDialog(response.msg);
         }else{
-            showModalDialog("提示", "<div style='text-align:center;'>文件正在上传...</div>",function(){},120,40);
+            showModalDialog("提示", "<div style='text-align:center;'>文件正在上传...</div>",function(){},150,40);
         }
         //更新下拉列表
         updateDropdownListTrainFile();
@@ -456,7 +456,7 @@ $(function () {
         if(response.status != 0){
             showTransientDialog(response.msg);
         }else{
-            showModalDialog("提示", "<div style='text-align:center;'>文件正在上传...</div>",function(){},120,40);
+            showModalDialog("提示", "<div style='text-align:center;'>文件正在上传...</div>",function(){},150,40);
         }
         updateDropdownListTrainModel();
        // updateDropdownListUdfTrainModel();
@@ -487,7 +487,7 @@ $(function () {
         if(response.status != 0){
             showTransientDialog(response.msg);
         }else{
-            showModalDialog("提示", "<div style='text-align:center;'>文件正在上传...</div>",function(){},120,40);
+            showModalDialog("提示", "<div style='text-align:center;'>文件正在上传...</div>",function(){},150,40);
         }
         //更新下拉列表
         updateDropdownListEvaluateFile();
@@ -519,7 +519,7 @@ $(function () {
         if(response.status != 0){
             showTransientDialog(response.msg);
         }else{
-            showModalDialog("提示", "<div style='text-align:center;'>文件正在上传...</div>",function(){},120,40);
+            showModalDialog("提示", "<div style='text-align:center;'>文件正在上传...</div>",function(){},150,40);
         }
         //更新下拉列表
         updateDropdownListTestFile();

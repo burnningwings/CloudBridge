@@ -5,16 +5,18 @@ function setToken(token) {
 // 短暂提示框
 function showTransientDialog(content) {
     var d = dialog({
+        width : 200,
         content: content,
     });
     d.show();
     setTimeout(function () {
         d.close().remove();
-    }, 2000);
+    }, 3000);
 }
 
 function showDialog(content) {
     var d = dialog({
+        width : 200,
         content: content,
         okValue: '确定',
         ok: function () {

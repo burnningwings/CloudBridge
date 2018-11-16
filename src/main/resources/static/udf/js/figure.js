@@ -1071,48 +1071,48 @@ function showAnalysisResultChart_sevenlayer(figure_id, timeList, strain, sa7, sd
         title : [
             {
                 left : 'center',
-                text : 'strain-temperature',
+                text : '原始温度/原始应变',
                 top : '1%'
              },
             {
                 top : '12%',
                 left : 'center',
-                text : 'sa7-ta7'
+                text : '小波a7层温度/小波a7层应变'
             },
             {
                 top: '23%',
                 left : 'center',
-                text : 'sd1-td1'
+                text : '小波d1层温度/小波d1层应变'
             },
             {
                 top: '34%',
                 left : 'center',
-                text : 'sd2-td2'
+                text : '小波d2层温度/小波d2层应变'
             },
             {
                 top: '45%',
                 left : 'center',
-                text : 'sd3-td3'
+                text : '小波d3层温度/小波d3层应变'
             },
             {
                 top: '56%',
                 left : 'center',
-                text : 'sd4-td4'
+                text : '小波d4层温度/小波d4层应变'
             },
             {
                 top: '67%',
                 left : 'center',
-                text : 'sd5-td5'
+                text : '小波d5层温度/小波d5层应变'
             },
             {
                 top: '78%',
                 left : 'center',
-                text : 'sd6-td6'
+                text : '小波d6层温度/小波d6层应变'
             },
             {
                 top: '89%',
                 left : 'center',
-                text : 'sd7-td7'
+                text : '小波d7层温度/小波d7层应变'
             }
         ],
         grid : [
@@ -1177,158 +1177,256 @@ function showAnalysisResultChart_sevenlayer(figure_id, timeList, strain, sa7, sd
             {
                 type : 'inside',
                 xAxisIndex : 0,
-                yAxisIndex : [0,1]
+                //yAxisIndex : [0,1]
+                filterMode : 'empty',
             },
             {
                 type : 'slider',
                 show : false,
                 xAxisIndex : 0,
-                yAxisIndex : [0,1]
+                // yAxisIndex : [0,1]
+                filterMode : 'empty',
+            },
+            {
+                type : 'slider',
+                yAxisIndex : [0,1],
+                width : 12,
+                left : '95%',
+                filterMode : 'empty'
             },
             {
                 type : 'inside',
                 xAxisIndex : 1,
-                yAxisIndex : [2,3]
+                // yAxisIndex : [2,3]
+                filterMode : 'empty'
             },
             {
                 type : 'slider',
                 show : false,
                 xAxisIndex : 1,
-                yAxisIndex : [2,3]
+                // yAxisIndex : [2,3]
+                filterMode : 'empty'
+            },
+            {
+                type : 'slider',
+                yAxisIndex : [2,3],
+                width : 12,
+                left : '95%',
+                filterMode : 'empty'
             },
             {
                 type : 'inside',
                 xAxisIndex : 2,
-                yAxisIndex : [4,5]
+                // yAxisIndex : [4,5]
+                filterMode : 'empty'
             },
             {
                 type : 'slider',
                 show : false,
                 xAxisIndex : 2,
-                yAxisIndex : [4,5]
+                // yAxisIndex : [4,5]
+                filterMode : 'empty'
+            },
+            {
+                type : 'slider',
+                yAxisIndex : [4,5],
+                width : 12,
+                left : '95%',
+                filterMode : 'empty'
             },
             {
                 type : 'inside',
                 xAxisIndex : 3,
-                yAxisIndex : [6,7]
+                // yAxisIndex : [6,7]
+                filterMode : 'empty'
             },
             {
                 type : 'slider',
                 show : false,
                 xAxisIndex : 3,
-                yAxisIndex : [6,7]
+                // yAxisIndex : [6,7]
+                filterMode : 'empty'
+            },
+            {
+                type : 'slider',
+                yAxisIndex : [6,7],
+                width : 12,
+                left : '95%',
+                filterMode : 'empty'
             },
             {
                 type : 'inside',
                 xAxisIndex : 4,
-                yAxisIndex : [8,9]
+                filterMode : 'empty'
+                // yAxisIndex : [8,9]
             },
             {
                 type : 'slider',
                 show : false,
                 xAxisIndex : 4,
-                yAxisIndex : [8,9]
+                filterMode : 'empty'
+                // yAxisIndex : [8,9]
+            },
+            {
+                type : 'slider',
+                yAxisIndex : [8,9],
+                width : 12,
+                left : '95%',
+                filterMode : 'empty'
             },
             {
                 type : 'inside',
                 xAxisIndex : 5,
-                yAxisIndex : [10,11]
+                // yAxisIndex : [10,11]
+                filterMode : 'empty'
             },
             {
                 type : 'slider',
                 show : false,
                 xAxisIndex : 5,
-                yAxisIndex : [10,11]
+                // yAxisIndex : [10,11]
+                filterMode : 'empty'
+            },
+            {
+                type : 'slider',
+                yAxisIndex : [10,11],
+                width : 12,
+                left : '95%',
+                filterMode : 'empty'
             },
             {
                 type : 'inside',
                 xAxisIndex : 6,
-                yAxisIndex : [12,13]
+                // yAxisIndex : [12,13]
+                filterMode : 'empty'
             },
             {
                 type : 'slider',
                 show : false,
                 xAxisIndex : 6,
-                yAxisIndex : [12,13]
+                // yAxisIndex : [12,13]
+                filterMode : 'empty'
+            },
+            {
+                type : 'slider',
+                yAxisIndex : [12,13],
+                width : 12,
+                left : '95%',
+                filterMode : 'empty'
             },
             {
                 type : 'inside',
                 xAxisIndex : 7,
-                yAxisIndex : [14,15]
+                //yAxisIndex : [14,15]
+                filterMode : 'empty'
             },
             {
                 type : 'slider',
                 show : false,
                 xAxisIndex : 7,
-                yAxisIndex : [14,15]
+                //yAxisIndex : [14,15]
+                filterMode : 'empty'
+            },
+            {
+                type : 'slider',
+                yAxisIndex : [14,15],
+                width : 12,
+                left : '95%',
+                filterMode : 'empty'
             },
             {
                 type : 'inside',
                 xAxisIndex : 8,
-                yAxisIndex : [16,17]
+                // yAxisIndex : [16,17]
+                filterMode : 'empty'
             },
             {
                 type : 'slider',
                 show : false,
-                //filterMode : 'empty',
                 xAxisIndex : 8,
-                yAxisIndex : [16,17]
-            }
+                // yAxisIndex : [16,17]
+                filterMode : 'empty'
+            },
+            {
+                type : 'slider',
+                yAxisIndex : [16,17],
+                width : 12,
+                left : '95%',
+                filterMode : 'empty'
+            },
         ],
         xAxis: [
             {
                 name : '时间',
                 data : timeList,
                 id : 0,
-                gridIndex : 0
+                gridIndex : 0,
+                nameLocation : 'middle',
+                nameGap : 23
             },
             {
                 name : '时间',
                 data : timeList,
                 id : 1,
-                gridIndex : 1
+                gridIndex : 1,
+                nameLocation : 'middle',
+                nameGap : 23
             },
             {
                 name : '时间',
                 data : timeList,
                 id : 2,
-                gridIndex : 2
+                gridIndex : 2,
+                nameLocation : 'middle',
+                nameGap : 23
             },
             {
                 name : '时间',
                 data : timeList,
                 id : 3,
-                gridIndex : 3
+                gridIndex : 3,
+                nameLocation : 'middle',
+                nameGap : 23
             },
             {
                 name : '时间',
                 data : timeList,
                 id : 4,
-                gridIndex : 4
+                gridIndex : 4,
+                nameLocation : 'middle',
+                nameGap : 23
             },
             {
                 name : '时间',
                 data : timeList,
                 id : 5,
-                gridIndex : 5
+                gridIndex : 5,
+                nameLocation : 'middle',
+                nameGap : 23
             },
             {
                 name : '时间',
                 data : timeList,
                 id : 6,
-                gridIndex : 6
+                gridIndex : 6,
+                nameLocation : 'middle',
+                nameGap : 23
             },
             {
                 name : '时间',
                 data : timeList,
                 id : 7,
-                gridIndex : 7
+                gridIndex : 7,
+                nameLocation : 'middle',
+                nameGap : 23
             },
             {
                 name : '时间',
                 data : timeList,
                 id : 8,
-                gridIndex : 8
+                gridIndex : 8,
+                nameLocation : 'middle',
+                nameGap : 23
             },
         ],
         yAxis: [
@@ -1339,7 +1437,7 @@ function showAnalysisResultChart_sevenlayer(figure_id, timeList, strain, sa7, sd
                 max : 'dataMax',
                 gridIndex : 0
             },{
-                name : '温度',
+                name : '温度/℃',
                 id : 1,
                 min : 'dataMin',
                 max : 'dataMax',
@@ -1351,7 +1449,7 @@ function showAnalysisResultChart_sevenlayer(figure_id, timeList, strain, sa7, sd
                 max : 'dataMax',
                 gridIndex : 1
             },{
-                name : '温度',
+                name : '温度/℃',
                 id : 3,
                 min : 'dataMin',
                 max : 'dataMax',
@@ -1363,7 +1461,7 @@ function showAnalysisResultChart_sevenlayer(figure_id, timeList, strain, sa7, sd
                 max : 'dataMax',
                 gridIndex : 2
             },{
-                name : '温度',
+                name : '温度/℃',
                 id : 5,
                 min : 'dataMin',
                 max : 'dataMax',
@@ -1375,7 +1473,7 @@ function showAnalysisResultChart_sevenlayer(figure_id, timeList, strain, sa7, sd
                 max : 'dataMax',
                 gridIndex : 3
             },{
-                name : '温度',
+                name : '温度/℃',
                 id : 7,
                 min : 'dataMin',
                 max : 'dataMax',
@@ -1387,7 +1485,7 @@ function showAnalysisResultChart_sevenlayer(figure_id, timeList, strain, sa7, sd
                 max : 'dataMax',
                 gridIndex : 4
             },{
-                name : '温度',
+                name : '温度/℃',
                 id : 9,
                 min : 'dataMin',
                 max : 'dataMax',
@@ -1399,7 +1497,7 @@ function showAnalysisResultChart_sevenlayer(figure_id, timeList, strain, sa7, sd
                 max : 'dataMax',
                 gridIndex : 5
             },{
-                name : '温度',
+                name : '温度/℃',
                 id : 11,
                 min : 'dataMin',
                 max : 'dataMax',
@@ -1411,7 +1509,7 @@ function showAnalysisResultChart_sevenlayer(figure_id, timeList, strain, sa7, sd
                 max : 'dataMax',
                 gridIndex : 6
             },{
-                name : '温度',
+                name : '温度/℃',
                 id : 13,
                 min : 'dataMin',
                 max : 'dataMax',
@@ -1423,7 +1521,7 @@ function showAnalysisResultChart_sevenlayer(figure_id, timeList, strain, sa7, sd
                 max : 'dataMax',
                 gridIndex : 7
             },{
-                name : '温度',
+                name : '温度/℃',
                 id : 15,
                 min : 'dataMin',
                 max : 'dataMax',
@@ -1435,7 +1533,7 @@ function showAnalysisResultChart_sevenlayer(figure_id, timeList, strain, sa7, sd
                 max : 'dataMax',
                 gridIndex : 8
             },{
-                name : '温度',
+                name : '温度/℃',
                 id : 17,
                 min : 'dataMin',
                 max : 'dataMax',
@@ -1578,33 +1676,33 @@ function showAnalysisResultChart_fourlayer(figure_id, timeList, strain, sa4, sd1
         title : [
             {
                 left : 'center',
-                text : 'strain-temperature',
+                text : '原始温度/原始应变',
                 top : '1%'
             },
             {
                 top : '16%',
                 left : 'center',
-                text : 'sa4-ta4'
+                text : '小波a4层温度/小波a4层应变'
             },
             {
                 top: '31%',
                 left : 'center',
-                text : 'sd1-td1'
+                text : '小波d1层温度/小波d1层应变'
             },
             {
                 top: '46%',
                 left : 'center',
-                text : 'sd2-td2'
+                text : '小波d2层温度/小波d2层应变'
             },
             {
                 top: '61%',
                 left : 'center',
-                text : 'sd3-td3'
+                text : '小波d3层温度/小波d3层应变'
             },
             {
                 top: '76%',
                 left : 'center',
-                text : 'sd4-td4'
+                text : '小波d4层温度/小波d4层应变'
             }
         ],
         grid : [
@@ -1654,107 +1752,170 @@ function showAnalysisResultChart_fourlayer(figure_id, timeList, strain, sa4, sd1
             {
                 type : 'inside',
                 xAxisIndex : 0,
-                yAxisIndex : [0,1]
+                filterMode : 'empty',
+                // yAxisIndex : null
             },
             {
                 type : 'slider',
                 show : false,
                 xAxisIndex : 0,
-                yAxisIndex : [0,1]
+                filterMode : 'empty',
+                // yAxisIndex : null
+            },
+            {
+                type : 'slider',
+                yAxisIndex : [0,1],
+                width : 12,
+                left : '95%',
+                filterMode : 'empty'
             },
             {
                 type : 'inside',
                 xAxisIndex : 1,
-                yAxisIndex : [2,3]
+                //yAxisIndex : [2,3]
+                filterMode : 'empty'
             },
             {
                 type : 'slider',
                 show : false,
                 xAxisIndex : 1,
-                yAxisIndex : [2,3]
+                // yAxisIndex : [2,3]
+                filterMode : 'empty'
+            },
+            {
+                type : 'slider',
+                yAxisIndex : [2,3],
+                width : 12,
+                left : '95%',
+                filterMode : 'empty'
             },
             {
                 type : 'inside',
                 xAxisIndex : 2,
-                yAxisIndex : [4,5]
+                // yAxisIndex : [4,5]
+                filterMode : 'empty'
             },
             {
                 type : 'slider',
                 show : false,
                 xAxisIndex : 2,
-                yAxisIndex : [4,5]
+                // yAxisIndex : [4,5]
+                filterMode : 'empty'
+            },
+            {
+                type : 'slider',
+                yAxisIndex : [4,5],
+                width : 12,
+                left : '95%',
+                filterMode : 'empty'
             },
             {
                 type : 'inside',
                 xAxisIndex : 3,
-                yAxisIndex : [6,7]
+                // yAxisIndex : [6,7]
+                filterMode : 'empty'
             },
             {
                 type : 'slider',
                 show : false,
                 xAxisIndex : 3,
-                yAxisIndex : [6,7]
+                // yAxisIndex : [6,7]
+                filterMode : 'empty'
+            },
+            {
+                type : 'slider',
+                yAxisIndex : [6,7],
+                width : 12,
+                left : '95%',
+                filterMode : 'empty'
             },
             {
                 type : 'inside',
                 xAxisIndex : 4,
-                yAxisIndex : [8,9]
+                // yAxisIndex : [8,9]
+                filterMode : 'empty'
             },
             {
                 type : 'slider',
                 show : false,
                 xAxisIndex : 4,
-                yAxisIndex : [8,9]
+                // yAxisIndex : [8,9]
+                filterMode : 'empty'
+            },
+            {
+                type : 'slider',
+                yAxisIndex : [8,9],
+                width : 12,
+                left : '95%',
+                filterMode : 'empty'
             },
             {
                 type : 'inside',
                 xAxisIndex : 5,
-                yAxisIndex : [10,11]
+                // yAxisIndex : [10,11]
             },
             {
                 type : 'slider',
                 show : false,
                 xAxisIndex : 5,
-                yAxisIndex : [10,11]
+                // yAxisIndex : [10,11]
             },
-
+            {
+                type : 'slider',
+                yAxisIndex : [10,11],
+                width : 12,
+                left : '95%',
+                filterMode : 'empty'
+            },
         ],
         xAxis: [
             {
                 name : '时间',
                 data : timeList,
                 id : 0,
-                gridIndex : 0
+                gridIndex : 0,
+                nameLocation : 'middle',
+                nameGap : 23
             },
             {
                 name : '时间',
                 data : timeList,
                 id : 1,
-                gridIndex : 1
+                gridIndex : 1,
+                nameLocation : 'middle',
+                nameGap : 23
             },
             {
                 name : '时间',
                 data : timeList,
                 id : 2,
-                gridIndex : 2
+                gridIndex : 2,
+                nameLocation : 'middle',
+                nameGap : 23
             },
             {
                 name : '时间',
                 data : timeList,
                 id : 3,
-                gridIndex : 3
+                gridIndex : 3,
+                nameLocation : 'middle',
+                nameGap : 23
             },
             {
                 name : '时间',
                 data : timeList,
                 id : 4,
-                gridIndex : 4
+                gridIndex : 4,
+                nameLocation : 'middle',
+                nameGap : 23
             },
             {
                 name : '时间',
                 data : timeList,
                 id : 5,
-                gridIndex : 5
+                gridIndex : 5,
+                nameLocation : 'middle',
+                nameGap : 23
             },
 
         ],
@@ -1766,7 +1927,7 @@ function showAnalysisResultChart_fourlayer(figure_id, timeList, strain, sa4, sd1
                 max : 'dataMax',
                 gridIndex : 0
             },{
-                name : '温度',
+                name : '温度/℃',
                 id : 1,
                 min : 'dataMin',
                 max : 'dataMax',
@@ -1778,7 +1939,7 @@ function showAnalysisResultChart_fourlayer(figure_id, timeList, strain, sa4, sd1
                 max : 'dataMax',
                 gridIndex : 1
             },{
-                name : '温度',
+                name : '温度/℃',
                 id : 3,
                 min : 'dataMin',
                 max : 'dataMax',
@@ -1790,7 +1951,7 @@ function showAnalysisResultChart_fourlayer(figure_id, timeList, strain, sa4, sd1
                 max : 'dataMax',
                 gridIndex : 2
             },{
-                name : '温度',
+                name : '温度/℃',
                 id : 5,
                 min : 'dataMin',
                 max : 'dataMax',
@@ -1802,7 +1963,7 @@ function showAnalysisResultChart_fourlayer(figure_id, timeList, strain, sa4, sd1
                 max : 'dataMax',
                 gridIndex : 3
             },{
-                name : '温度',
+                name : '温度/℃',
                 id : 7,
                 min : 'dataMin',
                 max : 'dataMax',
@@ -1814,7 +1975,7 @@ function showAnalysisResultChart_fourlayer(figure_id, timeList, strain, sa4, sd1
                 max : 'dataMax',
                 gridIndex : 4
             },{
-                name : '温度',
+                name : '温度/℃',
                 id : 9,
                 min : 'dataMin',
                 max : 'dataMax',
@@ -1826,7 +1987,7 @@ function showAnalysisResultChart_fourlayer(figure_id, timeList, strain, sa4, sd1
                 max : 'dataMax',
                 gridIndex : 5
             },{
-                name : '温度',
+                name : '温度/℃',
                 id : 11,
                 min : 'dataMin',
                 max : 'dataMax',
@@ -2156,12 +2317,14 @@ function showReliabilityResultChart(figure_id, timeList, btcList, bttList, pfcLi
                 type : 'inside',
                 xAxisIndex : 0,
                 //yAxisIndex : 0
+                filterMode : 'empty',
             },
             {
                 type : 'slider',
                 show : false,
                 xAxisIndex : 0,
               //  yAxisIndex : 0
+                filterMode : 'empty',
             },
             {
                 type : 'slider',
@@ -2169,18 +2332,21 @@ function showReliabilityResultChart(figure_id, timeList, btcList, bttList, pfcLi
                 //xAxisIndex : 0,
                 yAxisIndex : 0,
                 left : '47%',
-                width : 10
+                width : 10,
+                filterMode : 'empty',
             },
             {
                 type : 'inside',
                 xAxisIndex : 1,
-               // yAxisIndex : 1
+               // yAxisIndex : 1,
+                filterMode : 'empty',
             },
             {
                 type : 'slider',
                 show : false,
                 xAxisIndex : 1,
-               // yAxisIndex : 1
+               // yAxisIndex : 1,
+                filterMode : 'empty',
             },
             {
                 type : 'slider',
@@ -2188,18 +2354,21 @@ function showReliabilityResultChart(figure_id, timeList, btcList, bttList, pfcLi
                 //xAxisIndex : 0,
                 yAxisIndex : 1,
                 left : '96%',
-                width : 10
+                width : 10,
+                filterMode : 'empty',
             },
             {
                 type : 'inside',
                 xAxisIndex : 2,
                 //yAxisIndex : 2
+                filterMode : 'empty',
             },
             {
                 type : 'slider',
                 show : false,
                 xAxisIndex : 2,
                // yAxisIndex : 2
+                filterMode : 'empty',
             },
             {
                 type : 'slider',
@@ -2207,17 +2376,19 @@ function showReliabilityResultChart(figure_id, timeList, btcList, bttList, pfcLi
                 //xAxisIndex : 0,
                 yAxisIndex : 2,
                 left : '47%',
-                width : 10
+                width : 10,
+                filterMode : 'empty',
             },
             {
                 type : 'inside',
                 xAxisIndex : 3,
-
+                filterMode : 'empty',
             },
             {
                 type : 'slider',
                 show : false,
                 xAxisIndex : 3,
+                filterMode : 'empty',
               //  yAxisIndex : 3
             },
             {
@@ -2226,7 +2397,8 @@ function showReliabilityResultChart(figure_id, timeList, btcList, bttList, pfcLi
                 //xAxisIndex : 0,
                 yAxisIndex : 3,
                 left : '96%',
-                width : 10
+                width : 10,
+                filterMode : 'empty',
             },
         ],
         toolbox : {

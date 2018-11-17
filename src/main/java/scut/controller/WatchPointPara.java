@@ -254,6 +254,11 @@ public class WatchPointPara {
             response.setCode(HttpResponse.FAIL_CODE);
             response.setMsg("操作失败！");
         }
+        else
+        {
+            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            new LogPara().log_bridge_para(reqMsg,userDetails.getUsername());
+        }
         return response.getHttpResponse();
     }
 }

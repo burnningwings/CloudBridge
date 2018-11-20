@@ -472,7 +472,6 @@ function legaldigit(num){
         if (eval(floats) > 20) return true;
 
     }
-
     return false;
 }
 

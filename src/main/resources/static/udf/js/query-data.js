@@ -211,7 +211,7 @@ var sensor_map = {
             attributes:{ class:"text-center" }
         }
     ],
-    "正弦传感器":[
+    "振弦传感器":[
         {
             // template:'<input type="checkbox" class="checkbox" name=sensordata-"#: sensor_info #" value="#: sensor_info #" />',
             // headerAttributes:{ style:"text-align:center"},
@@ -1175,7 +1175,7 @@ function updateDropdownMenu2(response){
     if(sensor_type_selected && !(sensor_type_selected.match(/^\s*$/))){
         for(var key in sensor_metadata_map[sensor_type_selected]["data_schema"]){
             if(key=="CLSJ") continue;
-            metric_options = metric_options + "<option value='" + key + "'>" + key + "</option>";
+            metric_options = metric_options + "<option value='" + key + "'>" + sensor_metrics_CN[key] + "</option>";
         }
         var sensor_list = sensor_info[sensor_type_selected];
         for(var key in sensor_list){
@@ -1259,7 +1259,7 @@ $(function () {
         {
             case "加速度传感器" : showJSDSensorDataDialog("增加传感器数据", "create", sensor_id,"","",""); break;
             case "光纤应变传感器" : showGXYBSensorDataDialog("增加传感器数据","create",sensor_id,"","",""); break;
-            case "正弦传感器" : showZXSensorDataDialog("增加传感器数据", "create",sensor_id, "","","","",""); break;
+            case "振弦传感器" : showZXSensorDataDialog("增加传感器数据", "create",sensor_id, "","","","",""); break;
             case "索力传感器" : showSLSensorDataDialog("增加传感器数据", "create", sensor_id, "", "", "", ""); break;
             case "GPS传感器" : showGPSSensorDataDialog("增加传感器数据", "create", sensor_id, "","","","","","","","","","","","",""); break;
             default: break;
@@ -1330,7 +1330,7 @@ $(function () {
         var sensor_options = "";
         for(var key in sensor_metadata_map[sensor_type_selected]["data_schema"]){
             if(key=="CLSJ") continue;
-            metric_options = metric_options + "<option value='" + key + "'>" + key + "</option>";
+            metric_options = metric_options + "<option value='" + key + "'>" + sensor_metrics_CN[key] + "</option>";
         }
         var sensor_list = data2[sensor_type_selected];
         for(var key in sensor_list){

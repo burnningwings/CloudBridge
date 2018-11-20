@@ -183,7 +183,7 @@ function showMessageDialog(title, custom_content, ok_callback, width, height) {
 }
 
 var sensor_metadata_map = {
-    "正弦传感器": {
+    "振弦传感器": {
         "name": "sin_sensor_info",
         "data_schema": {
             "CLSJ": "float",
@@ -237,6 +237,32 @@ var sensor_metadata_map = {
         }
     }
 };
+
+var sensor_metrics_CN = {
+    "CLSJ" : "测量时间",
+    "DY" : "电压",
+    "JSD" : "加速度",
+    "SL" : "索力",
+    "WXZBX": "测量卫星坐标X",
+    "QLZBX": "测量局部坐标X",
+    "WXWYX": "卫星X方向位移",
+    "QLWYX": "局部X方向位移",
+    "WXZBY": "测量卫星坐标Y",
+    "QLZBY": "测量局部坐标Y",
+    "WXWYY": "卫星Y方向位移",
+    "QLWYY": "局部Y方向位移",
+    "WXZBZ": "测量卫星坐标Z",
+    "QLZBZ": "测量局部坐标Z",
+    "WXWYZ": "卫星Z方向位移",
+    "QLWZ": "局部Z方向位移",
+    "CLBC": "测量波长",
+    "YB": "应变",
+    "CLYB": "测量应变",
+    "CLWD": "测量温度",
+    "DZ": "电阻",
+    "XZYB": "修正应变"
+
+}
 
 function getUserRole() {
     return $('meta[name=role]').attr("content");

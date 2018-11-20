@@ -134,6 +134,7 @@ function showTimeLineChart(figure_id,time_array,series_data,single){
     console.log(figure_id, time_array,series_data,single);
     var series = [];
     var legend_data = [];
+
     for(var key in series_data){
         console.log(key);
         legend_data.push(key);
@@ -148,17 +149,26 @@ function showTimeLineChart(figure_id,time_array,series_data,single){
             })
         }
         series.push({
-            name: key,
+            name: sensor_metrics_CN[key.split("-")[1]],
+            //name: key,
             data: temp,
             type: 'line',
             barMaxWidth:'25',
             smooth: true
         });
     }
+    //console.log(legend_data[0].split("-")[1])
+    var legend_cn = [];
+    for(var j=0, len=legend_data.length; j<len;j++){
+        legend_cn.push(sensor_metrics_CN[legend_data[j].split("-")[1]]);
+    }
+    console.log(legend_cn)
+    console.log(legend_data)
+
     var option = {
         legend: {
             left: 'center',
-            data: legend_data
+            data: legend_cn
         },
         tooltip : {
             trigger: 'item',

@@ -205,7 +205,7 @@ $(function () {
         var sensor_type_selected = $("#sensor_type_menu").val();
         var content = "";
         if(sensor_type_selected && !(sensor_type_selected.match(/^\s*$/))){
-            var schema = sensor_metadata_map[sensor_type_selected]["data_schema"];
+            var schema = sensor_data_schema[sensor_type_selected]["data_schema"];
             content = content + "{"
             var sep = "";
             for(var key in schema){

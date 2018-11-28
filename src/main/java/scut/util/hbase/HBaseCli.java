@@ -55,11 +55,13 @@ public class HBaseCli {
     public JSONArray query(String tableName,String startRowKey,String endRowKey,JSONArray columnArray,int limit, int sample){
         JSONArray data = new JSONArray();
         Scan scan = new Scan();
+        System.out.println("limit: " + limit);
         if(sample<=0){
             // 获取全部
             if(limit>0){
                 // 截取部分
                 if(startRowKey!=null && !startRowKey.equals("")){
+
                     scan.setStartRow(startRowKey.getBytes());
                     scan.setMaxResultSize(limit);
                     scan.setStopRow(endRowKey.getBytes());

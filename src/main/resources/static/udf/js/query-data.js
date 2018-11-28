@@ -1404,7 +1404,7 @@ $(function () {
                 // 访问数据
                 var item = $('#query_latest_item_menu').val();
                 // 根据选择条件获取查询条件
-
+                console.log(item);
                 var end_row_key = new Date().format('yyyyMMddHHmmssSS');
                 var params = {
                     "sensorList": JSON.stringify(sensor_id_array),

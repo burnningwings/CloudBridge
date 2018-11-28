@@ -238,6 +238,62 @@ var sensor_metadata_map = {
     }
 };
 
+var sensor_data_schema = {
+    "振弦传感器": {
+        "name": "sin_sensor_info",
+        "data_schema": {
+            "测量时间": "float",
+            "测量应变": "float",
+            "测量温度": "float",
+            "电阻": "float",
+            "修正应变": "float"
+        }
+    },
+    "光纤应变传感器": {
+        "name": "fiber_sensor_info",
+        "data_schema": {
+            "测量时间": "float",
+            "测量波长": "float",
+            "应变": "float"
+        }
+    },
+    "GPS传感器": {
+        "name": "gps_sensor_info",
+        "data_schema": {
+            "测量时间": "float",
+            "测量卫星坐标X": "float",
+            "测量局部坐标X": "float",
+            "卫星X方向位移": "float",
+            "局部X方向位移": "float",
+            "测量卫星坐标Y": "float",
+            "测量局部坐标Y": "float",
+            "卫星Y方向位移": "float",
+            "局部Y方向位移": "float",
+            "测量卫星坐标Z": "float",
+            "测量局部坐标Z": "float",
+            "卫星Z方向位移": "float",
+            "局部Z方向位移": "float",
+        }
+    },
+    "加速度传感器": {
+        "name": "acce_sensor_info",
+        "data_schema": {
+            "测量时间": "float",
+            "电压": "float",
+            "加速度": "float"
+        }
+    },
+    "索力传感器": {
+        "name": "cable_sensor_info",
+        "data_schema": {
+            "测量时间": "float",
+            "电压": "float",
+            "加速度": "float",
+            "索力": "float"
+        }
+    }
+};
+
 var sensor_metrics_CN = {
     "CLSJ" : "测量时间",
     "DY" : "电压",

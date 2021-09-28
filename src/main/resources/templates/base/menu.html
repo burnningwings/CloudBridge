@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="menu (one,two_1,two_2,three_1,three_2,four_1,four_2,four_3,four_4,five_1,five_2,six_1,six_2,six_3,seven_1,seven_2)"
+     id="cm-menu">
+    <nav class="cm-navbar cm-navbar-primary">
+        <div class="cm-flex"><a href="/" class="cm-logo"></a></div>
+        <div class="btn btn-primary md-menu-white" data-toggle="cm-menu"></div>
+    </nav>
+
+    <div id="cm-menu-content">
+        <div id="cm-menu-items-wrapper">
+            <div id="cm-menu-scroller">
+                <ul class="cm-menu-items">
+                    <li th:class="${one}"><a href="/" class="sf-house">Home</a></li>
+                    <li class="cm-submenu" th:classappend="${two_1=='active' or two_2=='active'}? pre-open : ''">
+                        <a class="sf-dashboard-alt">桥梁管理<span class="caret"></span></a>
+                        <ul>
+                            <li th:class="${two_1}"><a href="bridge">桥梁信息</a></li>
+                            <li th:class="${two_2}"><a href="watch-box">控制箱信息</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="cm-submenu" th:classappend="${three_1=='active' or three_2=='active'}? pre-open : ''">
+                        <a class="sf-database">监控数据<span class="caret"></span></a>
+                        <ul>
+                            <li th:class="${three_1}"><a href="query-data">数据查询</a></li>
+                            <li th:class="${three_2}"><a href="upload-data">数据导入</a></li>
+                        </ul>
+                    </li>
+                    <li class="cm-submenu" th:classappend="${four_1=='active' or four_2=='active' or four_3=='active' or four_4=='active'}? pre-open : ''">
+                        <a class="sf-funnel">数据分析<span class="caret"></span></a>
+                        <ul>
+                            <li th:class="${four_1}"><a href="overweight-analysis">超重分析</a></li>
+                            <li th:class="${four_2}"><a href="damage-detection">损伤识别</a></li>
+                            <li th:class="${four_3}"><a href="association-analysis">关联分析</a></li>
+                            <li th:class="${four_4}"><a href="test">桥梁可靠度分析</a></li>
+                        </ul>
+                    </li>
+                    <li class="cm-submenu" th:classappend="${five_1=='active' or five_2=='active'}? pre-open : ''">
+                        <a class="sf-profile-group">用户管理<span class="caret"></span></a>
+                        <ul>
+                            <li th:class="${five_1}"><a href="user-manager">用户管理</a></li>
+                            <li th:class="${five_2}"><a href="role-manager">角色管理</a></li>
+                        </ul>
+                    </li>
+                    <li class="cm-submenu" th:classappend="${six_1=='active' or six_2=='active' or six_3=='active'}? pre-open : ''">
+                        <a class="sf-file-text">日志管理<span class="caret"></span></a>
+                        <ul>
+                            <li th:class="${six_1}"><a href="ico-sf.html">阈值警告日志</a></li>
+                            <li th:class="${six_2}"><a href="ico-md.html">系统操作日志</a></li>
+                            <li th:class="${six_3}"><a href="log_bridge.html">桥梁修改日志</a></li>
+                        </ul>
+                    </li>
+                    <li class="cm-submenu" th:classappend="${seven_1=='active' or seven_2=='active'}? pre-open : ''">
+                        <a class="sf-cogs">系统管理<span class="caret"></span></a>
+                        <ul>
+                            <li th:class="${seven_1}"><a href="ico-sf.html">警告级别</a></li>
+                            <li th:class="${seven_2}"><a href="ico-md.html">日志选项</a></li>
+                        </ul>
+                    </li>
+                    <li><a th:href="@{/logout}" class="sf-lock-open">退出</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

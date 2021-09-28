@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <meta charset="utf-8">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <link rel="stylesheet" type="text/css" href="assets/css/bootstrap-clearmin.min.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/roboto.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/material-design.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/small-n-flat.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/font-awesome.min.css">
+    <!-- 下拉菜单 -->
+    <link rel="stylesheet" type="text/css" href="ext/bootstrap-select-1.12.4/css/bootstrap-select.min.css">
+    <!-- 支持同步和异步分页 -->
+    <link href="assets/css/kendo.common.min.css" rel="stylesheet" type="text/css" />
+    <link href="assets/css/kendo.default.min.css" rel="stylesheet" type="text/css" />
+    <!-- 滚动条 -->
+    <link rel="stylesheet" type="text/css" href="ext/mCustomScrollbar-3.0.9/css/jquery.mCustomScrollbar.css">
+    <!-- 对话框 -->
+    <link rel="stylesheet" type="text/css" href="ext/artDialog-6.0.4/css/ui-dialog.css">
+    <link rel="stylesheet" type="text/css" href="ext/artDialog-6.0.4/css/custom.css">
+    <!-- 时间选择器 -->
+    <link rel="stylesheet" href="ext/jquery-ui-1.12.1/css/jquery-ui.min.css">
+    <link rel="stylesheet" href="ext/jQuery-Timepicker-Addon-1.6.3/css/jquery-ui-timepicker-addon.min.css">
+    <!-- 文件上传插件 -->
+    <link rel="stylesheet" type="text/css" href="ext/bootstrap-fileinput-4.4.8/css/fileinput.min.css">
+    <title>桥梁信息管理系统</title>
+    <link rel="icon" type="image/x-icon" th:href="@{images/favicon.ico}"/>
+</head>
+<body class="cm-no-transition cm-2-navbar">
+<div id="cm-menu" th:include="base/menu::menu (one,two_1,two_2,three_1,three_2,four_1,four_2,active,four_4,five_1,five_2,six_1,six_2,six_3,seven_1,seven_2)"></div>
+<header id="cm-header">
+    <nav class="cm-navbar cm-navbar-primary">
+        <div class="btn btn-primary md-menu-white hidden-md hidden-lg" data-toggle="cm-menu"></div>
+        <div class="cm-flex">
+            <div class="cm-breadcrumb-container">
+                <ol class="breadcrumb">
+                    <li><a href="#">数据分析</a></li>
+                    <li class="active">关联分析</li>
+                </ol>
+            </div>
+            <form id="cm-search" action="index.html" method="get">
+                <input type="search" name="q" autocomplete="off" placeholder="Search...">
+            </form>
+        </div>
+        <div class="pull-right">
+            <div id="cm-search-btn" class="btn btn-primary md-search-white" data-toggle="cm-search"></div>
+        </div>
+        <div class="dropdown pull-right">
+            <button class="btn btn-primary md-notifications-white" data-toggle="dropdown"> <span class="label label-danger">23</span> </button>
+            <div class="popover cm-popover bottom">
+                <div class="arrow"></div>
+                <div class="popover-content">
+                    <div class="list-group">
+                        <a href="#" class="list-group-item">
+                            <h4 class="list-group-item-heading text-overflow">
+                                <i class="fa fa-fw fa-envelope"></i> Nunc volutpat aliquet magna.
+                            </h4>
+                            <p class="list-group-item-text text-overflow">Pellentesque tincidunt mollis scelerisque. Praesent vel blandit quam.</p>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <h4 class="list-group-item-heading">
+                                <i class="fa fa-fw fa-envelope"></i> Aliquam orci lectus
+                            </h4>
+                            <p class="list-group-item-text">Donec quis arcu non risus sagittis</p>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <h4 class="list-group-item-heading">
+                                <i class="fa fa-fw fa-warning"></i> Holy guacamole !
+                            </h4>
+                            <p class="list-group-item-text">Best check yo self, you're not looking too good.</p>
+                        </a>
+                    </div>
+                    <div style="padding:10px"><a class="btn btn-success btn-block" href="#">Show me more...</a></div>
+                </div>
+            </div>
+        </div>
+        <div class="dropdown pull-right">
+            <button class="btn btn-primary md-account-circle-white" data-toggle="dropdown"></button>
+            <ul class="dropdown-menu">
+                <li class="disabled text-center">
+                    <a style="cursor:default;" th:text="${CurrentUser.userName}"><strong></strong></a>
+                </li>
+                <li class="divider"></li>
+                <li>
+                    <a href="#"><i class="fa fa-fw fa-user"></i> Profile</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fa fa-fw fa-cog"></i> Settings</a>
+                </li>
+                <li>
+                    <a href="logout"><i class="fa fa-fw fa-sign-out"></i> Sign out</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <nav class="cm-navbar cm-navbar-default cm-navbar-slideup">
+        <div class="cm-flex">
+            <div class="nav-tabs-container">
+                <ul class="nav nav-tabs">
+                    <li><a href="association-analysis.html">关联分析</a></li>
+                    <li class="active"><a href="wavelet-analysis.html">小波分析</a></li>
+
+                </ul>
+            </div>
+        </div>
+        <!--<div class="pull-right" style="border-left:1px solid #e5e5e5"><a title="Download as PDF" class="btn btn-default btn-light md-file-download"></a></div>-->
+        <!--<div class="pull-right"><a title="Customize indicators" class="btn btn-default btn-light md-settings"></a></div>-->
+    </nav>
+</header>
+
+<div id="global">
+    <div class="container-fluid">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    小波分析
+                </h3>
+            </div>
+            <div class="panel-body" style="padding:0 20px 20px 20px">
+                <h4 class="control-label " style="display:inline-block">从本地上传小波分析数据（csv格式，小于50MB）：</h4>
+                <button id="wavelet_file_dataformat" title="数据格式" data-html="true" data-toggle="popover" data-container="body" type="button" class="btn btn-default"><i class="fa fa-fw fa-eye"></i></button>
+                <input id="wavelet_file_upload" name="wavelet_file_upload" type="file" class="file file-loading" data-preview-file-type="text"/>
+            </div>
+            <div class="panel-body" style="padding: 0 20px 20px 20px">
+                <select class="selectpicker" id="wavelet_file_selected" data-width="20%">
+                    <!--<option value="" disabled selected>请选择待预测文件</option>-->
+                    <!--<option value="1">001001212122.csv</option>-->
+                    <!--<option value="2">833998323233.csv</option>-->
+                </select>
+                &nbsp;&nbsp;
+                <select class="selectpicker" id="wavelet_layer_selected" data-width="20%">
+                    <option value="" disabled selected>请选择层</option>
+                    <option value="origin">原始层</option>
+                    <option value="A7">A7</option>
+                    <option value="D7">D7</option>
+                    <option value="D6">D6</option>
+                    <option value="D5">D5</option>
+                    <option value="D4">D4</option>
+                    <option value="D3">D3</option>
+                    <option value="D2">D2</option>
+                    <option value="D1">D1</option>
+                </select>
+                &nbsp;&nbsp;
+                <input size="17" type="text" id="wavelet_begin_time"  class="btn btn-default" value="" readonly="readonly">
+                <span style="line-height: 30px;">&nbsp;&nbsp;<label class="form-label">至</label>&nbsp;&nbsp;</span>
+                <input size="17" type="text" id="wavelet_end_time" class="btn btn-default" value="" readonly="readonly">
+            </div>
+
+
+            <div class="panel-body" style="padding: 0 20px 20px 20px">
+                <!--<div class="row">-->
+                <button id="wavelet_analysis_result" type="button" data-switch-color="success" class="btn btn-l btn-success" style="width:160px;height:40px;font-size:18px">小波分析结果</button>
+                <!--<label style="font-weight:normal;font-size:16px;margin-left: 50px">进度条&nbsp;&nbsp;</label>-->
+                <!--<progress id="association_analysis_process" value="0" max="100"></progress>-->
+                <!--<button id="result_association_analysis" type="button" data-switch-color="yellow" class="btn btn-l btn-yellow" style="width:150px;height:40px;font-size:18px; margin-left:350px">分析结果展示</button>-->
+                <div align="center" id="wavelet_show_result_figure" height="600" data-width="60%" style="position:relative;margin-top:20px; height:600px;">
+                </div>
+            </div>
+        </div>
+        <div th:include="base/footer"></div>
+    </div>
+</div>
+
+
+
+<script src="assets/js/lib/jquery-2.1.3.min.js"></script>
+<script src="assets/js/jquery.mousewheel.min.js"></script>
+<script src="assets/js/jquery.cookie.min.js"></script>
+<script src="assets/js/fastclick.min.js"></script>
+<script src="assets/js/clearmin.min.js"></script>
+<script src="assets/js/demo/home.js"></script>
+<!-- common.js -->
+<script src="udf/js/common.js"></script>
+<!-- 下拉菜单 -->
+<script src="ext/bootstrap-select-1.12.4/js/bootstrap-select.min.js"></script>
+<script src="ext/bootstrap-select-1.12.4/js/i18n/defaults-zh_CN.min.js"></script>
+<!-- 对话框 -->
+<script src="ext/artDialog-6.0.4/js/dialog-plus-min.js"></script>
+<!-- table相关 -->
+<script src="assets/js/kendo.web.min.js"></script>
+<script src="udf/js/common.js"></script>
+<!--画图-->
+<script src="ext/echarts/echarts.min.js"></script>
+<script src="udf/js/figure.js"></script>
+<!-- 滚动条 -->
+<script src="ext/mCustomScrollbar-3.0.9/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<!-- 主脚本 -->
+<script src="udf/js/wavelet-analysis.js"></script>
+<!-- 文件上传插件 -->
+<script src="ext/bootstrap-fileinput-4.4.8/js/fileinput.min.js"></script>
+<script src="ext/bootstrap-fileinput-4.4.8/js/locales/zh.js"></script>
+<!-- 时间选择器 -->
+<script src="ext/jquery-ui-1.12.1/js/jquery-ui.min.js"></script>
+<script src="ext/jQuery-Timepicker-Addon-1.6.3/js/jquery-ui-timepicker-addon.min.js"></script>
+<script src="ext/jQuery-Timepicker-Addon-1.6.3/js/i18n/jquery-ui-timepicker-zh-CN.js"></script>
+<script src="ext/jQuery-Timepicker-Addon-1.6.3/js/i18n/jquery-ui-timepicker-addon-i18n.min.js"></script>
+<!-- bootstrap脚本必须放在jquery-ui之后，否则某些操作会冲突 -->
+<script src="assets/js/bootstrap.min.js"></script>
+</body>
+</html>

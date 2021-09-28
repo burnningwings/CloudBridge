@@ -1,0 +1,12 @@
+/*
+ * created by gujw
+ */
+
+.form-inline-custom {
+  display: flex;
+  align-items: center;
+}
+
+label {
+  margin: 0;
+}

@@ -59,11 +59,13 @@ function updateRoleGrid(){
             {
                 field: "rolename",
                 title: "名称",
+                template: '#if(rolename == "ROLE_ADMIN") {# ' + '管理员'+ '# } else { #' + '普通用户' + '# } #',
                 headerAttributes:{ style:"text-align:center"},
                 attributes:{ class:"text-center" }
             }, {
                 field: "roledescription",
                 title: "描述",
+                template: '#if(roledescription == "super admin") {# ' + '超级管理员'+ '# } else { #' + '普通用户' + '# } #',
                 headerAttributes:{ style:"text-align:center"},
                 attributes:{ class:"text-center" }
 

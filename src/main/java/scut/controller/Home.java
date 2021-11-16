@@ -203,6 +203,12 @@ public class Home {
         return "watchpoint_para";
     }
 
+    @RequestMapping("/module_upload")
+    public String module_upload(Model model) {
+        setUser(model);
+        return "module_upload";
+    }
+
     @GetMapping("/{from}/image-upload/{objectId}")
     public String imageUpload(Model model,
                               @PathVariable("from") String from,

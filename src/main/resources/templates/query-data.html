@@ -28,7 +28,7 @@
     </head>
     <body class="cm-no-transition cm-1-navbar">
 
-        <div id="cm-menu" th:replace="base/menu::menu (one,two_1,two_2,active,three_2,four_1,four_2,four_3,four_4,five_1,five_2,six_1,six_2,six_3,seven_1,seven_2,seven_3,seven_4)"></div>
+        <div id="cm-menu" th:include="base/menu::menu (one,two_1,two_2,active,three_2,four_1,four_2,four_3,four_4,five_1,five_2,six_1,six_2,six_3,seven_1,seven_2,seven_3,seven_4,eight_1,eight_2,eight_3)"></div>
 
         <div th:replace="base/header::header"></div>
 
@@ -37,13 +37,15 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title">
-                            最新监测数据列表
+                            监测数据列表
                         </h3>
                     </div>
                     <div class="panel-body">
-                        <select class="selectpicker" id="bridge_menu" data-width="20%"></select>
-                        <select class="selectpicker" id="watch_box_menu" data-width="20%"></select>
-                        <select class="selectpicker" id="sensor_menu" data-width="20%"></select>
+                        <select class="selectpicker" id="bridge_menu" data-width="15%"></select>
+                        <select class="selectpicker" id="section_menu" data-width="15%"></select>
+                        <select class="selectpicker" id="point_menu" data-width="15%"></select>
+                        <select class="selectpicker" id="watch_box_menu" data-width="15%"></select>
+                        <select class="selectpicker" id="sensor_menu" data-width="15%"></select>
                         <button id="query_grid_btn" type="button"class="btn btn-l btn-primary">查询</button>
                         <br>
                         <br>
@@ -59,14 +61,16 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title">
-                            基于桥梁的数据图示
+                            监测数据图示
                         </h3>
                     </div>
                     <div class="panel-body">
-                        <select class="selectpicker" id="query_bridge_menu" data-width="20%"></select>
-                        <select class="selectpicker" id="query_sensor_type_menu" data-width="20%"></select>
-                        <select class="selectpicker" id="query_metric_menu" data-width="20%"></select>
-                        <select class="selectpicker" id="query_group_sensor_menu" data-width="20%" multiple></select>
+                        <select class="selectpicker" id="query_bridge_menu" data-width="13%"></select>
+                        <select class="selectpicker" id="query_section_menu" data-width="13%"></select>
+                        <select class="selectpicker" id="query_point_menu" data-width="13%"></select>
+                        <select class="selectpicker" id="query_box_menu" data-width="13%"></select>
+                        <select class="selectpicker" id="query_sensor_type_menu" data-width="13%"></select>
+                        <select class="selectpicker" id="query_metric_menu" data-width="13%"></select>
                     </div>
                     <div class="panel-body" style="padding:0 20px 20px 20px">
                         <ul class="nav nav-tabs">

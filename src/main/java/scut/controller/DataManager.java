@@ -113,8 +113,18 @@ public class DataManager {
 
     @RequestMapping(value = "/upload-data/message/list", method = RequestMethod.GET, produces = "application/json")
     public JSONObject getMessagePage(int page, Integer pageSize){
-        String sql = String.format("select * from message order by last_update desc limit %s offset %s", pageSize,(page-1)*pageSize);
-        String[] fields = new String[]{"id","source","target","status","last_update","error_log"};
+        String sql = String.format("select a.id,b.bridge_name as bridge,c.name as section," +
+                "d.name as point,e.name as watch_box,g.name as sensor," +
+                "a.target,a.source,a.status,a.last_update,a.error_log " +
+                "from message as a " +
+                "left join sensor_info as f on a.target=f.sensor_number " +
+                "left join sensor_type as g on f.type_id=g.type_id " +
+                "left join watch_box as e on e.box_id=f.box_id " +
+                "left join watch_point as d on f.point_id=d.point_id " +
+                "left join section as c on c.section_id=d.section_id " +
+                "left join bridge_info as b on b.bridge_id=c.bridge_id order by last_update desc limit %s offset %s", pageSize,(page-1)*pageSize);
+        String[] fields = new String[]{"id","bridge","section","point","watch_box","sensor","target","source","status","last_update","error_log"};
+//        String[] fields = new String[]{"id","source","target","status","last_update","error_log"};
         JSONArray data = new JSONArray();
         try {
             baseDao.querySingleObject(sql,new ResultSetHandler<String>(){
@@ -234,10 +244,12 @@ public class DataManager {
             e.printStackTrace();
         }
         if(data.size()>0 && !data.get("bridge_id").equals("")){
-            sql = "select a.box_id,a.name as box_name,b.sensor_id,b.sensor_number,c.name as sensor_type_name " +
+            sql = "select a.box_id,a.name as box_name,b.sensor_id,b.sensor_number,c.name as sensor_type_name,d.point_id,d.name as point_name,e.section_id,e.name as section_name " +
                     "from watch_box as a " +
                     "left join sensor_info as b on a.box_id=b.box_id " +
                     "left join sensor_type as c on b.type_id=c.type_id " +
+                    "left join watch_point as d on b.point_id=d.point_id " +
+                    "left join section as e on d.section_id=e.section_id " +
                     "where a.bridge_id='%s'" +
                     "and a.bridge_id in (" +
                     "select bo.bridge_id from bridge_organization bo " +
@@ -249,9 +261,17 @@ public class DataManager {
                             public String handle(ResultSet rs) throws SQLException {
                                 JSONObject bridgeItem = new JSONObject();
                                 while(rs.next()){
+                                    String sectionId = rs.getString("section_id");
+                                    JSONObject sectionItem = (JSONObject) bridgeItem.getOrDefault(sectionId,new JSONObject());
+                                    sectionItem.put("name",rs.getString("section_name"));
+                                    String pointId = rs.getString("point_id");
+                                    JSONObject pointItem = (JSONObject) sectionItem.getOrDefault(pointId,new JSONObject());
+                                    if(pointId!=null){
+                                        pointItem.put("name",rs.getString("point_name"));
+                                    }
                                     String boxId = rs.getString("box_id");
-                                    JSONObject boxItem = (JSONObject) bridgeItem.getOrDefault(boxId,new JSONObject());
-                                    JSONObject sensorItem= (JSONObject) boxItem.getOrDefault("sensor",  new JSONObject());
+                                    JSONObject boxItem = (JSONObject) pointItem.getOrDefault(boxId,new JSONObject());
+                                    JSONObject sensorItem= (JSONObject) boxItem.getOrDefault("sensor",new JSONObject());
                                     boxItem.put("name",rs.getString("box_name"));
                                     String sensorId = rs.getString("sensor_id");
                                     if(sensorId!=null) {
@@ -260,7 +280,9 @@ public class DataManager {
                                                         + rs.getString("sensor_type_name"));
                                     }
                                     boxItem.put("sensor",sensorItem);
-                                    bridgeItem.put(boxId,boxItem);
+                                    pointItem.put(boxId,boxItem);
+                                    sectionItem.put(pointId,pointItem);
+                                    bridgeItem.put(sectionId,sectionItem);
                                 }
                                 data.put("bridge_detail",bridgeItem);
                                 return null;

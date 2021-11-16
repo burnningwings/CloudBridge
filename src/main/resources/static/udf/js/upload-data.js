@@ -2,6 +2,9 @@
 function updateDropdownMenu(response){
     var data = null
     var bridge_options = "";
+    var section_options = "";
+    var point_options = "";
+    var box_options = "";
     var sensor_type_options = "";
     var sensor_options = "";
     var sensor_info = {};
@@ -14,19 +17,54 @@ function updateDropdownMenu(response){
             bridge_options = bridge_options + "<option value='" + key + "'>" + data["bridge"][key] + "</option>";
         }
         for(var key in data["bridge_detail"]){
-            var sensor_dict = data["bridge_detail"][key]["sensor"];
-            for(var sensor_id in sensor_dict){
-                var sensor_name = sensor_dict[sensor_id];
-                var sensor_name_list = sensor_name.split(" - ");
-                var sensor_number = sensor_name_list[0];
-                var sensor_type = sensor_name_list[1];
-                if(sensor_info.hasOwnProperty(sensor_type)){
-                    sensor_info[sensor_type].push([sensor_id,sensor_number]);
-                }else{
-                    sensor_info[sensor_type] = [[sensor_id,sensor_number]];
-                }
+            section_options += '<option value="' + key +'">' + data["bridge_detail"][key]["name"] + "</option>";
+        }
+        $('#section_menu').empty();
+        $('#section_menu').append(section_options);
+
+        var section_selected = $('#section_menu').val();
+        for(var key in data["bridge_detail"][section_selected]){
+            if(key=="name") continue;
+            point_options += '<option value="' + key +'">' + data["bridge_detail"][section_selected][key]["name"] + "</option>";
+        }
+        $('#point_menu').empty();
+        $('#point_menu').append(point_options);
+
+        var point_selected = $('#point_menu').val();
+        for(var key in data["bridge_detail"][section_selected][point_selected]){
+            if(key == "name") continue;
+            box_options = box_options + "<option value='" + key +"'>" + data["bridge_detail"][section_selected][point_selected][key]["name"] + "</option>";
+        }
+        $('#box_menu').empty();
+        $('#box_menu').append(box_options);
+
+        var box_selected = $('#box_menu').val();
+        var sensor_dict = data["bridge_detail"][section_selected][point_selected][box_selected]["sensor"];
+        for(var sensor_id in sensor_dict){
+            var sensor_name = sensor_dict[sensor_id];
+            var sensor_name_list = sensor_name.split(" - ");
+            var sensor_number = sensor_name_list[0];
+            var sensor_type = sensor_name_list[1];
+            if(sensor_info.hasOwnProperty(sensor_type)){
+                sensor_info[sensor_type].push([sensor_id,sensor_number]);
+            }else{
+                sensor_info[sensor_type] = [[sensor_id,sensor_number]];
             }
         }
+        // for(var key in data["bridge_detail"][section_selected][point_selected]){
+        //     var sensor_dict = data["bridge_detail"][section_selected][point_selected][box_selected]["sensor"];
+        //     for(var sensor_id in sensor_dict){
+        //         var sensor_name = sensor_dict[sensor_id];
+        //         var sensor_name_list = sensor_name.split(" - ");
+        //         var sensor_number = sensor_name_list[0];
+        //         var sensor_type = sensor_name_list[1];
+        //         if(sensor_info.hasOwnProperty(sensor_type)){
+        //             sensor_info[sensor_type].push([sensor_id,sensor_number]);
+        //         }else{
+        //             sensor_info[sensor_type] = [[sensor_id,sensor_number]];
+        //         }
+        //     }
+        // }
         // key为传感器类型
         console.log(sensor_info)
         for(var key in sensor_info){
@@ -113,14 +151,28 @@ function updateMessageGrid(){
         },
         columns: [
             {
-                field: "id",
-                title: "ID",
-                width: "280px",
+                field: "bridge",
+                title: "桥梁",
                 headerAttributes:{ style:"text-align:center"},
                 attributes:{ class:"text-center" }
             }, {
-                field: "source",
-                title: "原文件名称",
+                field: "section",
+                title: "截面",
+                headerAttributes:{ style:"text-align:center"},
+                attributes:{ class:"text-center" }
+            }, {
+                field: "point",
+                title: "测点",
+                headerAttributes:{ style:"text-align:center"},
+                attributes:{ class:"text-center" }
+            }, {
+                field: "watch_box",
+                title: "控制箱",
+                headerAttributes:{ style:"text-align:center"},
+                attributes:{ class:"text-center" }
+            }, {
+                field: "sensor",
+                title: "传感器类型",
                 headerAttributes:{ style:"text-align:center"},
                 attributes:{ class:"text-center" }
             }, {
@@ -129,8 +181,14 @@ function updateMessageGrid(){
                 headerAttributes:{ style:"text-align:center"},
                 attributes:{ class:"text-center" }
             }, {
+                field: "source",
+                title: "原文件名称",
+                headerAttributes:{ style:"text-align:center"},
+                attributes:{ class:"text-center" }
+            }, {
                 field: "status",
                 title: "上传状态",
+                template: '#if(status == "FINISHED") {# ' + '完成'+ '# } else { #' + '失败' + '# } #',
                 headerAttributes:{ style:"text-align:center"},
                 attributes:{ class:"text-center" }
             },{
@@ -140,7 +198,8 @@ function updateMessageGrid(){
                 attributes:{ class:"text-center" }
             }, {
                 title: "操作",
-                template: '<button class="btn btn-primary" title="重新上传" type="button" onclick="reUpload(\'#: id #\')"/><i class="fa fa-fw fa-repeat"></i></button>&nbsp;<button class="btn btn-success" type="button" onclick="browseUploadLog(\'#: id #\')"/>查看日志</button>',
+                template: '<button class="btn btn-primary" title="重新上传" type="button" onclick="reUpload(\'#: id #\')"/>上传</button>&nbsp;',
+                // template: '<button class="btn btn-primary" title="重新上传" type="button" onclick="reUpload(\'#: id #\')"/>上传</button>&nbsp;<button class="btn btn-success" type="button" onclick="browseUploadLog(\'#: id #\')"/>查看日志</button>',
                 headerAttributes:{ style:"text-align:center"},
                 attributes:{ class:"text-center" }
             }
@@ -178,10 +237,68 @@ $(function () {
     var url = "/query-data/dropdown";
     var response = webRequest(url,"GET",false,{"bridge_id":"all"})
     var data = updateDropdownMenu(response);
+    var data_menu = response.data;
     $('#bridge_menu').change(function(){
         var id = $(this).children('option:selected').val();
         var response = webRequest(url,"GET",false,{"bridge_id":id})
+        data_menu = response.data;
         data = updateDropdownMenu(response);
+    })
+
+    $('#section_menu').change(function(){
+        var section_selected = $(this).children('option:selected').val();
+        var point_options = "";
+        for (var key in data_menu["bridge_detail"][section_selected]){
+            if(key == "name") continue;
+            point_options = point_options + "<option value='" + key + "'>" + data_menu["bridge_detail"][section_selected][key]["name"] + "</option>";
+        }
+        $('#point_menu').empty();
+        $('#point_menu').append(point_options);
+        $('#point_menu').trigger("change");
+        $('.selectpicker').selectpicker('refresh');
+    })
+
+    $('#point_menu').change(function(){
+        var section_selected = $('#section_menu').children('option:selected').val();
+        var point_selected = $(this).children('option:selected').val();
+        var box_options = "";
+        for(var key in data_menu["bridge_detail"][section_selected][point_selected]){
+            if(key == "name") continue;
+            box_options = box_options + "<option value='" + key + "'>" + data_menu["bridge_detail"][section_selected][point_selected][key]["name"];
+        }
+        $('#box_menu').empty();
+        $('#box_menu').append(box_options);
+        $('#box_menu').trigger("change");
+        $('.selectpicker').selectpicker('refresh');
+    })
+
+    $('#box_menu').change(function(){
+        var section_selected = $('#section_menu').children('option:selected').val();
+        var point_selected = $('#point_menu').children('option:selected').val();
+        var box_selected = $(this).children('option:selected').val()
+        var sensor_dict = data_menu["bridge_detail"][section_selected][point_selected][box_selected]["sensor"];
+        var sensor_info = {};
+        var sensor_type_options = "";
+        for(var sensor_id in sensor_dict){
+            var sensor_name = sensor_dict[sensor_id];
+            var sensor_name_list = sensor_name.split(" - ");
+            var sensor_number = sensor_name_list[0];
+            var sensor_type = sensor_name_list[1];
+            if(sensor_info.hasOwnProperty(sensor_type)){
+                sensor_info[sensor_type].push([sensor_id,sensor_number]);
+            }else{
+                sensor_info[sensor_type] = [[sensor_id,sensor_number]];
+            }
+        }
+        for(var key in sensor_info){
+            sensor_type_options = sensor_type_options + "<option value='" + key + "'>" + key + "</option>";
+        }
+
+        $("#sensor_type_menu").empty();
+        $('#sensor_type_menu').append(sensor_type_options);
+        $('#sensor_type_menu').trigger("change");
+        data = sensor_info;
+        $('.selectpicker').selectpicker('refresh');
     })
 
     $('#sensor_type_menu').change(function(){

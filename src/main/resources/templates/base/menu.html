@@ -3,7 +3,7 @@
        xmlns:th="http://www.thymeleaf.org"
        xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
-<div th:fragment="menu (one,two_1,two_2,three_1,three_2,four_1,four_2,four_3,four_4,five_1,five_2,six_1,six_2,six_3,seven_1,seven_2,seven_3,seven_4)"
+<div th:fragment="menu (one,two_1,two_2,three_1,three_2,four_1,four_2,four_3,four_4,five_1,five_2,six_1,six_2,six_3,seven_1,seven_2,seven_3,seven_4,eight_1,eight_2,eight_3)"
      id="cm-menu">
     <nav class="cm-navbar cm-navbar-primary">
         <div class="cm-flex"><a href="/" class="cm-logo"></a></div>
@@ -27,16 +27,16 @@
                         <a class="sf-database">监控数据<span class="caret"></span></a>
                         <ul>
                             <li th:class="${three_1}"><a href="/query-data">数据查询</a></li>
-                            <li th:class="${three_2}"><a href="/upload-data">数据导入</a></li>
+                            <li th:class="${three_2}"><a href="/upload-data">数据上传</a></li>
                         </ul>
                     </li>
                     <li class="cm-submenu" th:classappend="${four_1=='active' or four_2=='active' or four_3=='active' or four_4=='active'}? pre-open : ''">
                         <a class="sf-funnel">数据分析<span class="caret"></span></a>
                         <ul>
-                            <li th:class="${four_1}"><a href="overweight-analysis">超重分析</a></li>
+                            <li th:class="${four_1}"><a href="overweight-analysis">超重车分析</a></li>
                             <li th:class="${four_2}"><a href="damage-detection">损伤识别</a></li>
-                            <li th:class="${four_3}"><a href="association-analysis">关联分析</a></li>
-                            <li th:class="${four_4}"><a href="reliability-analysis">桥梁可靠度分析</a></li>
+                            <li th:class="${four_3}"><a href="association-analysis">关联性分析</a></li>
+                            <li th:class="${four_4}"><a href="reliability-analysis">可靠度分析</a></li>
                         </ul>
                     </li>
                     <li class="cm-submenu" th:classappend="${five_1=='active' or five_2=='active'}? pre-open : ''"
@@ -59,11 +59,20 @@
                         <ul>
                             <li th:class="${seven_1}"><a href="/watchpoint_para.html">桥梁参数管理</a></li>
                             <li th:if="${CurrentUser.userName} == 'admin'"
-                                th:class="${seven_2}"><a href="/log_option.html">日志选项</a></li>
-                            <li th:if="${CurrentUser.userName} == 'admin'"
                                 th:class="${seven_3}"><a href="/bridge_type.html">桥梁类型</a></li>
                             <li th:if="${CurrentUser.userName} == 'admin'"
                                 th:class="${seven_4}"><a href="/watchbox_type.html">测控箱类型</a></li>
+                            <li th:if="${CurrentUser.userName} == 'admin'"
+                                th:class="${seven_2}"><a href="/log_option.html">日志选项</a></li>
+                        </ul>
+                    </li>
+                    <li class="cm-submenu" th:classappend="${eight_1=='active' or eight_2=='active' or eight_3=='active'}? pre-open : ''">
+                        <a class="sf-mod">模型管理<span class="caret"></span></a>
+                        <ul>
+                            <li th:class="${eight_1}"><a href="/module_upload.html">模型上传</a></li>
+                            <li th:class="${eight_2}"><a href="/module_upload">模型导出</a></li>
+                            <li th:class="${eight_3}"><a href="/module_upload">模型删除</a></li>
+
                         </ul>
                     </li>
                     <li><a th:href="@{/logout}" class="sf-lock-open">退出</a></li>

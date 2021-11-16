@@ -111,12 +111,12 @@ function updateWatchPointGrid(bridge_id, section_id){
             }
         },
         columns: [
-//            {
-//                template:'<input type="checkbox" class="checkbox" name=box-"#: point_id #" value="#: point_id #" />',
-//                headerAttributes:{ style:"text-align:center"},
-//                attributes:{ class:"text-center" }
-//            },
-            {
+           {
+               template:'<input type="checkbox" class="checkbox" name=box-"#: point_id #" value="#: point_id #" />',
+               headerAttributes:{ style:"text-align:center"},
+               attributes:{ class:"text-center" },
+               width: '30px'
+           }, {
                 field: "bridge_name",
                 title: "桥梁名称",
                 headerAttributes:{ style:"text-align:center"},
@@ -156,6 +156,78 @@ function modifyWatchPointPara(watch_point_id) {
 
 //弹窗
 function showWatchPointParaDialog(title, operation_type, watch_point_id) {
+    var url = "/watch-point-para/info";
+    var params = {
+        "watch_point_id": watch_point_id
+    };
+    var response = webRequest(url, "GET", false, params);
+    var sc = "";
+
+    var bridge_type_name = "";
+
+    if (response.status == 0) {
+        var data = response.data;
+        if (data["sc"]) {
+            sc = data["sc"]
+            //alert(sc)
+        }
+    }
+
+    <!--尽管报错，但是不能删去-->
+    var content = '\
+        <div class="form-inline-custom">\
+            <label class="col-sm-3 control-label">测点的收缩徐变值(单位:Mpa)</label>\
+            <div class="col-sm-8"> \
+                <input type="text" class="form-control" id="sc" placeholder="请输入测点的收缩徐变值" value="' + sc + '"> \
+            </div>\
+            <span class="text-danger mt5 fl">*</span>\
+        </div> \
+        <br>\
+        ';
+
+    if (!isAdminRole(getUserRole())) {
+        showModalDialogWithoutOK(title, content, 605, 330);
+        $('div.form-inline-custom').find('input,select,textarea').attr('disabled', 'disabled');
+    } else {
+        showModalDialog(title, content, ok_callback, 605, 330);
+    }
+
+    //回调函数
+    function ok_callback() {
+        //必须参数
+        var sc_val = $('#sc').val();
+        //alert(sc_val)
+
+        if (!sc_val) {
+            showTransientDialog("必填项不能为空！");
+            return false;
+        } else {
+            if (legaldigit(sc_val))
+            {
+                showTransientDialog("输入的格式不是合法数字或超过超过范围！");
+                return false;
+            }
+            var url = '/watch-point-para/update';
+            var params = {
+                'sc': sc_val,
+                'watch_point_id':watch_point_id
+            };
+            var response = webRequest(url, 'POST', false, params);
+            if (response != null && response.status == 0) {
+                refreshData();
+                showTransientDialog("操作成功！");
+                return true;
+            } else {
+                showTransientDialog(response.msg);
+                return false;
+            }
+        }
+
+    }
+}
+
+//增加参数弹窗
+function addWatchPointParaDialog(title, operation_type, watch_point_id) {
     var url = "/watch-point-para/info";
     var params = {
         "watch_point_id": watch_point_id
@@ -498,6 +570,7 @@ function refreshData() {
     $watch_point_grid.data("kendoGrid").dataSource.read();
     $watch_point_grid.data("kendoGrid").refresh();
 }
+
 // 表格初始化
 $(function () {
     bridgeListDropdown();
@@ -505,6 +578,10 @@ $(function () {
     updateWatchPointGrid($('#dropdownMenu1').val(), $('#dropdownMenu2').val());
     //updatePointGrid($("#bridge_menu").val());
     updateBridgeParaGrid();
+
+    $('#add_para').click(function () {
+        showBridgeDialog('新增桥梁参数', 'create');
+    })
 });
 
 

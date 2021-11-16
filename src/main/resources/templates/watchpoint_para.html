@@ -26,7 +26,7 @@
 </head>
 <body class="cm-no-transition cm-1-navbar">
 
-<div id="cm-menu" th:replace="base/menu::menu (one,two_1,two_2,three_1,three_2,four_1,four_2,four_3,four_4,five_1,five_2,six_1,six_2,six_3,active,seven_2,seven_3,seven_4)"></div>
+<div id="cm-menu" th:include="base/menu::menu (one,two_1,two_2,three_1,three_2,four_1,four_2,four_3,four_4,five_1,five_2,six_1,six_2,six_3,active,seven_2,seven_3,seven_4,eight_1,eight_2,eight_3)"></div>
 
 <div th:replace="base/header::header"></div>
 
@@ -44,6 +44,17 @@
                 <select class="selectpicker" id="dropdownMenu2" th:attr="init-value=${section_id}"></select>
                 <br><br>
                 <div id="watch-point-grid"></div>
+                <div style="float:left;margin: 20px 0px 0px 0px">
+                    <!--add_para与js中的dom相对应-->
+                    <button id="add_para" type="button" style="margin:0em 1em 0em 0em"
+                            class="btn btn-l btn-danger">
+                        增加
+                    </button>
+                    <button id="delete_para" type="button" style="margin:0em 1em 0em 0em"
+                            class="btn btn-l btn-danger">
+                        删除
+                    </button>
+                </div>
             </div>
             <div class="panel-heading">
                 <h3 class="panel-title">

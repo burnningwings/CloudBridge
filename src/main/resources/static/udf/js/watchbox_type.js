@@ -146,10 +146,43 @@ function showBridgeDialog(title, operation_type, type_id) {
     }
 }
 
+function del_watchbox_type(){
+    console.clear();
+    var url = "/watchbox_type/delete";
+    obj = document.getElementsByName("system-checkbox");
+    var type_info = [];
+    for(k in obj){
+        if(obj[k].checked){
+            var type = {};
+            type.type_id = obj[k].value.toString();
+            type.type_name = $(obj[k]).closest("tr").find('td:nth-child(2)').text().toString();
+            console.log($(obj[k]).closest("tr").find('td:nth-child(2)').text());
+            type_info.push(type);
+        }
+    }
+    info = JSON.stringify(type_info);
+    var params = {
+        "typeInfo": info
+    };
+    var response = webRequest(url, "POST", false, params);
+
+    if (response != null && response.status == 0) {
+        refreshData();
+        showTransientDialog("操作成功！");
+        return true;
+    } else {
+        showTransientDialog(response.msg);
+        return false;
+    }
+}
+
 //初始化增加桥梁类型按钮事件
 $(function(){
     $('#add_watchbox_type').click(function () {
         showBridgeDialog('新增控制箱类型', 'create');
+    });
+    $('#delete_watchbox_type').click(function () {
+       del_watchbox_type();
     });
 })
 

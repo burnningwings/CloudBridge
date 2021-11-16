@@ -1,5 +1,6 @@
 package scut.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.log4j.Logger;
@@ -173,6 +174,127 @@ public class TypeControl {
         }
         return response.getHttpResponse();
     }
+
+    /**
+     * 删除指定桥梁类型信息
+     *
+     * @param
+     * @return
+     * @Author: liujun
+     */
+    @PreAuthorize("hasRole('ADMIN')")
+    @RequestMapping(value = "/bridge_type/delete", method = RequestMethod.POST, produces = "application/json")
+    public JSONObject deleteBridgeType(@RequestBody JSONObject reqMsg) {
+        long userOrganizationId = sysUserService.getUserOrganizationId();
+        HttpResponse response = new HttpResponse();
+        String typeInfo = reqMsg.getString("typeInfo");
+        JSONArray bridge_type = JSON.parseArray(typeInfo);
+        String bridge_type_name = reqMsg.getString("bridge_type_name");
+
+        Integer[] typeId = new Integer[bridge_type.size()];
+        //检查必须参数
+        if (bridge_type == null) {
+            response.setStatus(HttpResponse.FAIL_STATUS);
+            response.setCode(HttpResponse.FAIL_CODE);
+            response.setMsg("参数错误！");
+            return response.getHttpResponse();
+        }
+
+        String curTime = sdf.format(new Date());
+        JSONObject objects = new JSONObject();
+        for (int n = 0;n<bridge_type.size();n++){
+
+            JSONObject o = bridge_type.getJSONObject(n);
+            //删除数据语句
+            String del_sql = String.format("DELETE FROM bridge_type WHERE type_id=%d;",Integer.parseInt((String)o.get("type_id")));
+            //执行操作
+            int ret = 0;
+            if (del_sql != null) {
+                ret = baseDao.updateData(del_sql);
+                o.put("ret",String.valueOf(ret));
+            }
+
+            if (ret != 1) {
+                response.setStatus(HttpResponse.FAIL_STATUS);
+                response.setCode(HttpResponse.FAIL_CODE);
+                response.setMsg("操作失败！");
+            }
+        }
+        //操作写入日志
+        LogBase logbase = new LogBase();
+        boolean logoption = logbase.sys_logoption(23);
+        if (logoption) {
+
+            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String log_sql = LogBase.log_del_bridge_type(userDetails.getUsername(),
+                    bridge_type
+            );
+            logger.info(log_sql);
+            baseDao.updateData(log_sql);
+        }
+        return response.getHttpResponse();
+    }
+
+    /**
+     * 删除指定控制箱类型信息
+     *
+     * @param
+     * @return
+     * @Author: liujun
+     */
+    @PreAuthorize("hasRole('ADMIN')")
+    @RequestMapping(value = "/watchbox_type/delete", method = RequestMethod.POST, produces = "application/json")
+    public JSONObject deleteWatchBoxType(@RequestBody JSONObject reqMsg) {
+        long userOrganizationId = sysUserService.getUserOrganizationId();
+        HttpResponse response = new HttpResponse();
+        String typeInfo = reqMsg.getString("typeInfo");
+        JSONArray watchbox_type = JSON.parseArray(typeInfo);
+        String bridge_type_name = reqMsg.getString("bridge_type_name");
+
+        Integer[] typeId = new Integer[watchbox_type.size()];
+        //检查必须参数
+        if (watchbox_type == null) {
+            response.setStatus(HttpResponse.FAIL_STATUS);
+            response.setCode(HttpResponse.FAIL_CODE);
+            response.setMsg("参数错误！");
+            return response.getHttpResponse();
+        }
+
+        String curTime = sdf.format(new Date());
+        JSONObject objects = new JSONObject();
+        for (int n = 0;n<watchbox_type.size();n++){
+
+            JSONObject o = watchbox_type.getJSONObject(n);
+            //删除数据语句
+            String del_sql = String.format("DELETE FROM watch_box_type WHERE type_id=%d;",Integer.parseInt((String)o.get("type_id")));
+            //执行操作
+            int ret = 0;
+            if (del_sql != null) {
+                ret = baseDao.updateData(del_sql);
+                o.put("ret",String.valueOf(ret));
+            }
+
+            if (ret != 1) {
+                response.setStatus(HttpResponse.FAIL_STATUS);
+                response.setCode(HttpResponse.FAIL_CODE);
+                response.setMsg("操作失败！");
+            }
+        }
+        //操作写入日志
+        LogBase logbase = new LogBase();
+        boolean logoption = logbase.sys_logoption(23);
+        if (logoption) {
+
+            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String log_sql = LogBase.log_del_watchbox_type(userDetails.getUsername(),
+                    watchbox_type
+            );
+            logger.info(log_sql);
+            baseDao.updateData(log_sql);
+        }
+        return response.getHttpResponse();
+    }
+
 
     /**
      * 异步翻页

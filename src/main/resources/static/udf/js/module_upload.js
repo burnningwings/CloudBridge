@@ -12,7 +12,7 @@ function refreshData() {
 var sensor_map = {
     "加速度传感器": [
         {
-           // template:'<input type="checkbox" class="checkbox" name=sensordata-"#: sensor_id #" value="#: sensor_id #" />',
+            // template:'<input type="checkbox" class="checkbox" name=sensordata-"#: sensor_id #" value="#: sensor_id #" />',
             template:'<input type="checkbox" class="checkbox" name="sensordata" value="#: CLSJ #" />',
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
@@ -282,7 +282,7 @@ function modifyZXSensorData(sensor_id, clsj, clyb, xzyb, dz,clwd) {
 }
 
 function showJSDSensorDataDialog(title, operation_tpe, sensor_id,clsj,jsd,dy) {
-        var content = '\
+    var content = '\
              <div class="form-inline-custom"> \
                 <label class="col-sm-3 control-label">测量时间:</label>\
             <div class="col-sm-8"> \
@@ -309,7 +309,7 @@ function showJSDSensorDataDialog(title, operation_tpe, sensor_id,clsj,jsd,dy) {
         <br>\
         ';
     showModifyModalDialog(title, content, ok_callback, 605, 330);
-    
+
     function ok_callback() {
         var CLSJ = $("#CLSJ").val();
         var JSD = $("#JSD").val();
@@ -1093,437 +1093,171 @@ function showModifyModalDialog(title,custom_content,ok_callback){
 }
 
 function updateDropdownMenu1(response){
-    if(response!=null && response.status==0)
+    var data = null
+    var bridge_options = "";
+    var section_options = "";
+    var point_options = "";
+    var watch_box_options = "";
+    var sensor_options = "";
+    if(response!=null && response.status==0){
         data = response.data;
+        console.log(data)
+        bridge_options = bridge_options + "<option value='" + data["bridge_id"] + "'>" + data["bridge"][data["bridge_id"]] + "</option>";
+        for(var key in data["bridge"]){
+            if(key==data["bridge_id"]) continue;
+            bridge_options = bridge_options + "<option value='" + key + "'>" + data["bridge"][key] + "</option>";
+        }
+        for(var key in data["bridge_detail"]){
+            //watch_box_options = watch_box_options + "<option value='" + key + "'>" + data["bridge_detail"][key]["name"] + "</option>";
+            section_options = section_options + "<option value='" + key +"'>" + data["bridge_detail"][key]["name"] + "</option>"
+        }
+    }
+    $("#bridge_menu").empty();
+    $("#section_menu").empty();
+    $("#point_menu").empty();
+    $("#watch_box_menu").empty();
+    $("#sensor_menu").empty();
+
+    $("#bridge_menu").append(bridge_options);
+    $("#section_menu").append(section_options);
+    var point_selected = $("#section_menu").val();
+    if (point_selected && !(point_selected.match(/^\s*$/))){
+        var point_info = data["bridge_detail"][point_selected];
+        for (var key in point_info){
+            if(key == "name") continue;
+            point_options = point_options + "<option value='" + key +"'>" + point_info[key]["name"] + "</option>"
+        }
+    }
+    $("#point_menu").append(point_options);
+
+    var box_selected = $("#point_menu").val();
+    if (box_selected && !(box_selected.match(/^\s*$/))){
+        var box_info = data["bridge_detail"][point_selected][box_selected];
+        for(var key in box_info){
+            if(key == "name") continue;
+            watch_box_options = watch_box_options + "<option value='" + key + "'>" + box_info[key]["name"] + "</option>"
+        }
+    }
+    $("#watch_box_menu").append(watch_box_options);
+
+    var watch_box_selected = $("#watch_box_menu").val();
+    if(watch_box_selected && !(watch_box_selected.match(/^\s*$/))){
+        var sensor_info = data["bridge_detail"][point_selected][box_selected][watch_box_selected]["sensor"];
+        for(var key in sensor_info){
+            sensor_options = sensor_options + "<option value='" + (key + " - " + sensor_info[key]) + "'>" + sensor_info[key] + "</option>";
+        }
+    }
+    $("#sensor_menu").append(sensor_options);
+    $('.selectpicker').selectpicker('refresh');
+    console.log(data)
     return data;
 }
 
-//桥梁列表下拉框
-function bridgeListDropdown() {
-    var url = "/bridge/simple-list";
-    var response = webRequest(url, "GET", false, {});
-    var options = "<option value='0'>全部桥梁</option>";
-    if (response != null && response['data']) {
-        var data = response["data"];
-        for (var i = 0; i < data.length; i++) {
-            options += "<option value='" + data[i]['bridge_id'] + "'>" + data[i]['bridge_name'] + "</option>";
-        }
-    }
-    var $dropdownMenu1 = $("#bridge_menu");
-    $dropdownMenu1.append(options);
-    $dropdownMenu1.selectpicker('val', $dropdownMenu1.attr('init-value'));
-    $dropdownMenu1.on("changed.bs.select", function () {
-        sectionListDropdown($(this).val()); //更新截面列表
-        watchPointListDropdown($('#section_menu').val());
-        watchBoxListDropdown($(this).val());
-        sensorListDropdown($(this).val(),$('#section_menu').val(),$('#point_menu').val(),$('#watch_box_menu').val());
-    });
-}
-
-//截面列表下拉框
-function sectionListDropdown(bridgeId, init_value) {
-    var options = "<option value='0'>全部截面</option>";
-    if (bridgeId != 0) {  //为全部桥梁时不需要获取截面列表
-        var url = "/section/simple-list";
-        var response = webRequest(url, "GET", false, {'bridgeId': bridgeId});
-        if (response != null && response['data']) {
-            var data = response["data"];
-            for (var i = 0; i < data.length; i++) {
-                options += "<option value='" + data[i]['section_id'] + "'>" + data[i]['section_name'] + "</option>";
-            }
-        }
-    }
-    var $dropdownMenu2 = $("#section_menu");
-    $dropdownMenu2.empty();
-    $dropdownMenu2.append(options);
-    $dropdownMenu2.selectpicker('refresh');
-    if (init_value) { //有初始值 则进行赋值
-        $dropdownMenu2.selectpicker('val', init_value);
-    }
-
-    $dropdownMenu2.off('changed.bs.select').on("changed.bs.select", function () {
-        watchPointListDropdown($(this).val());
-        sensorListDropdown($('#bridge_menu').val(),$('#section_menu').val(),$('#point_menu').val(),$('#watch_box_menu').val());
-    });
-
-}
-
-//监测点下拉列表
-function watchPointListDropdown(sectionId, init_value) {
-    var options = "<option value='0'>全部监测点</option>";
-    if (sectionId != 0) {  //为全部截面时不需要获取监测点列表
-        var url = "/watch-point/simple-list";
-        var response = webRequest(url, "GET", false, {'sectionId': sectionId});
-        if (response != null && response['data']) {
-            var data = response["data"];
-            for (var i = 0; i < data.length; i++) {
-                options += "<option value='" + data[i]['watch_point_id'] + "'>" + data[i]['watch_point_name'] + "</option>";
-            }
-        }
-    }
-    var $dropdownMenu3 = $("#point_menu");
-    $dropdownMenu3.empty();
-    $dropdownMenu3.append(options);
-    $dropdownMenu3.selectpicker('refresh');
-    if (init_value) { //有初始值 则进行赋值
-        $dropdownMenu3.selectpicker('val', init_value);
-    }
-
-    $dropdownMenu3.off('changed.bs.select').on("changed.bs.select", function () {
-        sensorListDropdown($('#bridge_menu').val(),$('#section_menu').val(),$('#point_menu').val(),$('#watch_box_menu').val());
-    });
-}
-
-//控制箱下拉列表
-function watchBoxListDropdown(bridgeId, init_value) {
-    var options = "<option value='0'>全部控制箱</option>";
-    if (bridgeId != 0) {  //为全部桥梁时不需要获取控制箱列表
-        var url = "/watch-box/simple-list";
-        var response = webRequest(url, "GET", false, {'bridgeId': bridgeId});
-        if (response != null && response['data']) {
-            var data = response["data"];
-            for (var i = 0; i < data.length; i++) {
-                options += "<option value='" + data[i]['watch_box_id'] + "'>" + data[i]['watch_box_name'] + "</option>";
-            }
-        }
-    }
-    var $dropdownMenu4 = $("#watch_box_menu");
-    $dropdownMenu4.empty();
-    $dropdownMenu4.append(options);
-    $dropdownMenu4.selectpicker('refresh');
-    if (init_value) { //有初始值 则进行赋值
-        $dropdownMenu4.selectpicker('val', init_value);
-    }
-
-    $dropdownMenu4.off('changed.bs.select').on("changed.bs.select", function () {
-        sensorListDropdown($('#bridge_menu').val(),$('#section_menu').val(),$('#point_menu').val(),$('#watch_box_menu').val());
-    });
-}
-
-//传感器下拉列表
-function sensorListDropdown(bridge_id, section_id, watch_point_id, watch_box_id, init_value) {
-    // if (bridgeId != 0) {  //为全部桥梁时不需要获取传感列表
-    //     var url = "/sensor/list";
-    //     var response = webRequest(url, "GET", false, {
-    //         page: 0,
-    //         pageSize: 18446744073709551615,
-    //         bridgeId: bridge_id | 0,
-    //         sectionId: section_id | 0,
-    //         watchPointId: watch_point_id | 0,
-    //         watchBoxId: watch_box_id | 0
-    //     });
-    //     if (response != null && response['data']) {
-    //         var data = response["data"];
-    //         for (var i = 0; i < data.length; i++) {
-    //             options += "<option value='" + data[i]['section_id'] + "'>" + data[i]['section_name'] + "</option>";
-    //         }
-    //     }
-    // }
-    var url = "/sensor/list";
-    var response = webRequest(url, "GET", false, {
-        page: 1,
-        pageSize: 9223372036854770,
-        bridgeId: bridge_id | 0,
-        sectionId: section_id | 0,
-        watchPointId: watch_point_id | 0,
-        watchBoxId: watch_box_id | 0
-    });
-    if (response != null && response['data']) {
-        var data = response["data"];
-        var options = "<option value='0'>全部传感器</option>";
-        for (var i = 0; i < data.length; i++) {
-            options += "<option value='" + data[i]['sensor_id'] + "'>" + data[i]['sensor_number'] + "--" + data[i]['sensor_type_name'] + "</option>";
-        }
-    } else {
-        options += "<option value='0'>无</option>";
-    }
-    var $dropdownMenu2 = $("#sensor_menu");
-    $dropdownMenu2.empty();
-    $dropdownMenu2.append(options);
-    $dropdownMenu2.selectpicker('refresh');
-    if (init_value) { //有初始值 则进行赋值
-        $dropdownMenu2.selectpicker('val', init_value);
-    }
-
-}
-
 function updateDropdownMenu2(response){
-    // var data = null;
-    // var bridge_options = "";
-    // var section_options = "";//截面
-    // var point_options = "";//测点
-    // var watch_box_options = "";//检测箱
-    // var sensor_type_options = "";
-    // var metric_options = "";
-    // var sensor_options = "";
-    // var sensor_info = {};
-    // if(response!=null && response.status==0){
-    //     data = response.data;
-    //     console.log(data);
-    //     bridge_options = bridge_options + "<option value='" + data["bridge_id"] + "'>" + data["bridge"][data["bridge_id"]] + "</option>";
-    //     for(var key in data["bridge"]){
-    //         if(key==data["bridge_id"]) continue;
-    //         bridge_options = bridge_options + "<option value='" + key + "'>" + data["bridge"][key] + "</option>";
-    //     }
-    //
-    //     for(var key in data["bridge_detail"]){
-    //         section_options += '<option value="' + key + '">' + data["bridge_detail"][key]["name"] + "</option>";
-    //     }
-    //     $('#query_section_menu').empty();
-    //     $('#query_section_menu').append(section_options);
-    //
-    //     var section_selected = $('#query_section_menu').val();
-    //     for(var key in data["bridge_detail"][section_selected]){
-    //         if(key=="name") continue;
-    //         point_options += '<option value="' + key +'">' + data["bridge_detail"][section_selected][key]["name"] + "</option>";
-    //     }
-    //     $('#query_point_menu').empty();
-    //     $('#query_point_menu').append(point_options);
-    //
-    //     var point_selected = $('#query_point_menu').val();
-    //     for(var key in data["bridge_detail"][section_selected][point_selected]){
-    //         if(key=="name") continue;
-    //         watch_box_options = watch_box_options + "<option value='" + key + "'>" + data["bridge_detail"][section_selected][point_selected][key]["name"] + "</option>";
-    //     }
-    //     $('#query_box_menu').empty();
-    //     $('#query_box_menu').append(watch_box_options);
-    //
-    //     var box_selected = $('#query_box_menu').val();
-    //     var sensor_dict = data["bridge_detail"][section_selected][point_selected][box_selected]["sensor"];
-    //     for(var sensor_id in sensor_dict){
-    //         var sensor_name = sensor_dict[sensor_id];
-    //         var sensor_name_list = sensor_name.split(" - ");
-    //         var sensor_number = sensor_name_list[0];
-    //         var sensor_type = sensor_name_list[1];
-    //         if(sensor_info.hasOwnProperty(sensor_type)){
-    //             sensor_info[sensor_type].push([sensor_id,sensor_number]);
-    //         }else{
-    //             sensor_info[sensor_type] = [[sensor_id,sensor_number]];
-    //         }
-    //     }
-    //     // for(var key in data["bridge_detail"][section_selected][point_selected][box_selected]){
-    //     //     var sensor_dict = data["bridge_detail"][section_selected][point_selected][box_selected]["sensor"];
-    //     //     for(var sensor_id in sensor_dict){
-    //     //         var sensor_name = sensor_dict[sensor_id];
-    //     //         var sensor_name_list = sensor_name.split(" - ");
-    //     //         var sensor_number = sensor_name_list[0];
-    //     //         var sensor_type = sensor_name_list[1];
-    //     //         if(sensor_info.hasOwnProperty(sensor_type)){
-    //     //             sensor_info[sensor_type].push([sensor_id,sensor_number]);
-    //     //         }else{
-    //     //             sensor_info[sensor_type] = [[sensor_id,sensor_number]];
-    //     //         }
-    //     //     }
-    //     // }
-    //     // key为传感器类型
-    //     console.log(sensor_info)
-    //     for(var key in sensor_info){
-    //         sensor_type_options = sensor_type_options + "<option value='" + key + "'>" + key + "</option>";
-    //     }
-    // }
-    //
-    // $("#query_bridge_menu").empty();
-    // // $('#query_section_menu').empty();
-    // // $('#query_point_menu').empty();
-    // $("#query_sensor_type_menu").empty();
-    // $("#query_metric_menu").empty();
-    // $("#query_group_sensor_menu").empty();
-    //
-    // $("#query_bridge_menu").append(bridge_options);
-    // // $('#query_section_menu').append(section_options);
-    // // $('#query_point_menu').append(point_options);
-    // $("#query_sensor_type_menu").append(sensor_type_options);
-    // var sensor_type_selected = $("#query_sensor_type_menu").val();
-    // if(sensor_type_selected && !(sensor_type_selected.match(/^\s*$/))){
-    //     for(var key in sensor_metadata_map[sensor_type_selected]["data_schema"]){
-    //         if(key=="CLSJ") continue;
-    //         metric_options = metric_options + "<option value='" + key + "'>" + sensor_metrics_CN[key] + "</option>";
-    //     }
-    //     var sensor_list = sensor_info[sensor_type_selected];
-    //     for(var key in sensor_list){
-    //         sensor_options = sensor_options + "<option value='" + sensor_list[key][0] + "'>" + sensor_list[key][1] + "</option>";
-    //     }
-    // }
-    // $("#query_metric_menu").append(metric_options);
-    // $("#query_group_sensor_menu").append(sensor_options);
-    // if(sensor_list && sensor_list.length){
-    //     $("#query_group_sensor_menu").selectpicker('val', sensor_list[0][0]);
-    // }
-    // $('.selectpicker').selectpicker('refresh');
-    // console.log(sensor_info)
-    // return sensor_info;
-}
-
-//桥梁列表下拉框
-function queryBridgeListDropdown() {
-    var url = "/bridge/simple-list";
-    var response = webRequest(url, "GET", false, {});
-    var options = "<option value='0'>全部桥梁</option>";
-    if (response != null && response['data']) {
-        var data = response["data"];
-        for (var i = 0; i < data.length; i++) {
-            options += "<option value='" + data[i]['bridge_id'] + "'>" + data[i]['bridge_name'] + "</option>";
+    var data = null;
+    var bridge_options = "";
+    var section_options = "";//截面
+    var point_options = "";//测点
+    var watch_box_options = "";//检测箱
+    var sensor_type_options = "";
+    var metric_options = "";
+    var sensor_options = "";
+    var sensor_info = {};
+    if(response!=null && response.status==0){
+        data = response.data;
+        console.log(data);
+        bridge_options = bridge_options + "<option value='" + data["bridge_id"] + "'>" + data["bridge"][data["bridge_id"]] + "</option>";
+        for(var key in data["bridge"]){
+            if(key==data["bridge_id"]) continue;
+            bridge_options = bridge_options + "<option value='" + key + "'>" + data["bridge"][key] + "</option>";
         }
-    }
-    var $dropdownMenu1 = $("#query_bridge_menu");
-    $dropdownMenu1.append(options);
-    $dropdownMenu1.selectpicker('val', $dropdownMenu1.attr('init-value'));
-    $dropdownMenu1.on("changed.bs.select", function () {
-        querySectionListDropdown($(this).val()); //更新截面列表
-        queryWatchPointListDropdown($('#query_section_menu').val());
-        queryWatchBoxListDropdown($(this).val());
-        querySensorListDropdown($(this).val(),$('#query_section_menu').val(),$('#query_point_menu').val(),$('#query_box_menu').val());
-    });
-}
 
-//截面列表下拉框
-function querySectionListDropdown(bridgeId, init_value) {
-    var options = "<option value='0'>全部截面</option>";
-    if (bridgeId != 0) {  //为全部桥梁时不需要获取截面列表
-        var url = "/section/simple-list";
-        var response = webRequest(url, "GET", false, {'bridgeId': bridgeId});
-        if (response != null && response['data']) {
-            var data = response["data"];
-            for (var i = 0; i < data.length; i++) {
-                options += "<option value='" + data[i]['section_id'] + "'>" + data[i]['section_name'] + "</option>";
+        for(var key in data["bridge_detail"]){
+            section_options += '<option value="' + key + '">' + data["bridge_detail"][key]["name"] + "</option>";
+        }
+        $('#query_section_menu').empty();
+        $('#query_section_menu').append(section_options);
+
+        var section_selected = $('#query_section_menu').val();
+        for(var key in data["bridge_detail"][section_selected]){
+            if(key=="name") continue;
+            point_options += '<option value="' + key +'">' + data["bridge_detail"][section_selected][key]["name"] + "</option>";
+        }
+        $('#query_point_menu').empty();
+        $('#query_point_menu').append(point_options);
+
+        var point_selected = $('#query_point_menu').val();
+        for(var key in data["bridge_detail"][section_selected][point_selected]){
+            if(key=="name") continue;
+            watch_box_options = watch_box_options + "<option value='" + key + "'>" + data["bridge_detail"][section_selected][point_selected][key]["name"] + "</option>";
+        }
+        $('#query_box_menu').empty();
+        $('#query_box_menu').append(watch_box_options);
+
+        var box_selected = $('#query_box_menu').val();
+        var sensor_dict = data["bridge_detail"][section_selected][point_selected][box_selected]["sensor"];
+        for(var sensor_id in sensor_dict){
+            var sensor_name = sensor_dict[sensor_id];
+            var sensor_name_list = sensor_name.split(" - ");
+            var sensor_number = sensor_name_list[0];
+            var sensor_type = sensor_name_list[1];
+            if(sensor_info.hasOwnProperty(sensor_type)){
+                sensor_info[sensor_type].push([sensor_id,sensor_number]);
+            }else{
+                sensor_info[sensor_type] = [[sensor_id,sensor_number]];
             }
         }
-    }
-    var $dropdownMenu2 = $("#query_section_menu");
-    $dropdownMenu2.empty();
-    $dropdownMenu2.append(options);
-    $dropdownMenu2.selectpicker('refresh');
-    if (init_value) { //有初始值 则进行赋值
-        $dropdownMenu2.selectpicker('val', init_value);
-    }
-
-    $dropdownMenu2.off('changed.bs.select').on("changed.bs.select", function () {
-        queryWatchPointListDropdown($(this).val());
-        querySensorListDropdown($('#query_bridge_menu').val(),$('#query_section_menu').val(),$('#query_point_menu').val(),$('#query_box_menu').val());
-    });
-
-}
-
-//监测点下拉列表
-function queryWatchPointListDropdown(sectionId, init_value) {
-    var options = "<option value='0'>全部监测点</option>";
-    if (sectionId != 0) {  //为全部截面时不需要获取监测点列表
-        var url = "/watch-point/simple-list";
-        var response = webRequest(url, "GET", false, {'sectionId': sectionId});
-        if (response != null && response['data']) {
-            var data = response["data"];
-            for (var i = 0; i < data.length; i++) {
-                options += "<option value='" + data[i]['watch_point_id'] + "'>" + data[i]['watch_point_name'] + "</option>";
-            }
+        // for(var key in data["bridge_detail"][section_selected][point_selected][box_selected]){
+        //     var sensor_dict = data["bridge_detail"][section_selected][point_selected][box_selected]["sensor"];
+        //     for(var sensor_id in sensor_dict){
+        //         var sensor_name = sensor_dict[sensor_id];
+        //         var sensor_name_list = sensor_name.split(" - ");
+        //         var sensor_number = sensor_name_list[0];
+        //         var sensor_type = sensor_name_list[1];
+        //         if(sensor_info.hasOwnProperty(sensor_type)){
+        //             sensor_info[sensor_type].push([sensor_id,sensor_number]);
+        //         }else{
+        //             sensor_info[sensor_type] = [[sensor_id,sensor_number]];
+        //         }
+        //     }
+        // }
+        // key为传感器类型
+        console.log(sensor_info)
+        for(var key in sensor_info){
+            sensor_type_options = sensor_type_options + "<option value='" + key + "'>" + key + "</option>";
         }
     }
-    var $dropdownMenu3 = $("#query_point_menu");
-    $dropdownMenu3.empty();
-    $dropdownMenu3.append(options);
-    $dropdownMenu3.selectpicker('refresh');
-    if (init_value) { //有初始值 则进行赋值
-        $dropdownMenu3.selectpicker('val', init_value);
-    }
 
-    $dropdownMenu3.off('changed.bs.select').on("changed.bs.select", function () {
-        querySensorListDropdown($('#query_bridge_menu').val(),$('#query_section_menu').val(),$('#query_point_menu').val(),$('#query_box_menu').val());
-    });
-}
+    $("#query_bridge_menu").empty();
+    // $('#query_section_menu').empty();
+    // $('#query_point_menu').empty();
+    $("#query_sensor_type_menu").empty();
+    $("#query_metric_menu").empty();
+    $("#query_group_sensor_menu").empty();
 
-//控制箱下拉列表
-function queryWatchBoxListDropdown(bridgeId, init_value) {
-    var options = "<option value='0'>全部控制箱</option>";
-    if (bridgeId != 0) {  //为全部桥梁时不需要获取控制箱列表
-        var url = "/watch-box/simple-list";
-        var response = webRequest(url, "GET", false, {'bridgeId': bridgeId});
-        if (response != null && response['data']) {
-            var data = response["data"];
-            for (var i = 0; i < data.length; i++) {
-                options += "<option value='" + data[i]['watch_box_id'] + "'>" + data[i]['watch_box_name'] + "</option>";
-            }
+    $("#query_bridge_menu").append(bridge_options);
+    // $('#query_section_menu').append(section_options);
+    // $('#query_point_menu').append(point_options);
+    $("#query_sensor_type_menu").append(sensor_type_options);
+    var sensor_type_selected = $("#query_sensor_type_menu").val();
+    if(sensor_type_selected && !(sensor_type_selected.match(/^\s*$/))){
+        for(var key in sensor_metadata_map[sensor_type_selected]["data_schema"]){
+            if(key=="CLSJ") continue;
+            metric_options = metric_options + "<option value='" + key + "'>" + sensor_metrics_CN[key] + "</option>";
+        }
+        var sensor_list = sensor_info[sensor_type_selected];
+        for(var key in sensor_list){
+            sensor_options = sensor_options + "<option value='" + sensor_list[key][0] + "'>" + sensor_list[key][1] + "</option>";
         }
     }
-    var $dropdownMenu4 = $("#query_box_menu");
-    $dropdownMenu4.empty();
-    $dropdownMenu4.append(options);
-    $dropdownMenu4.selectpicker('refresh');
-    if (init_value) { //有初始值 则进行赋值
-        $dropdownMenu4.selectpicker('val', init_value);
+    $("#query_metric_menu").append(metric_options);
+    $("#query_group_sensor_menu").append(sensor_options);
+    if(sensor_list && sensor_list.length){
+        $("#query_group_sensor_menu").selectpicker('val', sensor_list[0][0]);
     }
-
-    $dropdownMenu4.off('changed.bs.select').on("changed.bs.select", function () {
-        querySensorListDropdown($('#query_bridge_menu').val(),$('#query_section_menu').val(),$('#query_point_menu').val(),$('#query_box_menu').val());
-    });
-}
-
-//传感器相关下拉列表
-function querySensorListDropdown(bridge_id, section_id, watch_point_id, watch_box_id, init_value) {
-    // if (bridgeId != 0) {  //为全部桥梁时不需要获取传感列表
-    //     var url = "/sensor/list";
-    //     var response = webRequest(url, "GET", false, {
-    //         page: 0,
-    //         pageSize: 18446744073709551615,
-    //         bridgeId: bridge_id | 0,
-    //         sectionId: section_id | 0,
-    //         watchPointId: watch_point_id | 0,
-    //         watchBoxId: watch_box_id | 0
-    //     });
-    //     if (response != null && response['data']) {
-    //         var data = response["data"];
-    //         for (var i = 0; i < data.length; i++) {
-    //             options += "<option value='" + data[i]['section_id'] + "'>" + data[i]['section_name'] + "</option>";
-    //         }
-    //     }
-    // }
-    var url = "/sensor/list";
-    var response = webRequest(url, "GET", false, {
-        page: 1,
-        pageSize: 9223372036854770,
-        bridgeId: bridge_id | 0,
-        sectionId: section_id | 0,
-        watchPointId: watch_point_id | 0,
-        watchBoxId: watch_box_id | 0
-    });
-    if (response != null && response['data']) {
-        var data = response["data"];
-        var options = "<option value='0'>全部传感器</option>";
-        for (var i = 0; i < data.length; i++) {
-            options += "<option value='" + data[i]['sensor_id'] + "'>" + data[i]['sensor_number'] + "--" + data[i]['sensor_type_name'] + "</option>";
-        }
-    } else {
-        options += "<option value='0'>无</option>";
-    }
-    var $dropdownMenu2 = $("#query_sensor_type_menu");
-    $dropdownMenu2.empty();
-    $dropdownMenu2.append(options);
-    metricDropdowwn($('#query_sensor_type_menu').children('option:selected').text().split(" - ")[1])
-    $dropdownMenu2.selectpicker('refresh');
-    if (init_value) { //有初始值 则进行赋值
-        $dropdownMenu2.selectpicker('val', init_value);
-    }
-}
-
-//数据类型下拉框
-function metricDropdowwn(sensor_name) {
-    console.clear()
-    console.log(sensor_name)
-    var metric_options = ""
-    if(sensor_name==null){
-        metric_options += "<option value='0'>请先选择传感器</option>"
-        $('#query_metric_menu').empty();
-        $('#query_metric_menu').append(metric_options);
-        $('.selectpicker').selectpicker('refresh');
-        return;
-    }
-
-    for(var key in sensor_metadata_map[sensor_name]["data_schema"]){
-        if(key=="CLSJ") continue;
-        metric_options = metric_options + "<option value='" + key + "'>" + sensor_metrics_CN[key] + "</option>";
-    }
-    $('#query_metric_menu').empty();
-    $('#query_metric_menu').append(metric_options);
     $('.selectpicker').selectpicker('refresh');
-
+    console.log(sensor_info)
+    return sensor_info;
 }
 
 // 其它初始化
@@ -1533,116 +1267,62 @@ $(function () {
     // 表格操作
     var url = "/query-data/dropdown";
     var response = webRequest(url,"GET",false,{"bridge_id":"all"})
-    // var data1 = updateDropdownMenu1(response);
+    var data1 = updateDropdownMenu1(response);
 
     // begin
     //初始化表格
     // updateGrid($("#bridge_menu").val(),$("#watch_box_menu").val(),$("#sensor_menu").val());
     // end
 
-    bridgeListDropdown();
-    sectionListDropdown($('#bridge_menu').val(), $("#section_menu").attr('init-value'));
-    watchPointListDropdown($('#section_menu').val(), $("#point_menu").attr('init-value'));
-    watchBoxListDropdown($('#bridge_menu').val(), $("#watch_box_menu").attr('init-value'));
-    sensorListDropdown($('#bridge_menu').val(), $('#section_menu').val(), $('#point_menu').val(), $('#watch_box_menu').val())
+    $('#bridge_menu').change(function(){
+        var id = $(this).children('option:selected').val();
+        var url = "/query-data/dropdown";
+        var response = webRequest(url,"GET",false,{"bridge_id":id})
+        data1 = updateDropdownMenu1(response);
+    })
 
-    queryBridgeListDropdown();
-    querySectionListDropdown($('#query_bridge_menu').val(), $("#query_section_menu").attr('init-value'));
-    queryWatchPointListDropdown($('#query_section_menu').val(), $("#querypoint_menu").attr('init-value'));
-    queryWatchBoxListDropdown($('#query_bridge_menu').val(), $("#query_box_menu").attr('init-value'));
-    querySensorListDropdown($('#query_bridge_menu').val(), $('#query_section_menu').val(), $('#query_point_menu').val(), $('#query_box_menu').val())
+    $('#section_menu').change(function(){
+        var id = $(this).children('option:selected').val();
+        var point_info = data1["bridge_detail"][id];
+        var point_option = "";
+        for(var key in point_info){
+            if(key == "name") continue;
+            point_option = point_option + "<option value='" + key + "'>" + point_info[key]["name"] + "</option>"
+        }
+        $("#point_menu").empty();
+        $("#point_menu").append(point_option);
+        $("#point_menu").trigger("change");
+        $('.selectpicker').selectpicker('refresh');
+    })
 
-    //选择桥梁后-截面、监测点和控制箱列表联动
-    $('#bridge_menu').on('change', function () {
-        //截面列表联动
-        var section_options = "";
-        if ($(this).val()) {
-            var url = "/section/simple-list";
-            var response = webRequest(url, 'GET', false, {'bridgeId': $(this).val()});
-            var section_list = response['data'];//格式：[{'section_id':1,'section_name':''},{...}]
-            if (section_list) {
-                section_options += "<option value='0'>全部截面</option>";
-                for (var i = 0; i < section_list.length; i++) {
-                    section_options += '<option value="' + section_list[i]['section_id'] + '">' + section_list[i]['section_name'] + '</option>'
-                }
-            } else {
-                section_options += "<option value='0'>无</option>";
-            }
-        }
-        $('#section_menu').empty();
-        $('#section_menu').append(section_options);
-        //监测点列表联动
-        var watch_point_options = "";
-        if ($('#section_menu').val()) {
-            url = "/watch-point/simple-list";
-            response = webRequest(url, 'GET', false, {'sectionId': $('#section_menu').val()});
-            var watch_point_list = response['data'];
-            if (watch_point_list) {
-                watch_point_options += "<option value='0'>全部监测点</option>";
-                for (i = 0; i < watch_point_list.length; i++) {
-                    watch_point_options += '<option value="' + watch_point_list[i]['watch_point_id'] + '">' + watch_point_list[i]['watch_point_name'] + '</option>'
-                }
-            } else {
-                watch_point_options += "<option value='0'>无</option>";
-            }
-        }
-        $('#point_menu').empty();
-        $('#point_menu').append(watch_point_options);
-        //控制箱列表联动
+    $('#point_menu').change(function(){
+        var section_id = $("#section_menu").children('option:selected').val();
+        var id = $(this).children('option:selected').val();
+        var watch_box_info = data1["bridge_detail"][section_id][id];
         var watch_box_options = "";
-        if ($(this).val()) {
-            url = "/watch-box/simple-list";
-            response = webRequest(url, 'GET', false, {'bridgeId': $(this).val()});
-            var watch_box_list = response['data'];
-            if (watch_box_list) {
-                watch_box_options += "<option value='0'>全部控制箱</option>";
-                for (i = 0; i < watch_box_list.length; i++) {
-                    watch_box_options += '<option value="' + watch_box_list[i]['watch_box_id'] + '">' + watch_box_list[i]['watch_box_name'] + '</option>'
-                }
-            } else {
-                watch_box_options += "<option value='0'>无</option>";
-            }
+        for(var key in watch_box_info){
+            if(key == "name") continue;
+            watch_box_options = watch_box_options + "<option value='" + key + "'>" + watch_box_info[key]["name"] + "</option>"
         }
-        $('#watch_box_menu').empty();
-        $('#watch_box_menu').append(watch_box_options);
-        //传感器下拉框联动
-        sensorListDropdown($(this).val(),$('#section_menu').val(),$('#point_menu').val(),$('#watch_box_menu').val());
+        $("#watch_box_menu").empty();
+        $("#watch_box_menu").append(watch_box_options);
+        $("#watch_box_menu").trigger("change");
         $('.selectpicker').selectpicker('refresh');
-    });
-    //选择截面后-监测点列表联动
-    $('#section_menu').on('change', function () {
-        var watch_point_options = "";
-        if ($(this).val()) {
-            var url = "/watch-point/simple-list";
-            var response = webRequest(url, 'GET', false, {'sectionId': $(this).val()});
-            var watch_point_list = response['data'];
-            if (watch_point_list) {
-                watch_point_options += "<option value='0'>全部监测点</option>";
-                for (i = 0; i < watch_point_list.length; i++) {
-                    watch_point_options += '<option value="' + watch_point_list[i]['watch_point_id'] + '">' + watch_point_list[i]['watch_point_name'] + '</option>'
-                }
-            } else {
-                watch_point_options += "<option value='0'>无</option>";
-            }
+    })
+
+    $('#watch_box_menu').change(function(){
+        var section_id = $('#section_menu').children('option:selected').val();
+        var point_id = $('#point_menu').children('option:selected').val();
+        var id = $(this).children('option:selected').val();
+        var sensor_info = data1["bridge_detail"][section_id][point_id][id]["sensor"];
+        var sensor_options = "";
+        for(var key in sensor_info){
+            sensor_options = sensor_options + "<option value='" + (key + " - " + sensor_info[key]) + "'>" + sensor_info[key] + "</option>";
         }
-        $('#point_menu').empty();
-        $('#point_menu').append(watch_point_options);
-        //传感器下拉框联动
-        sensorListDropdown($('#bridge_menu').val(),$('#section_menu').val(),$('#point_menu').val(),$('#watch_box_menu').val());
+        $("#sensor_menu").empty();
+        $("#sensor_menu").append(sensor_options);
         $('.selectpicker').selectpicker('refresh');
-    });
-    //选择测点后，传感器联动
-    $('#point_menu').on('change',function () {
-        //传感器下拉框联动
-        sensorListDropdown($('#bridge_menu').val(),$('#section_menu').val(),$('#point_menu').val(),$('#watch_box_menu').val());
-        $('.selectpicker').selectpicker('refresh');
-    });
-    //选择监测箱后传感器联动
-    $('#watch_box_menu').on('change',function (){
-        //传感器下拉框联动
-        sensorListDropdown($('#bridge_menu').val(),$('#section_menu').val(),$('#point_menu').val(),$('#watch_box_menu').val());
-        $('.selectpicker').selectpicker('refresh');
-    });
+    })
 
     // 点击查询
     $("#query_grid_btn").click(function(){
@@ -1737,186 +1417,91 @@ $(function () {
 
     var data2 = updateDropdownMenu2(response);
     var data_menu2 = response.data;
-    // $('#query_bridge_menu').change(function(){
-    //     var id = $(this).children('option:selected').val();
-    //     var url = "/query-data/dropdown";
-    //     var response = webRequest(url,"GET",false,{"bridge_id":id})
-    //     data2 = updateDropdownMenu2(response);
-    //     data_menu2 = response.data;
-    // })
-    //
-    // $('#query_section_menu').change(function(){
-    //     var section_selected = $(this).children('option:selected').val();
-    //     var point_options = "";
-    //     for (var key in data_menu2["bridge_detail"][section_selected]){
-    //         if(key=="name") continue;
-    //         point_options = point_options + "<option value='" + key + "'>" + data_menu2["bridge_detail"][section_selected][key]["name"] + "</option>";
-    //     }
-    //     $('#query_point_menu').empty();
-    //     $('#query_point_menu').append(point_options);
-    //     $('#query_point_menu').trigger("change");
-    //     $('.selectpicker').selectpicker('refresh');
-    // })
-    //
-    // $('#query_point_menu').change(function(){
-    //     var section_selected = $("#query_section_menu").children('option:selected').val();
-    //     var point_selected = $(this).children('option:selected').val();
-    //     var box_optioins = "";
-    //     for (var key in data_menu2["bridge_detail"][section_selected][point_selected]){
-    //         if(key == "name") continue;
-    //         box_optioins += '<option value="' + key + '">' + data_menu2["bridge_detail"][section_selected][point_selected][key]["name"] + "</option>";
-    //     }
-    //     $("#query_box_menu").empty();
-    //     $("#query_box_menu").append(box_optioins);
-    //     $('#query_box_menu').trigger("change");
-    //     $('.selectpicker').selectpicker('refresh');
-    // })
-    //
-    // $('#query_box_menu').change(function(){
-    //     var section_selected = $('#query_section_menu').children('option:selected').val();
-    //     var point_selected = $('#query_point_menu').children('option:selected').val();
-    //     var box_selected = $(this).children('option:selected').val();
-    //     console.clear();
-    //     console.log(data_menu2);
-    //     var sensor_dict = data_menu2["bridge_detail"][section_selected][point_selected][box_selected]["sensor"];
-    //     var sensor_info = {};
-    //     var sensor_type_options = "";
-    //     for(var sensor_id in sensor_dict){
-    //         var sensor_name = sensor_dict[sensor_id];
-    //         var sensor_name_list = sensor_name.split(" - ");
-    //         var sensor_number = sensor_name_list[0];
-    //         var sensor_type = sensor_name_list[1];
-    //         if(sensor_info.hasOwnProperty(sensor_type)){
-    //             sensor_info[sensor_type].push([sensor_id,sensor_number]);
-    //         }else{
-    //             sensor_info[sensor_type] = [[sensor_id,sensor_number]];
-    //         }
-    //     }
-    //     for(var key in sensor_info){
-    //         sensor_type_options = sensor_type_options + "<option value='" + key + "'>" + key + "</option>";
-    //     }
-    //
-    //     $("#query_sensor_type_menu").empty();
-    //     $('#query_sensor_type_menu').append(sensor_type_options);
-    //     data2 = sensor_info;
-    //     $('#query_sensor_type_menu').trigger("change");
-    //     $('.selectpicker').selectpicker('refresh');
-    // })
-    //
-    // $('#query_sensor_type_menu').change(function(){
-    //     var sensor_type_selected = $(this).children('option:selected').val();
-    //     var metric_options = ""
-    //     var sensor_options = "";
-    //     for(var key in sensor_metadata_map[sensor_type_selected]["data_schema"]){
-    //         if(key=="CLSJ") continue;
-    //         metric_options = metric_options + "<option value='" + key + "'>" + sensor_metrics_CN[key] + "</option>";
-    //     }
-    //     var sensor_list = data2[sensor_type_selected];
-    //     for(var key in sensor_list){
-    //         sensor_options = sensor_options + "<option value='" + sensor_list[key][0] + "'>" + sensor_list[key][1] + "</option>";
-    //     }
-    //     $("#query_metric_menu").empty();
-    //     $("#query_group_sensor_menu").empty();
-    //     $("#query_metric_menu").append(metric_options);
-    //     $("#query_group_sensor_menu").append(sensor_options);
-    //     if(sensor_list.length){
-    //         $("#query_group_sensor_menu").selectpicker('val', sensor_list[0][0]);
-    //     }
-    //     $('.selectpicker').selectpicker('refresh');
-    // })
-    //选择桥梁后-截面、监测点和控制箱列表联动
-    $('#query_bridge_menu').on('change', function () {
-        //截面列表联动
-        var section_options = "";
-        if ($(this).val()) {
-            var url = "/section/simple-list";
-            var response = webRequest(url, 'GET', false, {'bridgeId': $(this).val()});
-            var section_list = response['data'];//格式：[{'section_id':1,'section_name':''},{...}]
-            if (section_list) {
-                section_options += "<option value='0'>全部截面</option>";
-                for (var i = 0; i < section_list.length; i++) {
-                    section_options += '<option value="' + section_list[i]['section_id'] + '">' + section_list[i]['section_name'] + '</option>'
-                }
-            } else {
-                section_options += "<option value='0'>无</option>";
-            }
-        }
-        $('#query_section_menu').empty();
-        $('#query_section_menu').append(section_options);
-        //监测点列表联动
-        var watch_point_options = "";
-        if ($('#query_section_menu').val()) {
-            url = "/watch-point/simple-list";
-            response = webRequest(url, 'GET', false, {'sectionId': $('#query_section_menu').val()});
-            var watch_point_list = response['data'];
-            if (watch_point_list) {
-                watch_point_options += "<option value='0'>全部监测点</option>";
-                for (i = 0; i < watch_point_list.length; i++) {
-                    watch_point_options += '<option value="' + watch_point_list[i]['watch_point_id'] + '">' + watch_point_list[i]['watch_point_name'] + '</option>'
-                }
-            } else {
-                watch_point_options += "<option value='0'>无</option>";
-            }
+    $('#query_bridge_menu').change(function(){
+        var id = $(this).children('option:selected').val();
+        var url = "/query-data/dropdown";
+        var response = webRequest(url,"GET",false,{"bridge_id":id})
+        data2 = updateDropdownMenu2(response);
+        data_menu2 = response.data;
+    })
+
+    $('#query_section_menu').change(function(){
+        var section_selected = $(this).children('option:selected').val();
+        var point_options = "";
+        for (var key in data_menu2["bridge_detail"][section_selected]){
+            if(key=="name") continue;
+            point_options = point_options + "<option value='" + key + "'>" + data_menu2["bridge_detail"][section_selected][key]["name"] + "</option>";
         }
         $('#query_point_menu').empty();
-        $('#query_point_menu').append(watch_point_options);
-        //控制箱列表联动
-        var watch_box_options = "";
-        if ($(this).val()) {
-            url = "/watch-box/simple-list";
-            response = webRequest(url, 'GET', false, {'bridgeId': $(this).val()});
-            var watch_box_list = response['data'];
-            if (watch_box_list) {
-                watch_box_options += "<option value='0'>全部控制箱</option>";
-                for (i = 0; i < watch_box_list.length; i++) {
-                    watch_box_options += '<option value="' + watch_box_list[i]['watch_box_id'] + '">' + watch_box_list[i]['watch_box_name'] + '</option>'
-                }
-            } else {
-                watch_box_options += "<option value='0'>无</option>";
+        $('#query_point_menu').append(point_options);
+        $('#query_point_menu').trigger("change");
+        $('.selectpicker').selectpicker('refresh');
+    })
+
+    $('#query_point_menu').change(function(){
+        var section_selected = $("#query_section_menu").children('option:selected').val();
+        var point_selected = $(this).children('option:selected').val();
+        var box_optioins = "";
+        for (var key in data_menu2["bridge_detail"][section_selected][point_selected]){
+            if(key == "name") continue;
+            box_optioins += '<option value="' + key + '">' + data_menu2["bridge_detail"][section_selected][point_selected][key]["name"] + "</option>";
+        }
+        $("#query_box_menu").empty();
+        $("#query_box_menu").append(box_optioins);
+        $('#query_box_menu').trigger("change");
+        $('.selectpicker').selectpicker('refresh');
+    })
+
+    $('#query_box_menu').change(function(){
+        var section_selected = $('#query_section_menu').children('option:selected').val();
+        var point_selected = $('#query_point_menu').children('option:selected').val();
+        var box_selected = $(this).children('option:selected').val();
+        console.clear();
+        console.log(data_menu2);
+        var sensor_dict = data_menu2["bridge_detail"][section_selected][point_selected][box_selected]["sensor"];
+        var sensor_info = {};
+        var sensor_type_options = "";
+        for(var sensor_id in sensor_dict){
+            var sensor_name = sensor_dict[sensor_id];
+            var sensor_name_list = sensor_name.split(" - ");
+            var sensor_number = sensor_name_list[0];
+            var sensor_type = sensor_name_list[1];
+            if(sensor_info.hasOwnProperty(sensor_type)){
+                sensor_info[sensor_type].push([sensor_id,sensor_number]);
+            }else{
+                sensor_info[sensor_type] = [[sensor_id,sensor_number]];
             }
         }
-        $('#query_box_menu').empty();
-        $('#query_box_menu').append(watch_box_options);
-        //传感器下拉框联动
-        sensorListDropdown($(this).val(),$('#query_section_menu').val(),$('#query_point_menu').val(),$('#query_box_menu').val());
-        $('.selectpicker').selectpicker('refresh');
-    });
-    //选择截面后-监测点列表联动
-    $('#query_section_menu').on('change', function () {
-        var watch_point_options = "";
-        if ($(this).val()) {
-            var url = "/watch-point/simple-list";
-            var response = webRequest(url, 'GET', false, {'sectionId': $(this).val()});
-            var watch_point_list = response['data'];
-            if (watch_point_list) {
-                watch_point_options += "<option value='0'>全部监测点</option>";
-                for (i = 0; i < watch_point_list.length; i++) {
-                    watch_point_options += '<option value="' + watch_point_list[i]['watch_point_id'] + '">' + watch_point_list[i]['watch_point_name'] + '</option>'
-                }
-            } else {
-                watch_point_options += "<option value='0'>无</option>";
-            }
+        for(var key in sensor_info){
+            sensor_type_options = sensor_type_options + "<option value='" + key + "'>" + key + "</option>";
         }
-        $('#query_point_menu').empty();
-        $('#query_point_menu').append(watch_point_options);
-        //传感器下拉框联动
-        sensorListDropdown($('#query_bridge_menu').val(),$('#query_section_menu').val(),$('#query_point_menu').val(),$('#query_box_menu').val());
+
+        $("#query_sensor_type_menu").empty();
+        $('#query_sensor_type_menu').append(sensor_type_options);
+        data2 = sensor_info;
+        $('#query_sensor_type_menu').trigger("change");
         $('.selectpicker').selectpicker('refresh');
-    });
-    //选择测点后，传感器联动
-    $('#query_point_menu').on('change',function () {
-        //传感器下拉框联动
-        sensorListDropdown($('#query_bridge_menu').val(),$('#query_section_menu').val(),$('#query_point_menu').val(),$('#query_box_menu').val());
-        $('.selectpicker').selectpicker('refresh');
-    });
-    //选择监测箱后传感器联动
-    $('#query_box_menu').on('change',function (){
-        //传感器下拉框联动
-        sensorListDropdown($('#query_bridge_menu').val(),$('#query_section_menu').val(),$('#query_point_menu').val(),$('#query_box_menu').val());
-        $('.selectpicker').selectpicker('refresh');
-    });
-    $('#query_sensor_type_menu').on('change',function () {
-        metricDropdowwn($(this).children('option:selected').text().split("--")[1]);
+    })
+
+    $('#query_sensor_type_menu').change(function(){
+        var sensor_type_selected = $(this).children('option:selected').val();
+        var metric_options = ""
+        var sensor_options = "";
+        for(var key in sensor_metadata_map[sensor_type_selected]["data_schema"]){
+            if(key=="CLSJ") continue;
+            metric_options = metric_options + "<option value='" + key + "'>" + sensor_metrics_CN[key] + "</option>";
+        }
+        var sensor_list = data2[sensor_type_selected];
+        for(var key in sensor_list){
+            sensor_options = sensor_options + "<option value='" + sensor_list[key][0] + "'>" + sensor_list[key][1] + "</option>";
+        }
+        $("#query_metric_menu").empty();
+        $("#query_group_sensor_menu").empty();
+        $("#query_metric_menu").append(metric_options);
+        $("#query_group_sensor_menu").append(sensor_options);
+        if(sensor_list.length){
+            $("#query_group_sensor_menu").selectpicker('val', sensor_list[0][0]);
+        }
         $('.selectpicker').selectpicker('refresh');
     })
 

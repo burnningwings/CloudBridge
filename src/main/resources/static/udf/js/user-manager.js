@@ -124,7 +124,8 @@ function showUserCreateDialog(title) {
     if (response.status == 0) {
         var data = response.data;
         for (var key in data["rolelist"]) {
-            role_option = role_option + "<input type='checkbox' name='cuitem' value='" + key + "'/> " + data["rolelist"][key] + "<br/>";
+            var role = data["rolelist"][key]=="ROLE_ADMIN"?"管理员":"普通用户";
+            role_option = role_option + "<input type='checkbox' name='cuitem' value='" + key + "'/> " + role + "<br/>";
         }
     }
 
@@ -278,15 +279,16 @@ function showUserUpdateDialog(userid,title){
         var used;
         for (var key in data["rolelist"]) {
             used = false;
+            var role_update = data["rolelist"][key]=="ROLE_ADMIN"?"管理员":"普通用户";
             for (var ukey in data["usedrole"]) {
                 if (key == ukey) {
-                    role_option = role_option + "<input type='checkbox' name='uuitem' checked='true' value='" + key + "'/> " + data["rolelist"][key] + "<br/>";
+                    role_option = role_option + "<input type='checkbox' name='uuitem' checked='true' value='" + key + "'/> " + role_update + "<br/>";
                     used = true;
                     break;
                 }
             }
             if (!used) {
-                role_option = role_option + "<input type='checkbox' name='uuitem' value='" + key + "'/> " + data["rolelist"][key] + "<br/>";
+                role_option = role_option + "<input type='checkbox' name='uuitem' value='" + key + "'/> " + role_update + "<br/>";
             }
         }
 
@@ -521,12 +523,14 @@ function searchRole(userid){
             {
                 field: "rolename",
                 title: "角色名称",
+                template: '#if(rolename == "ROLE_ADMIN") {# ' + '管理员'+ '# } else { #' + '普通用户' + '# } #',
                 headerAttributes:{ style:"text-align:center"},
                 attributes:{ class:"text-center" }
             },
             {
                 field: "roledescription",
                 title: "角色描述",
+                template: '#if(roledescription == "super admin") {# ' + '超级管理员'+ '# } else { #' + '普通用户' + '# } #',
                 headerAttributes:{ style:"text-align:center"},
                 attributes:{ class:"text-center" }
             }

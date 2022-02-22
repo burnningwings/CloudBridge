@@ -64,17 +64,32 @@ public class CommandLineExecutor implements Executor {
     public LogEntity execute_analysis() {
         LogEntity logEntity = new LogEntity();
         try{
+            System.out.println("start analyse");
             Process process = Runtime.getRuntime().exec(execStr);
+
+            process.getOutputStream().close();
+            process.getErrorStream().close();
             InputStream stdin = process.getInputStream();
             InputStreamReader isr = new InputStreamReader(stdin);
             BufferedReader br = new BufferedReader(isr);
             String line = "";
-            this.status = Constants.RUNNING;
-            AnalysisMessage.getInstance().update(key,null,null,status,null,logEntity.toString());
             while ((line = br.readLine()) != null) {
                 logEntity.add(line);
+                System.out.println(line);
             }
+            this.status = Constants.RUNNING;
+            AnalysisMessage.getInstance().update(key,null,null,status,null,logEntity.toString());
             int exitVal = process.waitFor();
+//            while ((line = br.readLine()) != null) {
+//                logEntity.add(line);
+//                System.out.println(line);
+//            }
+//            while ((errline = brerr.readLine()) != null) {
+//                logEntity.add(errline);
+//                System.out.println(errline);
+//            }
+//            int exitVal = process.waitFor();
+            System.out.println("end analyse");
             logEntity.setExitVal(exitVal);
         }catch (IOException e) {
             e.printStackTrace();
@@ -98,6 +113,7 @@ public class CommandLineExecutor implements Executor {
             //AnalysisMessage.getInstance().update(key,null,null,status,null,logEntity.toString());
             while ((line = br.readLine()) != null) {
                 logEntity.add(line);
+                System.out.println(line);
             }
             int exitVal = process.waitFor();
             logEntity.setExitVal(exitVal);

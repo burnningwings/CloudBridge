@@ -228,11 +228,24 @@ function showWatchPointParaDialog(title, operation_type, watch_point_id) {
 
 //增加参数弹窗
 function addWatchPointParaDialog(title, operation_type, watch_point_id) {
-    var url = "/watch-point-para/info";
-    var params = {
-        "watch_point_id": watch_point_id
-    };
-    var response = webRequest(url, "GET", false, params);
+    var url = "/bridge/simple-list";
+    var response = webRequest(url, "GET", false, {});
+    var bridge_options = "";
+    var section_option = "";
+    if (response != null && response['data']) {
+        var data = response["data"];
+        for (var i = 0; i < data.length; i++) {
+            bridge_options += "<option value='" + data[i]['bridge_id'] + "'>" + data[i]['bridge_name'] + "</option>";
+        }
+        var response1 = webRequest("/section/simple-list", "GET", false, {'bridgeId': data[0]['bridge_id']});
+        if (response1 != null && response1['data']) {
+            var data = response1["data"];
+            for (var i = 0; i < data.length; i++) {
+                section_option += "<option value='" + data[i]['section_id'] + "'>" + data[i]['section_name'] + "</option>";
+            }
+        }
+    }
+
     var sc = "";
 
     var bridge_type_name = "";
@@ -247,10 +260,31 @@ function addWatchPointParaDialog(title, operation_type, watch_point_id) {
 
     <!--尽管报错，但是不能删去-->
     var content = '\
-        <div class="form-inline-custom">\
-            <label class="col-sm-3 control-label">测点的收缩徐变值(单位:Mpa)</label>\
+    \<div class="form-inline-custom">\
+            <label class="col-sm-3 control-label">桥梁</label>\
             <div class="col-sm-8"> \
-                <input type="text" class="form-control" id="sc" placeholder="请输入测点的收缩徐变值" value="' + sc + '"> \
+                <select class="selectpicker" id="bridge_menu" data-width="100%">'
+                + bridge_options +
+                '</select> \
+            </div>\
+            <span class="text-danger mt5 fl">*</span>\
+        </div> \
+        <br>\
+        <div class="form-inline-custom">\
+            <label class="col-sm-3 control-label">截面</label>\
+            <div class="col-sm-8"> \
+                <select class="selectpicker" id="bridge_menu" data-width="100%">'
+        + section_option +
+        '</select> \
+    </div>\
+    <span class="text-danger mt5 fl">*</span>\
+</div> \
+<br>\
+\
+<div class="form-inline-custom">\
+    <label class="col-sm-3 control-label">测点的收缩徐变值(单位:Mpa)</label>\
+    <div class="col-sm-8"> \
+        <input type="text" class="form-control" id="sc" placeholder="请输入测点的收缩徐变值" value="' + sc + '"> \
             </div>\
             <span class="text-danger mt5 fl">*</span>\
         </div> \
@@ -263,6 +297,7 @@ function addWatchPointParaDialog(title, operation_type, watch_point_id) {
     } else {
         showModalDialog(title, content, ok_callback, 605, 330);
     }
+    $('.selectpicker').selectpicker("refresh");
 
     //回调函数
     function ok_callback() {
@@ -580,7 +615,7 @@ $(function () {
     updateBridgeParaGrid();
 
     $('#add_para').click(function () {
-        showBridgeDialog('新增桥梁参数', 'create');
+        addWatchPointParaDialog('新增桥梁参数', 'create');
     })
 });
 

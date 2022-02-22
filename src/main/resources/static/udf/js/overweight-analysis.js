@@ -418,6 +418,7 @@ function updateDropdownListTestBridge(){
 //初始化
 $(function () {
     var timer;
+
     // $("#train_file_selected").selectpicker({
     //     noneSelectedText: "请选择训练数据"
     // });
@@ -497,6 +498,28 @@ $(function () {
     $('#train_begin_time').val(t_begin_train);
     $('#train_end_time').val(t_end_train);
 
+
+    $('#train_file_selected').change(function(){
+        var file = $(this).children('option:selected').val();
+        var url = "/overweight-analysis/getTime";
+        var response = webRequest(url, "GET", false, {"type" : "trainfile","filename":file});
+        if(response!=null && response.status==0){
+            var data = response.data;
+            for(var key in data){
+                if (key == "begin_time"){
+                    t_begin_train = new Date(year=parseInt(data[key].toString().substring(0,4)),month=parseInt(data[key].toString().substring(4,6))-1,date=parseInt(data[key].toString().substring(6,8)),hours=parseInt(data[key].toString().substring(8,10)),minutes=parseInt(data[key].toString().substring(10,12)),seconds=parseInt(data[key].toString().substring(12))).format(data_format_str);
+                }else if (key == "end_time"){
+                    t_end_train = new Date(parseInt(data[key].toString().substring(0,4)),parseInt(data[key].toString().substring(4,6))-1,parseInt(data[key].toString().substring(6,8)),parseInt(data[key].toString().substring(8,10)),parseInt(data[key].toString().substring(10,12)),parseInt(data[key].toString().substring(12))).format(data_format_str);
+                }
+                $('#train_begin_time').val(t_begin_train);
+                $('#train_end_time').val(t_end_train);
+                $('.datetimepicker').datetimepicker('refresh');
+            }
+        }
+    });
+
+
+
     var t_begin_evaluate = new Date(2018,09,12,00,00,00).format(data_format_str);
     var t_end_evaluate = new Date(2018,09,12,23,59,59).format(data_format_str);
     $('#evaluate_begin_time').datetimepicker({
@@ -514,6 +537,27 @@ $(function () {
         timeFormat: "HH:mm:ss",
         dateFormat: "yy-mm-dd"
     });
+
+    $('#evaluate_file_selected').change(function () {
+        var file = $(this).children('option:selected').val();
+        var url = "/overweight-analysis/getTime";
+        var response = webRequest(url, "GET", false, {"type" : "evaluatefile","filename":file});
+        if(response!=null && response.status==0){
+            var data = response.data;
+            for(var key in data){
+                if (key == "begin_time"){
+                    console.log(data[key].toString().substring(0,4));
+                    t_begin_evaluate = new Date(parseInt(data[key].toString().substring(0,4)),parseInt(data[key].toString().substring(4,6))-1,parseInt(data[key].toString().substring(6,8)),parseInt(data[key].toString().substring(8,10)),parseInt(data[key].toString().substring(10,12)),parseInt(data[key].toString().substring(12))).format(data_format_str);
+                }else if (key == "end_time"){
+                    t_end_evaluate = new Date(parseInt(data[key].toString().substring(0,4)),parseInt(data[key].toString().substring(4,6))-1,parseInt(data[key].toString().substring(6,8)),parseInt(data[key].toString().substring(8,10)),parseInt(data[key].toString().substring(10,12)),parseInt(data[key].toString().substring(12))).format(data_format_str);
+                }
+                $('#evaluate_begin_time').val(t_begin_evaluate);
+                $('#evaluate_end_time').val(t_end_evaluate);
+                $('.datetimepicker').datetimepicker('refresh');
+            }
+        }
+    });
+
     var t_begin_test = new Date(2018,09,13,00,00,00).format(data_format_str);
     var t_end_test = new Date(2018,09,13,23,59,59).format(data_format_str);
     $('#test_end_time').datetimepicker({
@@ -523,6 +567,26 @@ $(function () {
     $('#test_begin_time').val(t_begin_test);
     $('#test_end_time').val(t_end_test);
 
+    $('#test_file_selected').change(function () {
+        var file = $(this).children('option:selected').val();
+        var url = "/overweight-analysis/getTime";
+        var response = webRequest(url, "GET", false, {"type" : "testfile","filename":file});
+        if(response!=null && response.status==0){
+            var data = response.data;
+            for(var key in data){
+                if (key == "begin_time"){
+                    console.log(data[key].toString().substring(0,4));
+                    t_begin_test = new Date(parseInt(data[key].toString().substring(0,4)),parseInt(data[key].toString().substring(4,6))-1,parseInt(data[key].toString().substring(6,8)),parseInt(data[key].toString().substring(8,10)),parseInt(data[key].toString().substring(10,12)),parseInt(data[key].toString().substring(12))).format(data_format_str);
+                }else if (key == "end_time"){
+                    t_end_test = new Date(parseInt(data[key].toString().substring(0,4)),parseInt(data[key].toString().substring(4,6))-1,parseInt(data[key].toString().substring(6,8)),parseInt(data[key].toString().substring(8,10)),parseInt(data[key].toString().substring(10,12)),parseInt(data[key].toString().substring(12))).format(data_format_str);
+                }
+                $('#test_begin_time').val(t_begin_test);
+                $('#test_end_time').val(t_end_test);
+                $('.datetimepicker').datetimepicker('refresh');
+            }
+        }
+    });
+
 
     $("#description_train_dataformat").click(function(){
         var popoverEl = $("#description_train_dataformat");
@@ -530,12 +594,20 @@ $(function () {
         // var content = "{<br/>"+
         //     "feature1,feature2,feature3,label<br/>"+
         //     "}";
-        var content = "data1 : float<br/>" + "data2 : float<br/>" + "data3 : float<br/>" + "data4 : float<br/>" + "data5 : float<br/>"
-                    + "data6 : float<br/>" + "data7 : float<br/>" + "data8 : float<br/>" + "data9 : float<br/>" + "data10 : float<br/>"
-                    + "data11 : float<br/>" + "data12 : float<br/>" + "data13 : float<br/>" + "data14 : float<br/>" + "data15 : float<br/>"
-                    + "label : integer<br/>" + "bridge : string<br/>" + "time : string"
-        popoverEl.attr("data-content", content);
-        popoverEl.popover("show");
+        // var content = "data1 : float<br/>" + "data2 : float<br/>" + "data3 : float<br/>" + "data4 : float<br/>" + "data5 : float<br/>"
+        //             + "data6 : float<br/>" + "data7 : float<br/>" + "data8 : float<br/>" + "data9 : float<br/>" + "data10 : float<br/>"
+        //             + "data11 : float<br/>" + "data12 : float<br/>" + "data13 : float<br/>" + "data14 : float<br/>" + "data15 : float<br/>"
+        //             + "label : integer<br/>" + "bridge : string<br/>" + "time : string"
+        // popoverEl.attr("data-content", content);
+        // popoverEl.popover("show");
+        var str = "UY1,UY2,UY3,UY4,UY5,UY6,UY7,UY8,UY9,UY10,UY11,UY12,UY13,UY14,UY15,label,bridge,time\n";
+        var url = "data:text/csv;charset=utf-8,\ufeff" + encodeURIComponent(str);
+        var link = document.createElement("a");
+        link.href = url;
+        link.download = 'example_train.csv';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
 
     });
 
@@ -545,12 +617,20 @@ $(function () {
         // var content = "{<br/>"+
         //     "feature1,feature2,feature3,label<br/>"+
         //     "}";
-        var content = "data1 : float<br/>" + "data2 : float<br/>" + "data3 : float<br/>" + "data4 : float<br/>" + "data5 : float<br/>"
-            + "data6 : float<br/>" + "data7 : float<br/>" + "data8 : float<br/>" + "data9 : float<br/>" + "data10 : float<br/>"
-            + "data11 : float<br/>" + "data12 : float<br/>" + "data13 : float<br/>" + "data14 : float<br/>" + "data15 : float<br/>"
-            + "label : integer<br/>" + "bridge : string<br/>" + "time : string";
-        popoverEl.attr("data-content", content);
-        popoverEl.popover("show");
+        // var content = "data1 : float<br/>" + "data2 : float<br/>" + "data3 : float<br/>" + "data4 : float<br/>" + "data5 : float<br/>"
+        //     + "data6 : float<br/>" + "data7 : float<br/>" + "data8 : float<br/>" + "data9 : float<br/>" + "data10 : float<br/>"
+        //     + "data11 : float<br/>" + "data12 : float<br/>" + "data13 : float<br/>" + "data14 : float<br/>" + "data15 : float<br/>"
+        //     + "label : integer<br/>" + "bridge : string<br/>" + "time : string";
+        // popoverEl.attr("data-content", content);
+        // popoverEl.popover("show");
+        var str = "UY1,UY2,UY3,UY4,UY5,UY6,UY7,UY8,UY9,UY10,UY11,UY12,UY13,UY14,UY15,label,bridge,time\n";
+        var url = "data:text/csv;charset=utf-8,\ufeff" + encodeURIComponent(str);
+        var link = document.createElement("a");
+        link.href = url;
+        link.download = 'example_evaluate.csv';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
 
     });
 
@@ -560,12 +640,20 @@ $(function () {
         // var content = "{<br/>"+
         //     "feature1,feature2,feature3<br/>"+
         //     "}";
-        var content = "data1 : float<br/>" + "data2 : float<br/>" + "data3 : float<br/>" + "data4 : float<br/>" + "data5 : float<br/>"
-            + "data6 : float<br/>" + "data7 : float<br/>" + "data8 : float<br/>" + "data9 : float<br/>" + "data10 : float<br/>"
-            + "data11 : float<br/>" + "data12 : float<br/>" + "data13 : float<br/>" + "data14 : float<br/>" + "data15 : float<br/>"
-            + "bridge : string<br/>" + "time : string";
-        popoverEl.attr("data-content", content);
-        popoverEl.popover("show");
+        // var content = "data1 : float<br/>" + "data2 : float<br/>" + "data3 : float<br/>" + "data4 : float<br/>" + "data5 : float<br/>"
+        //     + "data6 : float<br/>" + "data7 : float<br/>" + "data8 : float<br/>" + "data9 : float<br/>" + "data10 : float<br/>"
+        //     + "data11 : float<br/>" + "data12 : float<br/>" + "data13 : float<br/>" + "data14 : float<br/>" + "data15 : float<br/>"
+        //     + "bridge : string<br/>" + "time : string";
+        // popoverEl.attr("data-content", content);
+        // popoverEl.popover("show");
+        var str = "UY1,UY2,UY3,UY4,UY5,UY6,UY7,UY8,UY9,UY10,UY11,UY12,UY13,UY14,UY15,bridge,time\n";
+        var url = "data:text/csv;charset=utf-8,\ufeff" + encodeURIComponent(str);
+        var link = document.createElement("a");
+        link.href = url;
+        link.download = 'example_test.csv';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
 
     });
 
@@ -732,7 +820,7 @@ $(function () {
     $("#train_start").click(function () {
         var train_file = $("#train_file_selected").val();
         var train_model = $("#train_model_selected").val();
-        var train_bridge = $("#train_bridge_selected").val();
+        // var train_bridge = $("#train_bridge_selected").val();
         var saved_model = $("#saved_model").val();
         //console.log(saved_model);
         if (train_file == null){
@@ -745,11 +833,11 @@ $(function () {
             //showDialog("请选择训练模型");
             return;
         }
-        if(train_bridge == null){
-            showTransientDialog("请选择分析桥梁");
-            //showDialog("请选择训练模型");
-            return;
-        }
+        // if(train_bridge == null){
+        //     showTransientDialog("请选择分析桥梁");
+        //     //showDialog("请选择训练模型");
+        //     return;
+        // }
         if(!saved_model){
             showTransientDialog("请输入保存模型名称");
             //showDialog("请输入保存模型名称");
@@ -778,7 +866,7 @@ $(function () {
                 "trainfile" : train_file,
                 "trainmodel" : train_model,
                 "savedmodel" : saved_model,
-                "bridge" : train_bridge,
+                // "bridge" : train_bridge,
                 "begintime" : new Date(begin_time).format('yyyyMMddHHmmss'),
                 "endtime" : new Date(end_time).format("yyyyMMddHHmmss")
             }),
@@ -1252,7 +1340,7 @@ $(function () {
             async: true,
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({
-                "testfile" : test_file,
+                "testfile" : "displacement.csv",
                 "bridge" : bridge,
                 "testmodel" : test_model,
                 "begintime" : new Date(begin_time).format('yyyyMMddHHmmss'),

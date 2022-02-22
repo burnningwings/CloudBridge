@@ -55,18 +55,19 @@
                 </div>
                 <div class="panel-body" style="padding:0 20px 20px 20px">
                     <h4 class="control-label " style="display:inline-block">从本地上传训练数据（csv格式，小于50MB）：</h4>
-                    <button id="description_train_dataformat" title="数据格式" data-html="true" data-toggle="popover" data-container="body" type="button" class="btn btn-default"><i class="fa fa-fw fa-eye"></i></button>
+<!--                    <button id="description_train_dataformat" title="数据格式" data-html="true" data-toggle="popover" data-container="body" type="button" class="btn btn-default"><i class="fa fa-fw fa-eye"></i></button>-->
+                    <button id="description_train_dataformat" title="数据格式" data-toggle="popover" type="button" class="btn btn-default"><i class="fa fa-fw fa-eye"></i></button>
                     <input id="trainfile_upload" name="trainfile_upload" type="file" class="file file-loading" data-preview-file-type="text"/>
                 </div>
                 <div class="panel-body" style="padding:0 20px 20px 20px">
                     <h4 class="control-label" style="display:inline-block">从本地上传训练模型（py格式，小于50MB）：</h4>
-                    <button id="description_modelformat" title="模型文件格式" data-html="true" data-toggle="popover" data-container="body" type="button" class="btn btn-default"><i class="fa fa-fw fa-eye"></i></button>
+<!--                    <button id="description_modelformat" title="模型文件格式" data-html="true" data-toggle="popover" data-container="body" type="button" class="btn btn-default"><i class="fa fa-fw fa-eye"></i></button>-->
                     <input id="trainmodel_upload" name="trainmodel_upload" type="file" class="file file-loading" data-preview-file-type="text"/>
                 </div>
                 <div class="panel-body" style="padding:0 20px 20px 20px">
                     <select class="selectpicker" id="train_file_selected" data-width="20%"></select>&nbsp;&nbsp;
                     <select class="selectpicker" id="train_model_selected" data-width="20%"></select>&nbsp;&nbsp;
-                    <select class="selectpicker" id="train_bridge_selected" data-width="20%"></select>&nbsp;&nbsp;
+                    <span hidden="hidden"><select class="selectpicker" id="train_bridge_selected" data-width="20%" ></select></span>
                 </div>
                 <div class="panel-body" style="padding:0 20px 20px 20px">
                     <label style="font-weight:normal;font-size:16px;margin-left: 7px">时段选择&nbsp;&nbsp;</label>
@@ -102,7 +103,7 @@
                 <div class="panel-body" style="padding:0 20px 20px 20px">
                     <select class="selectpicker" id="evaluate_file_selected" data-width="20%"></select>&nbsp;&nbsp;
                     <select class="selectpicker" id="evaluate_model_selected" data-width="20%"></select>&nbsp;&nbsp;
-                    <select class="selectpicker" id="evaluate_bridge_selected" data-width="20%"></select>&nbsp;&nbsp;
+                    <span hidden="hidden"><select class="selectpicker" id="evaluate_bridge_selected" data-width="20%" hidden></select></span>&nbsp;&nbsp;
                 </div>
                 <div class="panel-body" style="padding:0 20px 20px 20px">
                     <label style="font-weight:normal;font-size:16px;margin-left: 7px">时段选择&nbsp;&nbsp;</label>
@@ -134,7 +135,7 @@
                 <div class="panel-body" style="padding:0 20px 20px 20px">
                     <select class="selectpicker" id="test_file_selected" data-width="20%"></select>&nbsp;&nbsp;
                     <select class="selectpicker" id="test_model_selected" data-width="20%"></select>&nbsp;&nbsp;
-                    <select class="selectpicker" id="test_bridge_selected" data-width="20%"></select>&nbsp;&nbsp;
+                    <span ><select class="selectpicker" id="test_bridge_selected" data-width="20%"></select></span>&nbsp;&nbsp;
                 </div>
                 <div class="panel-body" style="padding:0 20px 20px 20px">
                     <label style="font-weight:normal;font-size:16px;margin-left: 7px">时段选择&nbsp;&nbsp;</label>

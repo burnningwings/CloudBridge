@@ -105,6 +105,12 @@ public class Constants {
     //python程序执行脚本前缀
     public static String SCRIPT_EXEC_PREFIX = null;
 
+    //模型训练标签保存路径
+    public static String OVERWEIGHT_TRAIN_LABEL = null;
+
+    //模型损失函数图像保存路径
+    public static String OVERWEIGHT_TRAIN_LOSSIMAGE = null;
+
 
 
   // 消息状态

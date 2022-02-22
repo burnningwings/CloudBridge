@@ -318,20 +318,30 @@ $(function () {
 
     $("#dataschema_tips_btn").click(function(){
         var popoverEl = $("#dataschema_tips_btn");
-        popoverEl.popover("destroy");
+        // popoverEl.popover("destroy");
         var sensor_type_selected = $("#sensor_type_menu").val();
         var content = "";
         if(sensor_type_selected && !(sensor_type_selected.match(/^\s*$/))){
             var schema = sensor_data_schema[sensor_type_selected]["data_schema"];
-            content = content + "{"
-            var sep = "";
+            // content = content + "{"
+            // var sep = "";
+            var str = "";
             for(var key in schema){
-                content = content + sep + "<br>&nbsp;&nbsp;&nbsp;&nbsp;" + key + ": " + schema[key];
-                sep = ","
+                // content = content + sep + "<br>&nbsp;&nbsp;&nbsp;&nbsp;" + key + ": " + schema[key];
+                // sep = ","
+                str += key + ",";
             }
-            content = content + "<br>}"
-            popoverEl.attr("data-content", content);
-            popoverEl.popover("show");
+            str += "\n";
+            var url = "data:text/csv;charset=utf-8,\ufeff" + encodeURIComponent(str);
+            var link = document.createElement("a");
+            link.href = url;
+            link.download = sensor_type_selected + '.csv';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            // content = content + "<br>}"
+            // popoverEl.attr("data-content", content);
+            // popoverEl.popover("show");
         }else{
             showTransientDialog("未选择传感器类型！");
         }

@@ -41,8 +41,8 @@ public class AnalysisMessage {
     }
 
     private int updateOrInsert(String id,String source,String target,String status,String type,String errorLog){
-        String sqlFormat = "INSERT INTO analysis_message (id,source,target,status,type,error_log) VALUES ('%s','%s','%s','%s','%s','%s') " +
-                "ON DUPLICATE KEY UPDATE status='%s',error_log='%s'";
+        String sqlFormat = "INSERT INTO analysis_message (id,source,target,status,type,error_log)" + " VALUES (\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\") " +
+                "ON DUPLICATE KEY UPDATE status='%s',error_log=\"%s\"";
         int ret = 0;
         try {
             ret = baseDao.Execute(String.format(sqlFormat,id,source,target,status,type,errorLog,status,errorLog));

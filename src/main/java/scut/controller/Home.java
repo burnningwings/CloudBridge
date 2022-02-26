@@ -215,6 +215,12 @@ public class Home {
         return "module_download";
     }
 
+    @RequestMapping("/module_delete")
+    public String module_delete(Model model){
+        setUser(model);
+        return "module_delete";
+    }
+
     @GetMapping("/{from}/image-upload/{objectId}")
     public String imageUpload(Model model,
                               @PathVariable("from") String from,

@@ -508,6 +508,30 @@ public class LogBase {
     }
 
     /*
+     * 记录删除模型的日志
+     */
+    public static String log_del_module_info(
+            String username,
+            JSONArray res)
+    {
+        StringBuilder info = new StringBuilder();
+        for (int n=0;n<res.size();n++){
+
+            JSONObject r = res.getJSONObject(n);
+            if (1 == Integer.parseInt((String)r.get("ret"))){
+                info.append("删除\"").append(r.get("name\"")).append("模型成功\n");
+            }else {
+                info.append("删除\"").append(r.get("name\"")).append("模型失败\n");
+            }
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String curTime = sdf.format(new Date());
+        String ressql = String.format("insert into log_system(username,log_time,log_info) " +
+                "values('%s','%s','%s')",username,curTime, info.toString());
+        return ressql;
+    }
+
+    /*
      * 记录删除控制箱类型的日志
      */
     public static String log_del_watchbox_type(

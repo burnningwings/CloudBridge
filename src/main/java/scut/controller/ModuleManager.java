@@ -204,4 +204,67 @@ public class ModuleManager {
         response.setData(data);
         return response.getHttpResponse();
     }
+
+    /**
+     * 删除指定模型信息
+     *
+     * @param
+     * @return
+     * @Author: liujun
+     */
+    @PreAuthorize("hasRole('ADMIN')")
+    @RequestMapping(value = "/module_manger/delete", method = RequestMethod.POST, produces = "application/json")
+    public JSONObject deleteBridgeType(@RequestBody JSONObject reqMsg) {
+        long userOrganizationId = sysUserService.getUserOrganizationId();
+        HttpResponse response = new HttpResponse();
+        String moduleInfo = reqMsg.getString("moduleInfo");
+        JSONArray module_info = JSON.parseArray(moduleInfo);
+
+        Integer[] typeId = new Integer[module_info.size()];
+        //检查必须参数
+        if (module_info == null) {
+            response.setStatus(HttpResponse.FAIL_STATUS);
+            response.setCode(HttpResponse.FAIL_CODE);
+            response.setMsg("参数错误！");
+            return response.getHttpResponse();
+        }
+
+        String curTime = sdf.format(new Date());
+        JSONObject objects = new JSONObject();
+        for (int n = 0;n<module_info.size();n++){
+
+            JSONObject o = module_info.getJSONObject(n);
+
+            //TODO:删除相应文件地址
+
+
+            //删除mysql数据语句
+            String del_sql = String.format("DELETE FROM module WHERE id=%d;",Integer.parseInt((String)o.get("id")));
+            //执行操作
+            int ret = 0;
+            if (del_sql != null) {
+                ret = baseDao.updateData(del_sql);
+                o.put("ret",String.valueOf(ret));
+            }
+
+            if (ret != 1) {
+                response.setStatus(HttpResponse.FAIL_STATUS);
+                response.setCode(HttpResponse.FAIL_CODE);
+                response.setMsg("操作失败！");
+            }
+        }
+        //操作写入日志
+        LogBase logbase = new LogBase();
+        boolean logoption = logbase.sys_logoption(23);
+        if (logoption) {
+
+            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String log_sql = LogBase.log_del_module_info(userDetails.getUsername(),
+                    module_info
+            );
+            logger.info(log_sql);
+            baseDao.updateData(log_sql);
+        }
+        return response.getHttpResponse();
+    }
 }

@@ -2,7 +2,7 @@
 
 function updateDropdownListTrainModel(){
     $("#mu_model").empty();
-    var options ="<option value=\'\' disabled selected>请选择训练文件</option>" +
+    var options ="<option value=\'\' disabled selected>请选择模型功能</option>" +
         "<option value='1'>超重车识别</optionva>" +
         "<option value='2'>损伤识别</option>"
     $("#mu_model").append(options);
@@ -44,6 +44,12 @@ $(function () {
         maxFileSize: 512000, // KB,当前限制为50MB
         maxPreviewFileSize: 1,
         // dropZoneEnabled: false
+        uploadExtraData: function() {
+            return {
+                uploader_name : $('#username').text(),
+                feature : $('#mu_model option:selected').text()
+            };
+        }
     }).on("fileuploaded",function (event, data, previewId, index) {
         var response = data.response;
         console.log(response)

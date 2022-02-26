@@ -11,9 +11,11 @@ import scut.util.Constants;
 import scut.util.sql.SQLBaseDao;
 import scut.util.sql.SQLDaoFactory;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Locale;
+import java.util.function.Consumer;
 
 /**
  * Created by Carrod on 2018/4/19.
@@ -86,6 +88,8 @@ public class CloudBridge implements EnvironmentAware {
             Constants.SCRIPT_EXEC_PREFIX = env.getProperty("program.exec.prefix").toString();
             Constants.OVERWEIGHT_TRAIN_LABEL = env.getProperty("overweight.trainfile.label").toString();
             Constants.OVERWEIGHT_TRAIN_LOSSIMAGE = env.getProperty("overweight.trainfile.lossimage").toString();
+            Constants.ASSOCIATION_UPLOAD_TRAIN_MODEL_DIR = env.getProperty("association.upload.trainmodel.dir").toString();
+            Constants.RELIABILITY_UPLOAD_TRAIN_MODEL_DIR = env.getProperty("reliability.analysis.upload.trainmodel.dir").toString();
         }catch (Exception e){
             logger.debug("当前MYSQL未配置.");
         }

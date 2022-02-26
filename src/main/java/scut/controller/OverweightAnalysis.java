@@ -839,8 +839,8 @@ public class OverweightAnalysis {
                 FileOutputStream fos = new FileOutputStream(targetFile);
                 OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");
                 BufferedWriter bw = new BufferedWriter(osw);
-//                bw.write("UY1,UY2,UY3,UY4,UY5,UY6,UY7,UY8,UY9,UY10,UY11,UY12,UY13,UY14,UY15,bridge,time" + "\n");
-                bw.write("x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15" + "\n");
+                bw.write("UY1,UY2,UY3,UY4,UY5,UY6,UY7,UY8,UY9,UY10,UY11,UY12,UY13,UY14,UY15,bridge,time" + "\n");
+//                bw.write("x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15" + "\n");
 
                 FileInputStream fis = new FileInputStream(selectedFile);
                 InputStreamReader isr = new InputStreamReader(fis, "UTF-8");

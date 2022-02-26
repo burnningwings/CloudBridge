@@ -209,6 +209,12 @@ public class Home {
         return "module_upload";
     }
 
+    @RequestMapping("/module_download")
+    public String module_download(Model model){
+        setUser(model);
+        return "module_download";
+    }
+
     @GetMapping("/{from}/image-upload/{objectId}")
     public String imageUpload(Model model,
                               @PathVariable("from") String from,

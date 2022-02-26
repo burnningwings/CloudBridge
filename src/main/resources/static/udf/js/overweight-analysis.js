@@ -1340,7 +1340,7 @@ $(function () {
             async: true,
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({
-                "testfile" : "displacement.csv",
+                "testfile" : test_file,
                 "bridge" : bridge,
                 "testmodel" : test_model,
                 "begintime" : new Date(begin_time).format('yyyyMMddHHmmss'),

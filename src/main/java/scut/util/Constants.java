@@ -38,6 +38,7 @@ public class Constants {
     public static String DAMAGE_TEST_FILE_MERGED_DIR = null;
 
 
+
     //自定义条件目标文件路径
     public static String DAMAGE_TRAINFILE_TARGET_DIR = null;
     public static String DAMAGE_EVALUATEFILE_TARGET_DIR = null;
@@ -59,6 +60,8 @@ public class Constants {
     //上传训练模型文件路径
     public static String OVERWEIGHT_UPLOAD_TRAIN_MODEL_DIR = null;
     public static String DAMAGE_UPLOAD_TRAIN_MODEL_DIR = null;
+    public static String ASSOCIATION_UPLOAD_TRAIN_MODEL_DIR = null;
+    public static String RELIABILITY_UPLOAD_TRAIN_MODEL_DIR = null;
 
     //保存训练好的模型路径
     public static String OVERWEIGHT_SAVE_TRAIN_MODEL_DIR = null;

@@ -21,7 +21,7 @@ function bridgeListDropdown() {
     $dropdownMenu1.selectpicker('val', $dropdownMenu1.attr('init-value'));
     $dropdownMenu1.on("changed.bs.select", function () {
         sectionListDropdown($(this).val()); //更新截面列表
-        updateWatchPointGrid($('#dropdownMenu1').val(), $('#dropdownMenu2').val()); //更新表格
+        updateWatchPointGrid($('#dropdownMenu1').val(), $('#dropdownMenu2').val(),$('#dropdownMenu3').val());//更新表格
     });
 }
 
@@ -47,11 +47,40 @@ function sectionListDropdown(bridgeId, init_value) {
     }
 
     $dropdownMenu2.off('changed.bs.select').on("changed.bs.select", function () {
-        updateWatchPointGrid($('#dropdownMenu1').val(), $('#dropdownMenu2').val());//更新表格
+        watchPointListDropdown($(this).val());//更新测点列表
+        updateWatchPointGrid($('#dropdownMenu1').val(), $('#dropdownMenu2').val(),$('#dropdownMenu3').val());//更新表格
     });
 
 }
-function updateWatchPointGrid(bridge_id, section_id){
+
+//测点列表下拉框
+function watchPointListDropdown(sectionId, init_value) {
+    var options = "<option value='0'>全部测点</option>";
+    if (sectionId != 0) {  //为全部桥梁时不需要获取截面列表
+        var url = "/watch-point/simple-list";
+        var response = webRequest(url, "GET", false, {'sectionId': sectionId});
+        if (response != null && response['data']) {
+            var data = response["data"];
+            for (var i = 0; i < data.length; i++) {
+                options += "<option value='" + data[i]['watch_point_id'] + "'>" + data[i]['watch_point_name'] + "</option>";
+            }
+        }
+    }
+    var $dropdownMenu3 = $("#dropdownMenu3");
+    $dropdownMenu3.empty();
+    $dropdownMenu3.append(options);
+    $dropdownMenu3.selectpicker('refresh');
+    if (init_value) { //有初始值 则进行赋值
+        $dropdownMenu3.selectpicker('val', init_value);
+    }
+
+    $dropdownMenu3.off('changed.bs.select').on("changed.bs.select", function () {
+        updateWatchPointGrid($('#dropdownMenu1').val(), $('#dropdownMenu2').val(),$('#dropdownMenu3').val());//更新表格
+    });
+
+}
+
+function updateWatchPointGrid(bridge_id, section_id,point_id){
     var detailCol = getDetailCol(getUserRole()),
         detailTitle = detailCol['title'],
         detailBtnText = detailCol['buttonText'],
@@ -72,7 +101,8 @@ function updateWatchPointGrid(bridge_id, section_id){
                         page: options.page,
                         pageSize: options.pageSize,
                         bridgeId: bridge_id | 0,
-                        sectionId: section_id | 0
+                        sectionId: section_id | 0,
+                        pointId: point_id | 0,
                     };
                     return parameter;
                 }
@@ -232,16 +262,24 @@ function addWatchPointParaDialog(title, operation_type, watch_point_id) {
     var response = webRequest(url, "GET", false, {});
     var bridge_options = "";
     var section_option = "";
+    var point_option = "";
     if (response != null && response['data']) {
         var data = response["data"];
         for (var i = 0; i < data.length; i++) {
-            bridge_options += "<option value='" + data[i]['bridge_id'] + "'>" + data[i]['bridge_name'] + "</option>";
+            bridge_options += "<option value='" + data[i]['bridge_id'] + "' title='" + data[i]['bridge_name'] + "'>" + data[i]['bridge_name'] + "</option>";
         }
         var response1 = webRequest("/section/simple-list", "GET", false, {'bridgeId': data[0]['bridge_id']});
         if (response1 != null && response1['data']) {
             var data = response1["data"];
             for (var i = 0; i < data.length; i++) {
                 section_option += "<option value='" + data[i]['section_id'] + "'>" + data[i]['section_name'] + "</option>";
+            }
+            var response2 = webRequest("/watch-point/simple-list", "GET", false, {'sectionId': data[0]['section_id']});
+            if (response2 != null && response2['data']) {
+                var data = response2["data"];
+                for (var i = 0; i < data.length; i++) {
+                    point_option += "<option value='" + data[i]['watch_point_id'] + "'>" + data[i]['watch_point_name'] + "</option>";
+                }
             }
         }
     }
@@ -263,7 +301,7 @@ function addWatchPointParaDialog(title, operation_type, watch_point_id) {
     \<div class="form-inline-custom">\
             <label class="col-sm-3 control-label">桥梁</label>\
             <div class="col-sm-8"> \
-                <select class="selectpicker" id="bridge_menu" data-width="100%">'
+                <select class="selectpicker" id="add_bridge_select" data-width="100%" data-size="5">'
                 + bridge_options +
                 '</select> \
             </div>\
@@ -273,8 +311,18 @@ function addWatchPointParaDialog(title, operation_type, watch_point_id) {
         <div class="form-inline-custom">\
             <label class="col-sm-3 control-label">截面</label>\
             <div class="col-sm-8"> \
-                <select class="selectpicker" id="bridge_menu" data-width="100%">'
+                <select class="selectpicker" id="add_section_select" data-width="100%" data-size="5">'
         + section_option +
+        '</select> \
+    </div>\
+    <span class="text-danger mt5 fl">*</span>\
+</div> \
+<br>\
+        <div class="form-inline-custom">\
+            <label class="col-sm-3 control-label">测点</label>\
+            <div class="col-sm-8"> \
+                <select class="selectpicker" id="add_point_select" data-width="100%" data-size="5">'
+        + point_option +
         '</select> \
     </div>\
     <span class="text-danger mt5 fl">*</span>\
@@ -289,10 +337,11 @@ function addWatchPointParaDialog(title, operation_type, watch_point_id) {
             <span class="text-danger mt5 fl">*</span>\
         </div> \
         <br>\
+        \<div style="width: 100px !important;height: 100px !important;"></div>\
         ';
 
     if (!isAdminRole(getUserRole())) {
-        showModalDialogWithoutOK(title, content, 605, 330);
+        showModalDialogWithoutOK(title, content, 605, 430);
         $('div.form-inline-custom').find('input,select,textarea').attr('disabled', 'disabled');
     } else {
         showModalDialog(title, content, ok_callback, 605, 330);
@@ -317,7 +366,7 @@ function addWatchPointParaDialog(title, operation_type, watch_point_id) {
             var url = '/watch-point-para/update';
             var params = {
                 'sc': sc_val,
-                'watch_point_id':watch_point_id
+                'watch_point_id':$('#add_point_select').val(),
             };
             var response = webRequest(url, 'POST', false, params);
             if (response != null && response.status == 0) {
@@ -331,6 +380,10 @@ function addWatchPointParaDialog(title, operation_type, watch_point_id) {
         }
 
     }
+}
+
+function deletePara() {
+    
 }
 
 //修改监测点参数信息
@@ -610,13 +663,19 @@ function refreshData() {
 $(function () {
     bridgeListDropdown();
     sectionListDropdown($('#dropdownMenu1').val(), $("#dropdownMenu2").attr('init-value'));
-    updateWatchPointGrid($('#dropdownMenu1').val(), $('#dropdownMenu2').val());
+    watchPointListDropdown($('#dropdownMenu2').val(), $("#dropdownMenu3").attr('init-value'))
+    updateWatchPointGrid($('#dropdownMenu1').val(), $('#dropdownMenu2').val(),$('#dropdownMenu3').val());
     //updatePointGrid($("#bridge_menu").val());
     updateBridgeParaGrid();
 
     $('#add_para').click(function () {
         addWatchPointParaDialog('新增桥梁参数', 'create');
-    })
+    });
+
+    $('#delete_para').click(function (){
+        
+    });
+
 });
 
 

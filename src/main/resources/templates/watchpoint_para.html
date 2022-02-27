@@ -23,6 +23,7 @@
     <link rel="stylesheet" type="text/css" href="ext/mCustomScrollbar-3.0.9/css/jquery.mCustomScrollbar.css">
     <title>桥梁信息管理系统</title>
     <link rel="icon" type="image/x-icon" th:href="@{images/favicon.ico}"/>
+    <script src="../../../../../../cloudbridge/src/main/resources/static/assets/js/chosen.jquery.js"></script>
 </head>
 <body class="cm-no-transition cm-1-navbar">
 
@@ -42,6 +43,7 @@
                 <!--select class="selectpicker" id="bridge_menu" onchange="selectBridgeOnchange(this)" th:attr="init-value=${bridge_id}"></--select>-->
                 <select class="selectpicker" id="dropdownMenu1" th:attr="init-value=${bridge_id}"></select>
                 <select class="selectpicker" id="dropdownMenu2" th:attr="init-value=${section_id}"></select>
+                <select class="selectpicker" id="dropdownMenu3" th:attr="init-value=${point_id}"></select>
                 <br><br>
                 <div id="watch-point-grid"></div>
                 <div style="float:left;margin: 20px 0px 0px 0px">
@@ -87,5 +89,7 @@
 <script src="assets/js/kendo.web.min.js"></script>
 <script src="udf/js/watchpoint_para.js"></script>
 <script src="udf/js/common.js"></script>
+<!--下拉框美化相关-->
+<script src="assets/js/chosen.jquery.js"></script>
 </body>
 </html>

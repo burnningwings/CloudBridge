@@ -155,6 +155,34 @@ function showModalDialog(title, custom_content, ok_callback, width, height) {
         advanced: {autoExpandHorizontalScroll: true},
         theme: "minimal-dark"
     });
+    //增加桥梁参数
+    $('#add_bridge_select').change(function () {
+        var section_option ="";
+        var response1 = webRequest("/section/simple-list", "GET", false, {'bridgeId': $('#add_bridge_select').val()});
+        if (response1 != null && response1['data']) {
+            var data = response1["data"];
+            for (var i = 0; i < data.length; i++) {
+                section_option += "<option value='" + data[i]['section_id'] + "'>" + data[i]['section_name'] + "</option>";
+            }
+            $('#add_section_select').empty();
+            $('#add_section_select').append(section_option);
+            $('#add_section_select').trigger("change");
+            $('.selectpicker').selectpicker('refresh');
+        }
+    })
+    $('#add_section_select').change(function (){
+        var point_option ="";
+        var response1 = webRequest("/watch-point/simple-list", "GET", false, {'sectionId': $('#add_section_select').val()});
+        if (response1 != null && response1['data']) {
+            var data = response1["data"];
+            for (var i = 0; i < data.length; i++) {
+                point_option += "<option value='" + data[i]['watch_point_id'] + "'>" + data[i]['watch_point_name'] + "</option>";
+            }
+            $('#add_point_select').empty();
+            $('#add_point_select').append(point_option);
+            $('.selectpicker').selectpicker('refresh');
+        }
+    })
 }
 
 //模态弹窗-拥有水平滚动条

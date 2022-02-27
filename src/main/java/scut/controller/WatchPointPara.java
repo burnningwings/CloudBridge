@@ -49,7 +49,7 @@ public class WatchPointPara {
      * @return
      */
     @RequestMapping(value = "/watch-point-para/list", method = RequestMethod.GET, produces = "application/json")
-    public JSONObject tableList(int page, Integer pageSize, Integer bridgeId, Integer sectionId) {
+    public JSONObject tableList(int page, Integer pageSize, Integer bridgeId, Integer sectionId, Integer pointId) {
         long userOrganizationId = sysUserService.getUserOrganizationId();
         // 获取数据
         JSONObject response = new JSONObject();
@@ -58,12 +58,20 @@ public class WatchPointPara {
             "from bridge_organization bo " +
             "where bo.organization_id = %d " +
             ") ", userOrganizationId);
-        if (bridgeId != 0 && sectionId == 0)
+        if (bridgeId != 0 && sectionId == 0 && pointId == 0)
             whereStr += String.format(" and c.bridge_id = %d" , bridgeId);
-        if (bridgeId == 0 && sectionId != 0)
+        if (bridgeId == 0 && sectionId != 0 && pointId == 0)
             whereStr += String.format(" and a.section_id = %d" , sectionId);
-        if (sectionId != 0 && bridgeId != 0)
+        if (bridgeId == 0 && sectionId == 0 && pointId != 0)
+            whereStr += String.format(" and a.point_id = %d" , pointId);
+        if (sectionId != 0 && bridgeId != 0 && pointId == 0)
             whereStr += String.format(" and c.bridge_id = %d and a.section_id = %d", bridgeId, sectionId);
+        if (bridgeId != 0 && sectionId == 0 && pointId != 0)
+            whereStr += String.format(" and a.point_id = %d and c.bridge_id = %d" , pointId, bridgeId);
+        if (bridgeId == 0 && sectionId != 0 && pointId != 0)
+            whereStr += String.format(" and a.point_id = %d and a.section_id = %d" , pointId,sectionId);
+        if (bridgeId != 0 && sectionId != 0 && pointId != 0)
+            whereStr += String.format(" and a.point_id = %d and a.section_id =%d and c.bridge_id = %d" , pointId, sectionId, bridgeId);
 
         String sql = String.format(" select c.bridge_id,d.bridge_name,a.section_id,c.name as section_name,a.point_id,a.name as point_name,b.sc from watch_point as a " +
                 "left join watch_point_para as b on a.point_id = b.watch_point_id " +
@@ -73,7 +81,7 @@ public class WatchPointPara {
             whereStr, pageSize, (page - 1) * pageSize
         );
 
-        logger.info(bridgeId+","+sectionId);
+        logger.info(bridgeId+","+sectionId+","+pointId);
         logger.info(sql);
         String[] fields = new String[]{"point_id","bridge_name","section_name","point_name","sc"};
         //JSONObject data = new JSONObject();

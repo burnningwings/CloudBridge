@@ -294,4 +294,6 @@ public class HBaseCli {
             return resultFlag;
         }
     }
+
+
 }

@@ -1098,6 +1098,18 @@ function updateDropdownMenu1(response){
     return data;
 }
 
+function selectIsExitItem(objSelect,objItemValue){
+    var isExit = false;
+    console.log(objSelect["0"])
+    for(var i = 0;i < objSelect["0"].options.length;i++){
+        if (objSelect[0].options[i].value == objItemValue){
+            isExit = true;
+            break
+        }
+    }
+    return isExit;
+}
+
 //桥梁列表下拉框
 function bridgeListDropdown() {
     var url = "/bridge/simple-list";
@@ -1116,7 +1128,7 @@ function bridgeListDropdown() {
         sectionListDropdown($(this).val()); //更新截面列表
         watchPointListDropdown($('#section_menu').val());
         watchBoxListDropdown($(this).val());
-        sensorListDropdown($(this).val(),$('#section_menu').val(),$('#point_menu').val(),$('#watch_box_menu').val());
+        sensorListDropdown($(this).val(),$('#section_menu').val(),$('#point_menu').val());
     });
 }
 
@@ -1127,7 +1139,7 @@ function sectionListDropdown(bridgeId, init_value) {
         var url = "/section/simple-list";
         var response = webRequest(url, "GET", false, {'bridgeId': bridgeId});
         if (response != null && response['data']) {
-            var data = response["data"];
+            var data = response["data"]
             for (var i = 0; i < data.length; i++) {
                 options += "<option value='" + data[i]['section_id'] + "'>" + data[i]['section_name'] + "</option>";
             }
@@ -1142,8 +1154,21 @@ function sectionListDropdown(bridgeId, init_value) {
     }
 
     $dropdownMenu2.off('changed.bs.select').on("changed.bs.select", function () {
+        if (selectIsExitItem($dropdownMenu2,"-1")){
+            for (var i =0;i<$dropdownMenu2["0"].options.length;i++){
+                if ($dropdownMenu2["0"].options[i].value == "-1"){
+                    $dropdownMenu2["0"].remove(i);
+                    break;
+                }
+            }
+        }
+        if (!selectIsExitItem($('#watch_box_menu'),"-1")){
+            var em = "<option value='-1'>未选中</option>";
+            $('#watch_box_menu').append(em)
+            $('#watch_box_menu').val("-1")
+        }
         watchPointListDropdown($(this).val());
-        sensorListDropdown($('#bridge_menu').val(),$('#section_menu').val(),$('#point_menu').val(),$('#watch_box_menu').val());
+        sensorListDropdown($('#bridge_menu').val(),$('#section_menu').val(),$('#point_menu').val(),0);
     });
 
 }
@@ -1170,7 +1195,21 @@ function watchPointListDropdown(sectionId, init_value) {
     }
 
     $dropdownMenu3.off('changed.bs.select').on("changed.bs.select", function () {
-        sensorListDropdown($('#bridge_menu').val(),$('#section_menu').val(),$('#point_menu').val(),$('#watch_box_menu').val());
+        if (selectIsExitItem($dropdownMenu3,"-1")){
+            for (var i =0;i<$dropdownMenu3["0"].options.length;i++){
+                if ($dropdownMenu3["0"].options[i].value == "-1"){
+                    $dropdownMenu3["0"].remove(i);
+                    break;
+                }
+            }
+        }
+        if (!selectIsExitItem($('#watch_box_menu'),"-1")){
+            var em = "<option value='-1'>未选中</option>";
+            $('#watch_box_menu').append(em)
+            $('#watch_box_menu').val("-1")
+        }
+        $('.selectpicker').selectpicker('refresh')
+        sensorListDropdown($('#bridge_menu').val(),$('#section_menu').val(),$('#point_menu').val(),0);
     });
 }
 
@@ -1196,7 +1235,26 @@ function watchBoxListDropdown(bridgeId, init_value) {
     }
 
     $dropdownMenu4.off('changed.bs.select').on("changed.bs.select", function () {
-        sensorListDropdown($('#bridge_menu').val(),$('#section_menu').val(),$('#point_menu').val(),$('#watch_box_menu').val());
+        if (selectIsExitItem($dropdownMenu4,"-1")){
+            for (var i =0;i<$dropdownMenu4["0"].options.length;i++){
+                if ($dropdownMenu4["0"].options[i].value == "-1"){
+                    $dropdownMenu4["0"].remove(i)
+                    break;
+                }
+            }
+        }
+        if (!selectIsExitItem($('#section_menu'),"-1")){
+            var em = "<option value='-1'>未选中</option>";
+            $('#section_menu').append(em)
+            $('#section_menu').val("-1")
+        }
+        if (!selectIsExitItem($('#point_menu'),"-1")){
+            var em = "<option value='-1'>未选中</option>";
+            $('#point_menu').append(em)
+            $('#point_menu').val("-1")
+        }
+        $('.selectpicker').selectpicker('refresh')
+        sensorListDropdown($('#bridge_menu').val(),0,0,$('#watch_box_menu').val());
     });
 }
 
@@ -1220,6 +1278,9 @@ function sensorListDropdown(bridge_id, section_id, watch_point_id, watch_box_id,
     //     }
     // }
     var url = "/sensor/list";
+    if(section_id == -1) section_id = 0;
+    if(watch_point_id == -1) watch_point_id = 0;
+    if(watch_box_id == -1) watch_box_id = 0;
     var response = webRequest(url, "GET", false, {
         page: 1,
         pageSize: 9223372036854770,
@@ -1398,8 +1459,23 @@ function querySectionListDropdown(bridgeId, init_value) {
     }
 
     $dropdownMenu2.off('changed.bs.select').on("changed.bs.select", function () {
+
+        if (selectIsExitItem($dropdownMenu2,"-1")){
+            for (var i =0;i<$dropdownMenu2["0"].options.length;i++){
+                if ($dropdownMenu2["0"].options[i].value == "-1"){
+                    $dropdownMenu2["0"].remove(i);
+                    break;
+                }
+            }
+        }
+        if (!selectIsExitItem($('#query_box_menu'),"-1")){
+            var em = "<option value='-1'>未选中</option>";
+            $('#query_box_menu').append(em)
+            $('#query_box_menu').val("-1")
+        }
         queryWatchPointListDropdown($(this).val());
-        querySensorListDropdown($('#query_bridge_menu').val(),$('#query_section_menu').val(),$('#query_point_menu').val(),$('#query_box_menu').val());
+
+        querySensorListDropdown($('#query_bridge_menu').val(),$('#query_section_menu').val(),$('#query_point_menu').val(),0);
     });
 
 }
@@ -1426,7 +1502,21 @@ function queryWatchPointListDropdown(sectionId, init_value) {
     }
 
     $dropdownMenu3.off('changed.bs.select').on("changed.bs.select", function () {
-        querySensorListDropdown($('#query_bridge_menu').val(),$('#query_section_menu').val(),$('#query_point_menu').val(),$('#query_box_menu').val());
+
+        if (selectIsExitItem($dropdownMenu3,"-1")){
+            for (var i =0;i<$dropdownMenu3["0"].options.length;i++){
+                if ($dropdownMenu3["0"].options[i].value == "-1"){
+                    $dropdownMenu3["0"].remove(i);
+                    break;
+                }
+            }
+        }
+        if (!selectIsExitItem($('#query_box_menu'),"-1")){
+            var em = "<option value='-1'>未选中</option>";
+            $('#query_box_menu').append(em)
+            $('#query_box_menu').val("-1")
+        }
+        querySensorListDropdown($('#query_bridge_menu').val(),$('#query_section_menu').val(),$('#query_point_menu').val(),0);
     });
 }
 
@@ -1452,7 +1542,26 @@ function queryWatchBoxListDropdown(bridgeId, init_value) {
     }
 
     $dropdownMenu4.off('changed.bs.select').on("changed.bs.select", function () {
-        querySensorListDropdown($('#query_bridge_menu').val(),$('#query_section_menu').val(),$('#query_point_menu').val(),$('#query_box_menu').val());
+
+        if (selectIsExitItem($dropdownMenu4,"-1")){
+            for (var i =0;i<$dropdownMenu4["0"].options.length;i++){
+                if ($dropdownMenu4["0"].options[i].value == "-1"){
+                    $dropdownMenu4["0"].remove(i);
+                    break;
+                }
+            }
+        }
+        if (!selectIsExitItem($('#query_section_menu'),"-1")){
+            var em = "<option value='-1'>未选中</option>";
+            $('#query_section_menu').append(em)
+            $('#query_section_menu').val("-1")
+        }
+        if (!selectIsExitItem($('#query_point_menu'),"-1")){
+            var em = "<option value='-1'>未选中</option>";
+            $('#query_point_menu').append(em)
+            $('#query_point_menu').val("-1")
+        }
+        querySensorListDropdown($('#query_bridge_menu').val(),0,0,$('#query_box_menu').val());
     });
 }
 
@@ -1476,6 +1585,9 @@ function querySensorListDropdown(bridge_id, section_id, watch_point_id, watch_bo
     //     }
     // }
     var url = "/sensor/list";
+    if(section_id == -1) section_id = 0;
+    if(watch_point_id == -1) watch_point_id = 0;
+    if(watch_box_id == -1) watch_box_id = 0;
     var response = webRequest(url, "GET", false, {
         page: 1,
         pageSize: 9223372036854770,
@@ -1628,19 +1740,19 @@ $(function () {
         $('#point_menu').empty();
         $('#point_menu').append(watch_point_options);
         //传感器下拉框联动
-        sensorListDropdown($('#bridge_menu').val(),$('#section_menu').val(),$('#point_menu').val(),$('#watch_box_menu').val());
+        sensorListDropdown($('#bridge_menu').val(),$('#section_menu').val(),$('#point_menu').val(),0);
         $('.selectpicker').selectpicker('refresh');
     });
     //选择测点后，传感器联动
     $('#point_menu').on('change',function () {
         //传感器下拉框联动
-        sensorListDropdown($('#bridge_menu').val(),$('#section_menu').val(),$('#point_menu').val(),$('#watch_box_menu').val());
+        sensorListDropdown($('#bridge_menu').val(),$('#section_menu').val(),$('#point_menu').val(),0);
         $('.selectpicker').selectpicker('refresh');
     });
     //选择监测箱后传感器联动
     $('#watch_box_menu').on('change',function (){
         //传感器下拉框联动
-        sensorListDropdown($('#bridge_menu').val(),$('#section_menu').val(),$('#point_menu').val(),$('#watch_box_menu').val());
+        sensorListDropdown($('#bridge_menu').val(),0,0,$('#watch_box_menu').val());
         $('.selectpicker').selectpicker('refresh');
     });
 
@@ -1900,19 +2012,19 @@ $(function () {
         $('#query_point_menu').empty();
         $('#query_point_menu').append(watch_point_options);
         //传感器下拉框联动
-        sensorListDropdown($('#query_bridge_menu').val(),$('#query_section_menu').val(),$('#query_point_menu').val(),$('#query_box_menu').val());
+        sensorListDropdown($('#query_bridge_menu').val(),$('#query_section_menu').val(),$('#query_point_menu').val(),0);
         $('.selectpicker').selectpicker('refresh');
     });
     //选择测点后，传感器联动
     $('#query_point_menu').on('change',function () {
         //传感器下拉框联动
-        sensorListDropdown($('#query_bridge_menu').val(),$('#query_section_menu').val(),$('#query_point_menu').val(),$('#query_box_menu').val());
+        sensorListDropdown($('#query_bridge_menu').val(),$('#query_section_menu').val(),$('#query_point_menu').val(),0);
         $('.selectpicker').selectpicker('refresh');
     });
     //选择监测箱后传感器联动
     $('#query_box_menu').on('change',function (){
         //传感器下拉框联动
-        sensorListDropdown($('#query_bridge_menu').val(),$('#query_section_menu').val(),$('#query_point_menu').val(),$('#query_box_menu').val());
+        sensorListDropdown($('#query_bridge_menu').val(),0,0,$('#query_box_menu').val());
         $('.selectpicker').selectpicker('refresh');
     });
     $('#query_sensor_type_menu').on('change',function () {

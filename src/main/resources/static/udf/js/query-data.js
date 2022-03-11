@@ -1644,7 +1644,7 @@ $(function () {
     // begin
     // 表格操作
     var url = "/query-data/dropdown";
-    var response = webRequest(url,"GET",false,{"bridge_id":"all"})
+    // var response = webRequest(url,"GET",false,{"bridge_id":"all"})
     // var data1 = updateDropdownMenu1(response);
 
     // begin
@@ -1847,8 +1847,10 @@ $(function () {
     $('#query_latest_udf_begin_time').val(current_time);
     $('#query_latest_udf_end_time').val(current_time)
 
-    var data2 = updateDropdownMenu2(response);
-    var data_menu2 = response.data;
+    // var data2 = updateDropdownMenu2(response);
+    // var data_menu2 = response.data;
+
+
     // $('#query_bridge_menu').change(function(){
     //     var id = $(this).children('option:selected').val();
     //     var url = "/query-data/dropdown";
@@ -2038,10 +2040,17 @@ $(function () {
         var metric = $("#query_metric_menu").val();
         var sensor_id_array = [];
         var sensor_number_array = [];
-        $("#query_group_sensor_menu option:selected").each(function() {
+        // $("#query_group_sensor_menu option:selected").each(function() {
+        //     sensor_id_array.push($(this).val());
+        //     sensor_number_array.push($(this).text());
+        // });
+
+        $('#query_sensor_type_menu option:selected').each(function () {
             sensor_id_array.push($(this).val());
-            sensor_number_array.push($(this).text());
+            sensor_number_array.push($(this).text().split("--")[0])
         });
+
+
         console.log(sensor_id_array,sensor_number_array)
         if(!sensor_type || !metric || !sensor_id_array || sensor_type.match(/^\s*$/) || metric.match(/^\s*$/) || sensor_id_array.length<=0){
             showTransientDialog("没有符合条件的查询！");
@@ -2075,10 +2084,16 @@ $(function () {
         var metric = $("#query_metric_menu").val();
         var sensor_id_array = [];
         var sensor_number_array = [];
-        $("#query_group_sensor_menu option:selected").each(function() {
+        // $("#query_group_sensor_menu option:selected").each(function() {
+        //     sensor_id_array.push($(this).val());
+        //     sensor_number_array.push($(this).text());
+        // });
+
+        $('#query_sensor_type_menu option:selected').each(function () {
             sensor_id_array.push($(this).val());
-            sensor_number_array.push($(this).text());
+            sensor_number_array.push($(this).text().split("--")[0])
         });
+
         console.log(sensor_id_array,sensor_number_array)
         console.log(sensor_type,metric)
         if(!sensor_type || !metric || !sensor_id_array || sensor_type.match(/^\s*$/) || metric.match(/^\s*$/) || sensor_id_array.length<=0){
@@ -2112,10 +2127,16 @@ $(function () {
         var metric = $("#query_metric_menu").val();
         var sensor_id_array = [];
         var sensor_number_array = [];
-        $("#query_group_sensor_menu option:selected").each(function() {
+
+        // $("#query_group_sensor_menu option:selected").each(function() {
+        //     sensor_id_array.push($(this).val());
+        //     sensor_number_array.push($(this).text());
+        // });
+        $('#query_sensor_type_menu option:selected').each(function () {
             sensor_id_array.push($(this).val());
-            sensor_number_array.push($(this).text());
+            sensor_number_array.push($(this).text().split("--")[0])
         });
+
         console.log(sensor_id_array,sensor_number_array)
         console.log(sensor_type,metric)
         if(!sensor_type || !metric || !sensor_id_array || sensor_type.match(/^\s*$/) || metric.match(/^\s*$/) || sensor_id_array.length<=0){

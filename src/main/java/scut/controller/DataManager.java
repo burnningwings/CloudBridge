@@ -266,7 +266,7 @@ public class DataManager {
 //                    "and a.bridge_id in (" +
 //                    "select bo.bridge_id from bridge_organization bo " +
 //                    "where bo.organization_id = " + userOrganizationId + ")";
-            sql = "select a.sensor_id,a.sensor_number,b.name as sensor_type_name,c.point_id,c.name as point_name d.section_id,d.name as section_name " +
+            sql = "select a.sensor_id,a.sensor_number,b.name as sensor_type_name,c.point_id,c.name as point_name, d.section_id,d.name as section_name " +
                     "from sensor_info as a " +
                     "left join sensor_type as b on a.type_id = b.type_id " +
                     "left join watch_point as c on a.point_id = c.point_id " +

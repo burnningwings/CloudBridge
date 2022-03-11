@@ -1293,7 +1293,7 @@ function sensorListDropdown(bridge_id, section_id, watch_point_id, watch_box_id,
         var data = response["data"];
         var options = "<option value='0'>全部传感器</option>";
         for (var i = 0; i < data.length; i++) {
-            options += "<option value='" + data[i]['sensor_id'] + "'>" + data[i]['sensor_number'] + "--" + data[i]['sensor_type_name'] + "</option>";
+            options += "<option value='" + data[i]['sensor_id'] + " - " + data[i]['sensor_number'] + "'>" + data[i]['sensor_number'] + "--" + data[i]['sensor_type_name'] + "</option>";
         }
     } else {
         options += "<option value='0'>无</option>";
@@ -2053,6 +2053,7 @@ $(function () {
 
         console.log(sensor_id_array,sensor_number_array)
         if(!sensor_type || !metric || !sensor_id_array || sensor_type.match(/^\s*$/) || metric.match(/^\s*$/) || sensor_id_array.length<=0){
+            showTransientDialog("没有符合条件的查询！");
             showTransientDialog("没有符合条件的查询！");
         }else{
             var figure_id = "query_latest_time_figure";

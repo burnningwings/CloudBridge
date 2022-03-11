@@ -25,7 +25,7 @@ public class HBaseCli {
     private Configuration conf = null;
     private HBaseCli(){
         this.conf = HBaseConfiguration.create();
-        this.conf.set("hbase.zookeeper.quorum","cu01,cu02,cu03,cu04,cu05,cu06");
+        this.conf.set("hbase.zookeeper.quorum","cu01,cu03,cu04");   
         this.conf.set("hbase.zookeeper.property.clientPort","2181");
         this.conf.set("hbase.master", "mu01:60000");
         this.conf.set("mapreduce.output.fileoutputformat.outputdir", "/tmp");
@@ -161,7 +161,7 @@ public class HBaseCli {
                 for(String column: columns){
 //                    System.out.println(column);
                     Cell a = r.getColumnCells(
-                            new String("family").getBytes(),
+                            new String("data").getBytes(),
                             new String(column).getBytes()).get(0);
                     rowObj.put(column,new String(CellUtil.cloneValue(a)));
                     rowObj.putAll(otherInfo);

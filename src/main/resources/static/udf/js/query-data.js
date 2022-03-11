@@ -2161,8 +2161,8 @@ $(function () {
                 var params = {
                     "sensorList": JSON.stringify(sensor_id_array),
                     "columnList": JSON.stringify([metric]),
-                    "startRowKey": new Date(begin_time).format('yyyyMMddHHmmssSS'),
-                    "endRowKey": new Date(end_time).format('yyyyMMddHHmmssSS'),
+                    "startRowKey": new Date(begin_time).format('yyyyMMddHHmm'),
+                    "endRowKey": new Date(end_time).format('yyyyMMddHHmm'),
                     "limit": 0
                 }
                 // 返回后调用

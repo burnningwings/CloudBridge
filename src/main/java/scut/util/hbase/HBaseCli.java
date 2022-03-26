@@ -86,8 +86,11 @@ public class HBaseCli {
                     JSONObject rowObj = new JSONObject();
                     rowObj.put("CLSJ",new String(r.getRow()));
                     for(Object column: columnArray.toArray()){
+//                        Cell a = r.getColumnCells(
+//                                new String("family").getBytes(),
+//                                column.toString().getBytes()).get(0);
                         Cell a = r.getColumnCells(
-                                new String("family").getBytes(),
+                                new String("data").getBytes(),
                                 column.toString().getBytes()).get(0);
                         rowObj.put(column.toString(),new String(CellUtil.cloneValue(a)));
                     }
@@ -95,7 +98,7 @@ public class HBaseCli {
                 }
             } catch (IOException e) {
                 System.out.println("数据表" + table.getName() + "不存在！");
-//                e.printStackTrace();
+                e.printStackTrace();
             } finally {
                 if(table!=null) {
                     try {

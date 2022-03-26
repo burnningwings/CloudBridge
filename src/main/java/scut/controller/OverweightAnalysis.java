@@ -1,5 +1,6 @@
 package scut.controller;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.dbutils.ResultSetHandler;
@@ -10,11 +11,11 @@ import scut.base.HttpResponse;
 import scut.service.SysUserService;
 import scut.service.scheduler.AnalysisMessage;
 import scut.service.scheduler.LogEntity;
-import scut.service.scheduler.Message;
-import scut.service.scheduler.Scheduler;
 import scut.service.scheduler.executor.CommandLineExecutor;
 import scut.service.scheduler.executor.Executor;
 import scut.util.Constants;
+import scut.util.hbase.HBaseCli;
+import scut.util.parser.JsonParser;
 import scut.util.sql.SQLBaseDao;
 import scut.util.sql.SQLDaoFactory;
 
@@ -24,6 +25,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by Xiaoah on 2018/9/13
@@ -38,6 +42,30 @@ public class OverweightAnalysis {
 
     @Resource
     SysUserService sysUserService;
+
+    private Map<String,Object> getDataSchema(String sensorId){
+        String sql = "select b.data_schema " +
+                "from sensor_info as a " +
+                "left join sensor_type as b on a.type_id=b.type_id " +
+                "where a.sensor_id='%s'";
+        System.out.println(String.format(sql,sensorId));
+        Map<String,Object> dataSchema = null;
+        try {
+            dataSchema = SQLDaoFactory.getSQLDaoInstance(druid_mysql_url).querySingleObject(
+                    String.format(sql,sensorId),new ResultSetHandler<Map<String,Object>>(){
+                        @Override
+                        public Map<String,Object> handle(ResultSet rs) throws SQLException {
+                            if(rs.next()){
+                                return new JsonParser().parse(rs.getString("data_schema"));
+                            }
+                            return null;
+                        }
+                    });
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return dataSchema;
+    }
 //    @RequestMapping(value = "/overweight-analysis/getPredictResult", method = RequestMethod.GET, produces = "application/json")
 //    public JSONObject getPredictResult(String testfile, String testmodel){
 //        HttpResponse response = new HttpResponse();
@@ -383,6 +411,41 @@ public class OverweightAnalysis {
         return response.getHttpResponse();
     }
 
+    @RequestMapping(value = "/overweight-analysis/trainlabelupload", method = RequestMethod.POST)
+    public JSONObject trainLabelUpload(@RequestParam("trainlabel_upload")MultipartFile file){
+        HttpResponse response = new HttpResponse();
+        JSONObject data = new JSONObject();
+        if (!file.isEmpty()){
+            try{
+                File targetFile = new File(Constants.OVERWEIGHT_TRAIN_LABEL);
+                if(!targetFile.exists()) {
+                    targetFile.mkdirs();
+                }
+                String originFileName = file.getOriginalFilename();
+                String fileName = Constants.OVERWEIGHT_TRAIN_LABEL + "/" + originFileName;
+                BufferedOutputStream out = new BufferedOutputStream(
+                        new FileOutputStream(new File( fileName)));
+                out.write(file.getBytes());
+                out.flush();
+                out.close();
+            }catch (FileNotFoundException e){
+                e.printStackTrace();
+                response.setStatus(HttpResponse.FAIL_STATUS);
+                response.setMsg("服务器路径错误！");
+            }catch (IOException e){
+                e.printStackTrace();
+                response.setStatus(HttpResponse.FAIL_STATUS);
+                response.setMsg("文件上传失败！");
+            }
+
+        }else{
+            response.setStatus(HttpResponse.FAIL_STATUS);
+            response.setMsg("相关上传参数错误！");
+        }
+        response.setData(data);
+        return response.getHttpResponse();
+    }
+
     @RequestMapping(value = "/overweight-analysis/dropdown", method = RequestMethod.GET, produces = "application/json")
     public JSONObject dropDownList(String type){
         HttpResponse response = new HttpResponse();
@@ -394,6 +457,7 @@ public class OverweightAnalysis {
             case "trainmodel" : targetPath = Constants.OVERWEIGHT_UPLOAD_TRAIN_MODEL_DIR; break;
             case "savedmodel" : targetPath = Constants.OVERWEIGHT_SAVE_TRAIN_MODEL_DIR; break;
             case "evaluatefile" : targetPath = Constants.OVERWEIGHT_UPLOAD_EVALUATE_FILE_DIR; break;
+            case "trainlabel" : targetPath = Constants.OVERWEIGHT_TRAIN_LABEL; break;
             default: break;
         }
         File dirFile = new File(targetPath);
@@ -536,15 +600,20 @@ public class OverweightAnalysis {
         String savedmodel = reqMsg.getString("savedmodel");
         String beginTime = reqMsg.getString("begintime");
         String endTime = reqMsg.getString("endtime");
+        String trainLabel = reqMsg.getString("trainlabel");
         long begintime = Long.parseLong(beginTime);
         long endtime = Long.parseLong(endTime);
 
         //根据条件过滤数据
         File selectFile = new File(Constants.OVERWEIGHT_UPLOAD_TRAIN_FILE_DIR + "/" +trainfile);
+        File labelFile = new File(Constants.OVERWEIGHT_TRAIN_LABEL + "/" +trainLabel);
         if(!selectFile.exists()){
             response.setStatus(HttpResponse.FAIL_STATUS);
             response.setMsg("找不到该训练文件！");
-        }else{
+        }else if(!labelFile.exists()) {
+            response.setStatus(HttpResponse.FAIL_STATUS);
+            response.setMsg("找不到该训练标签！");
+        }else {
             boolean startflag = false;
             boolean endflag = false;
             try {
@@ -585,6 +654,9 @@ public class OverweightAnalysis {
                             String tmpline = "";
                             for (int t=0;t<15;t++){
                                 tmpline += split[t];
+                                if(t <14) {
+                                    tmpline += ",";
+                                }
                             }
                             bw.write(tmpline+"\n");
                             count ++ ;
@@ -607,10 +679,13 @@ public class OverweightAnalysis {
                     //调用外部程序
                     String md5 = DigestUtils.md5Hex(trainfile + beginTime + endTime + trainmodel);
                     String TRAIN_FILE = Constants.OVERWEIGHT_TRAINFILE_TARGET_DIR;
-                    String MODEL_TRAIN_PROGRAM = Constants.OVERWEIGHT_UPLOAD_TRAIN_MODEL_DIR + "/" + trainmodel + "/" + trainmodel;
-                    String SAVED_MODE = Constants.OVERWEIGHT_SAVE_TRAIN_MODEL_DIR + "/" + savedmodel;
-                    String TRAINLABEL = Constants.OVERWEIGHT_TRAIN_LABEL;
+                    String MODEL_TRAIN_PROGRAM = Constants.OVERWEIGHT_UPLOAD_TRAIN_MODEL_DIR + "/" + trainmodel + "/" + trainmodel + ".py";
+//                    String SAVED_MODE = Constants.OVERWEIGHT_SAVE_TRAIN_MODEL_DIR + "/" + savedmodel;
+                    String SAVED_MODE = Constants.OVERWEIGHT_SAVE_TRAIN_MODEL_DIR;
+                    String TRAINLABEL = Constants.OVERWEIGHT_TRAIN_LABEL + "/" + trainLabel;
                     String TRAINIMAGE = Constants.OVERWEIGHT_TRAIN_LOSSIMAGE;
+
+//                    TRAIN_FILE = "D:/tmp/CloudBridge/data_analysis/overweight_analysis/train_file/displacement.csv";
 
                     AnalysisMessage.getInstance().update(md5, trainfile+beginTime+endTime+trainmodel, savedmodel, Constants.READY, "TRAIN", null);
 
@@ -628,7 +703,7 @@ public class OverweightAnalysis {
                     logger.debug("exitVal: " + logentity.getExitVal());
                     logger.debug(logentity.toString());
 
-                    if (logentity.getExitVal() == 0){
+                    if (logentity.getExitVal() == 0 || logentity.getExitVal() == 120){
                         data.put("result", "success");
                         AnalysisMessage.getInstance().update(md5,null,null,Constants.FINISHED,null,logentity.toString());
                     }else{
@@ -668,13 +743,150 @@ public class OverweightAnalysis {
         return response.getHttpResponse();
     }
 
+    @RequestMapping(value = "/overweight-analysis/trainCGQ",method = RequestMethod.POST,produces = "application/json")
+    public JSONObject trainModelWithCGQ(@RequestBody JSONObject reqMsg){
+
+        HttpResponse response = new HttpResponse();
+        JSONObject data = new JSONObject();
+
+        String bridge = reqMsg.getString("bridge");
+        String trainmodel = reqMsg.getString("trainmodel");
+        String savedmodel = reqMsg.getString("savedmodel");
+        String beginTime = reqMsg.getString("begintime");
+        String endTime = reqMsg.getString("endtime");
+        long begintime = Long.parseLong(beginTime);
+        long endtime = Long.parseLong(endTime);
+
+//        TODO: select the sensor from mysql with the bridgeId, and the sensors privode the displacement responnse data
+        String sql = "select sensor_id from sensor_info as a " +
+                "left join watch_box as b on a.box_id = b.box_id " +
+                "left join bridge_info as c on  c.bridge_id = b.bridge_id " +
+                "where c.bridge_name = " + bridge;
+
+        ArrayList<Integer> sensorList = new ArrayList<>();
+        try {
+            baseDao.querySingleObject(sql, new ResultSetHandler<Object>() {
+                @Override
+                public String handle(ResultSet rs) throws SQLException {
+
+                    while(rs.next()){
+                        sensorList.add(rs.getInt("sensor_id"));
+                    }
+
+                    return null;
+                }
+            });
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+//        TODO: accroding the sensorId, selecting the minitoring data from hbase, and make a csv file
+        JSONArray columnArray = new JSONArray();
+        columnArray.add("CLYB");
+//        JSONArray CGQData = new JSONArray();
+        JSONObject CGQData = new JSONObject(true);
+        int index = 0;
+        for (Integer sensorId : sensorList){
+            // 获取所有列
+//            Set<String> sensorColumns = getDataSchema(sensorId.toString()).keySet();
+//            sensorColumns.remove("CLSJ");
+
+            System.out.println(columnArray);
+            String hbaseTableName = "CloudBridge:" + sensorId;
+            int sample = -1;
+            int limit = 0;
+            JSONArray rangeData = HBaseCli.getInstance().query(hbaseTableName,beginTime,endTime,columnArray,limit,sample);
+            for (int i = 0;i<rangeData.size();i++){
+                JSONObject o = rangeData.getJSONObject(i);
+                if (!CGQData.containsKey(o.getString("CLSJ"))){
+                    //创建新的一个时间戳行
+                    String newRow = "";
+                    if (index > 0){
+                        for (int j = 0;j<index;j++){
+                            newRow += ",";
+                        }
+                    }
+                    newRow += o.getString("CLYB");
+                    CGQData.put(o.getString("CLSJ"),newRow);
+                }else{
+                    CGQData.put(o.getString("CLSJ"),CGQData.getString(o.getString("CLSJ"))+o.getString("CLYB"));
+                }
+            }
+            Set<String> keys = CGQData.keySet();
+            for (String key : keys){
+                CGQData.put(key,CGQData.getString(key)+",");
+            }
+            index++;
+        }
+
+        int count = 0;
+        try {
+            File targetFile = new File(Constants.OVERWEIGHT_TRAINFILE_TARGET_DIR);
+            if(!targetFile.exists()){
+                targetFile.createNewFile();
+            }
+            FileOutputStream fos = null;
+            fos = new FileOutputStream(targetFile);
+            OutputStreamWriter osw = new OutputStreamWriter(fos,"UTF-8");
+            BufferedWriter bw = new BufferedWriter(osw);
+            bw.write("x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15" + "\n");
+            for(String key : CGQData.keySet()){
+                bw.write(CGQData.getString(key)+"\n");
+                count++;
+            }
+            bw.close();
+            osw.close();
+            fos.close();
+
+            //        TODO: using the test API to train the model, and return the result
+            if(count != 0){
+                //调用外部程序
+                String md5 = DigestUtils.md5Hex(targetFile + beginTime + endTime + trainmodel);
+                String TRAIN_FILE = Constants.OVERWEIGHT_TRAINFILE_TARGET_DIR;
+                String MODEL_TRAIN_PROGRAM = Constants.OVERWEIGHT_UPLOAD_TRAIN_MODEL_DIR + "/" + trainmodel + "/" + trainmodel;
+                String SAVED_MODE = Constants.OVERWEIGHT_SAVE_TRAIN_MODEL_DIR + "/" + savedmodel;
+                String TRAINLABEL = Constants.OVERWEIGHT_TRAIN_LABEL;
+                String TRAINIMAGE = Constants.OVERWEIGHT_TRAIN_LOSSIMAGE;
+
+                AnalysisMessage.getInstance().update(md5, "hbase:CloudBridge:"+bridge+beginTime+endTime+trainmodel, savedmodel, Constants.READY, "TRAIN", null);
+
+                String execStr = Constants.SCRIPT_EXEC_PREFIX + " " + MODEL_TRAIN_PROGRAM + " --task_name " + savedmodel +" --data " + TRAIN_FILE +
+                        " --label " + TRAINLABEL + " --mode train --epochs 25 --lr 0.0005 --batch_size 64 --save_loss_image True --loss_image_dir " +
+                        TRAINIMAGE + " --save_model True --model_dir " +SAVED_MODE;
+                //String execStr = "python D:/tmp/a.py";
+                logger.debug(execStr);
+                Executor executor = new CommandLineExecutor(md5, execStr);
+//                    Scheduler.getInstance().runExecutor(executor);
+                LogEntity logentity = ((CommandLineExecutor) executor).execute_analysis();
+
+                logger.debug("exitVal: " + logentity.getExitVal());
+                logger.debug(logentity.toString());
+
+                if (logentity.getExitVal() == 0 || logentity.getExitVal() == 0){
+                    data.put("result", "success");
+                    AnalysisMessage.getInstance().update(md5,null,null,Constants.FINISHED,null,logentity.toString());
+                }else{
+                    data.put("result", "failed");
+                    AnalysisMessage.getInstance().update(md5,null,null,Constants.FAILED,null,logentity.toString());
+                }
+            }else{
+                data.put("result", "nodata");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        response.setData(data);
+        return response.getHttpResponse();
+    }
+
     @RequestMapping(value = "/overweight-analysis/evaluate", method = RequestMethod.POST, produces = "application/json")
     public JSONObject udfEvaluateModel(@RequestBody JSONObject reqMsg){
         HttpResponse response = new HttpResponse();
         JSONObject data = new JSONObject();
 
         String evaluatefile = reqMsg.getString("evaluatefile");
-        String bridge = reqMsg.getString("bridge");
+//        String bridge = reqMsg.getString("bridge");
         String evaluatemodel = reqMsg.getString("evaluatemodel");
         String beginTime = reqMsg.getString("begintime");
         String endTime = reqMsg.getString("endtime");
@@ -694,10 +906,21 @@ public class OverweightAnalysis {
                 if(!targetFile.exists()){
                     targetFile.createNewFile();
                 }
+                File targetLabelFile = new File(Constants.OVERWEIGHT_EVALUATE_LABEL);
+                if (!targetLabelFile.exists()){
+                    targetLabelFile.createNewFile();
+                }
+                //写数据文件
                 FileOutputStream fos = new FileOutputStream(targetFile);
                 OutputStreamWriter osw = new OutputStreamWriter(fos,"UTF-8");
                 BufferedWriter bw = new BufferedWriter(osw);
-                bw.write("UY1,UY2,UY3,UY4,UY5,UY6,UY7,UY8,UY9,UY10,UY11,UY12,UY13,UY14,UY15,label,bridge,time" + "\n");
+//                bw.write("UY1,UY2,UY3,UY4,UY5,UY6,UY7,UY8,UY9,UY10,UY11,UY12,UY13,UY14,UY15,label,bridge,time" + "\n");
+                bw.write("x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15" + "\n");
+                //写标签文件
+                FileOutputStream l_fos = new FileOutputStream(targetLabelFile);
+                OutputStreamWriter l_osw = new OutputStreamWriter(l_fos, "UTF-8");
+                BufferedWriter l_bw = new BufferedWriter(l_osw);
+                l_bw.write("label"+"\n");
 
                 FileInputStream fis = new FileInputStream(selectFile);
                 InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
@@ -707,17 +930,26 @@ public class OverweightAnalysis {
                 while((line = br.readLine()) != null ){
 
                     String[] split = line.split(",");
-                    System.out.println(split.length);
                     if(split.length == 18){
-                        String current_bridge = split[16];
+//                        String current_bridge = split[16];
                         if(!split[17].matches("\\d+")){
                             continue;
                         }
                         long current_time = Long.parseLong(split[17]);
                         if(current_time >= endtime){ endflag = true;}
                         if(current_time <= begintime){ startflag = true;}
-                        if(current_bridge.equals(bridge) && current_time >= begintime && current_time <= endtime){
-                            bw.write(line+"\n");
+//                        if(current_bridge.equals(bridge) && current_time >= begintime && current_time <= endtime){
+//                            bw.write(line+"\n");
+//                            count ++ ;
+//                        }
+                        if(current_time >= begintime && current_time <= endtime){
+                            String tmpline = "";
+                            for (int t=0;t<15;t++){
+                                tmpline += split[t];
+                                if (t < 14) tmpline += ",";
+                            }
+                            bw.write(tmpline+"\n");
+                            l_bw.write(split[15]+"\n");
                             count ++ ;
                         }
                     }
@@ -726,6 +958,9 @@ public class OverweightAnalysis {
                 bw.close();
                 osw.close();
                 fos.close();
+                l_bw.close();
+                l_osw.close();
+                l_fos.close();
                 br.close();
                 isr.close();
                 fis.close();
@@ -734,14 +969,15 @@ public class OverweightAnalysis {
                     //调用外部程序
                     String md5 = DigestUtils.md5Hex(evaluatefile + beginTime + endTime + evaluatemodel);
                     String EVALUATE_FILE = Constants.OVERWEIGHT_EVALUATEFILE_TARGET_DIR;
+                    String EVALUATE_LABEL = Constants.OVERWEIGHT_EVALUATE_LABEL;
                     String MODEL_EVALUATE_PROGRAM = Constants.OVERWEIGHT_EVALUATE_MODEL_PROGRAM;
                     String EVALUATE_MODEL = Constants.OVERWEIGHT_SAVE_TRAIN_MODEL_DIR + "/" + evaluatemodel;
-                    String outputFileName = evaluatefile + "_" + bridge + "_" + beginTime + "_" + endTime + "_" + evaluatemodel.split("\\.")[0] + ".csv";
+                    String outputFileName = evaluatefile + "_" + beginTime + "_" + endTime + "_" + evaluatemodel.split("\\.")[0] + ".csv";
                     String OUTPUT_FILE = Constants.OVERWEIGHT_EVALUATE_MODEL_RESULT_DIR + "/" + outputFileName;
 
-                    AnalysisMessage.getInstance().update(md5, evaluatefile+bridge+beginTime+endTime+evaluatemodel, outputFileName, Constants.READY, "EVALUATE", null);
+                    AnalysisMessage.getInstance().update(md5, evaluatefile+beginTime+endTime+evaluatemodel, outputFileName, Constants.READY, "EVALUATE", null);
                     //String execStr = "D:/os_environment/anaconda/python " + MODEL_EVALUATE_PROGRAM + " " + EVALUATE_FILE + " " + EVALUATE_MODEL + " " + OUTPUT_FILE;
-                    String execStr = Constants.SCRIPT_EXEC_PREFIX + " " + MODEL_EVALUATE_PROGRAM + " " + EVALUATE_FILE + " " + EVALUATE_MODEL + " " + OUTPUT_FILE;
+                    String execStr = Constants.SCRIPT_EXEC_PREFIX + " " + MODEL_EVALUATE_PROGRAM + " --data " + EVALUATE_FILE + " --label " + EVALUATE_LABEL + " --mode evaluate --model " + EVALUATE_MODEL + " --evaluate_res_dir " + OUTPUT_FILE;
                     //String execStr = "python D:/tmp/a.py";
                     logger.debug(execStr);
                     Executor executor = new CommandLineExecutor(md5, execStr);
@@ -751,7 +987,7 @@ public class OverweightAnalysis {
                     logger.debug("exitVal: " + logentity.getExitVal());
                     logger.debug(logentity.toString());
 
-                    if (logentity.getExitVal() == 0){
+                    if (logentity.getExitVal() == 0 || logentity.getExitVal() == 120){
                         data.put("result", "success");
                         AnalysisMessage.getInstance().update(md5,null,null,Constants.FINISHED,null,logentity.toString());
                         try{
@@ -802,6 +1038,136 @@ public class OverweightAnalysis {
             }
         }
 
+
+        response.setData(data);
+        return response.getHttpResponse();
+    }
+
+    @RequestMapping(value = "/overweight-analysis/testCGQ",method = RequestMethod.POST,produces = "application/json")
+    public JSONObject testCGQ(@RequestBody JSONObject reqMsg){
+        HttpResponse response = new HttpResponse();
+        JSONObject data = new JSONObject();
+
+        String bridge = reqMsg.getString("bridge");
+        String testmodel = reqMsg.getString("testmodel");
+        String beginTime = reqMsg.getString("begintime");
+        String endTime = reqMsg.getString("endtime");
+        long begintime = Long.parseLong(beginTime);
+        long endtime = Long.parseLong(endTime);
+
+//        TODO: select the sensor from mysql with the bridgeId, and the sensors privode the displacement responnse data
+        String sql = "select sensor_id from sensor_info as a " +
+                "left join watch_box as b on a.box_id = b.box_id " +
+                "left join bridge_info as c on  c.bridge_id = b.bridge_id " +
+                "where c.bridge_name = " + bridge;
+
+        ArrayList<Integer> sensorList = new ArrayList<>();
+        try {
+            baseDao.querySingleObject(sql, new ResultSetHandler<Object>() {
+                @Override
+                public String handle(ResultSet rs) throws SQLException {
+
+                    while(rs.next()){
+                        sensorList.add(rs.getInt("sensor_id"));
+                    }
+
+                    return null;
+                }
+            });
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+//        TODO: accroding the sensorId, selecting the minitoring data from hbase, and make a csv file
+        JSONArray columnArray = new JSONArray();
+        columnArray.add("CLYB");
+//        JSONArray CGQData = new JSONArray();
+        JSONObject CGQData = new JSONObject(true);
+        int index = 0;
+        for (Integer sensorId : sensorList){
+            // 获取所有列
+//            Set<String> sensorColumns = getDataSchema(sensorId.toString()).keySet();
+//            sensorColumns.remove("CLSJ");
+
+            System.out.println(columnArray);
+            String hbaseTableName = "CloudBridge:" + sensorId;
+            int sample = -1;
+            int limit = 0;
+            JSONArray rangeData = HBaseCli.getInstance().query(hbaseTableName,beginTime,endTime,columnArray,limit,sample);
+            for (int i = 0;i<rangeData.size();i++){
+                JSONObject o = rangeData.getJSONObject(i);
+                if (!CGQData.containsKey(o.getString("CLSJ"))){
+                    //创建新的一个时间戳行
+                    String newRow = "";
+                    if (index > 0){
+                        for (int j = 0;j<index;j++){
+                            newRow += ",";
+                        }
+                    }
+                    newRow += o.getString("CLYB");
+                    CGQData.put(o.getString("CLSJ"),newRow);
+                }else{
+                    CGQData.put(o.getString("CLSJ"),CGQData.getString(o.getString("CLSJ"))+o.getString("CLYB"));
+                }
+            }
+            Set<String> keys = CGQData.keySet();
+            for (String key : keys){
+                CGQData.put(key,CGQData.getString(key)+",");
+            }
+            index++;
+        }
+
+        int count = 0;
+        try {
+            File targetFile = new File(Constants.OVERWEIGHT_TESTFILE_TARGET_DIR);
+            if(!targetFile.exists()){
+                targetFile.createNewFile();
+            }
+            FileOutputStream fos = null;
+            fos = new FileOutputStream(targetFile);
+            OutputStreamWriter osw = new OutputStreamWriter(fos,"UTF-8");
+            BufferedWriter bw = new BufferedWriter(osw);
+            bw.write("x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15" + "\n");
+            for(String key : CGQData.keySet()){
+                bw.write(CGQData.getString(key)+"\n");
+                count++;
+            }
+            bw.close();
+            osw.close();
+            fos.close();
+
+            //        TODO: using the test API to train the model, and return the result
+            if(count != 0){
+                //调用外部程序
+                String TEST_FILE = Constants.OVERWEIGHT_TESTFILE_TARGET_DIR;
+                String MODEL_TEST_PROGRAM = Constants.OVERWEIGHT_PREDICT_PROGRAM;
+//                    String TEST_MODEL = Constants.OVERWEIGHT_SAVE_TRAIN_MODEL_DIR + "/" + testmodel;
+                String TEST_MODEL = Constants.OVERWEIGHT_SAVE_TRAIN_MODEL_DIR + "/" + testmodel;
+                String outputFileName = bridge + "_" + beginTime + "_" + endTime + "_" + testmodel.split("\\.")[0] + ".csv";
+                String OUTPUT_FILE = Constants.OVERWEIGHT_PREDICT_FILE_DIR + "/" + outputFileName;
+                String md5 = DigestUtils.md5Hex( bridge + beginTime + endTime + testmodel);
+
+                AnalysisMessage.getInstance().update(md5, bridge + beginTime + endTime + testmodel, outputFileName, Constants.READY, "TEST",null);
+                //String execStr = "D:/os_environment/anaconda/python " + MODEL_TEST_PROGRAM + " " + TEST_FILE + " " + TEST_MODEL + " " + OUTPUT_FILE;
+                String execStr = Constants.SCRIPT_EXEC_PREFIX + " " + MODEL_TEST_PROGRAM + " --data " + TEST_FILE + " --mode test --model " + TEST_MODEL + " --res_dir " + OUTPUT_FILE;
+                //String execStr = "python D:/tmp/a.py";
+                logger.debug(execStr);
+                Executor executor = new CommandLineExecutor(md5, execStr);
+                //Scheduler.getInstance().runExecutor(executor);
+                LogEntity logentity = ((CommandLineExecutor) executor).execute_analysis();
+                if (logentity.getExitVal() == 0){
+                    data.put("result", "success");
+                    AnalysisMessage.getInstance().update(md5,null,null,Constants.FINISHED,null,logentity.toString());
+                }else{
+                    data.put("result", "failed");
+                    AnalysisMessage.getInstance().update(md5,null,null,Constants.FAILED,null,logentity.toString());
+                }
+            }else{
+                data.put("result", "nodata");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         response.setData(data);
         return response.getHttpResponse();

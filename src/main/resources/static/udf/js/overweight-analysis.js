@@ -208,6 +208,27 @@ function updateDropdownListTrainFile(){
 
 }
 
+function updateDropdownListTrainLabel(){
+    $("#train_label_selected").empty();
+    $('#spy_train_label_selected').empty();
+    var url = "/overweight-analysis/dropdown";
+    var response = webRequest(url, "GET", false, {"type" : "trainlabel"});
+    var options ="<option value=\'\' disabled selected>请选择训练标签</option>"
+    if(response!=null && response.status==0){
+        var data = response.data;
+        for(var key in data){
+            options = options + "<option>" + key + "</option>";
+        }
+    }
+    $("#train_label_selected").append(options);
+    $('#spy_train_label_selected').append(options)
+    $("#train_file_selected").selectpicker('refresh');
+    // $("#train_file_selected").on('shown.bs.select',function(e){
+    //      console.log('展开');
+    // })
+
+}
+
 function updateDropdownListTestFile(){
     $("#test_file_selected").empty();
     var url = "/overweight-analysis/dropdown";
@@ -225,6 +246,7 @@ function updateDropdownListTestFile(){
 
 function updateDropdownListTrainModel(){
     $("#train_model_selected").empty();
+    $('#spy_train_model_selected').empty();
     var url = "/overweight-analysis/dropdown";
     var response = webRequest(url, "GET", false, {"type" : "trainmodel"});
     var options ="<option value=\'\' disabled selected>请选择训练模型</option>"
@@ -235,11 +257,13 @@ function updateDropdownListTrainModel(){
         }
     }
     $("#train_model_selected").append(options);
+    $('#spy_train_model_selected').append(options);
     $("#train_model_selected").selectpicker('refresh');
 }
 
 function updateDropdownListSavedModel(){
     $("#test_model_selected").empty();
+    $("#spy_test_model_selected").empty();
     var url = "/overweight-analysis/dropdown";
     var response = webRequest(url, "GET", false, {"type" : "savedmodel"});
     var options ="<option value=\'\' disabled selected>请选择预测模型</option>"
@@ -250,7 +274,9 @@ function updateDropdownListSavedModel(){
         }
     }
     $("#test_model_selected").append(options);
+    $("#spy_test_model_selected").append(options);
     $("#test_model_selected").selectpicker('refresh');
+    $("#spy_test_model_selected").selectpicker('refresh');
 }
 
 function updateDropdownListEvaluateFile(){
@@ -330,6 +356,7 @@ function updateDropdownListEvaluateModel(){
 
 function updateDropdownListTrainBridge(){
     $("#train_bridge_selected").empty();
+    $('#spy_train_bridge_selected').empty();
     var url = "/overweight-analysis/update_bridge_dropdown";
     var response = webRequest(url, "GET", false, {});
     var options = "<option value='' disabled selected>请选择分析的桥梁</option>";
@@ -340,6 +367,7 @@ function updateDropdownListTrainBridge(){
         }
     }
     $("#train_bridge_selected").append(options);
+    $('#spy_train_bridge_selected').append(options);
     $("#train_bridge_selected").selectpicker('refresh');
 }
 function updateDropdownListEvaluateBridge(){
@@ -358,6 +386,7 @@ function updateDropdownListEvaluateBridge(){
 }
 function updateDropdownListTestBridge(){
     $("#test_bridge_selected").empty();
+    $("#spy_test_bridge_selected").empty();
     var url = "/overweight-analysis/update_bridge_dropdown";
     var response = webRequest(url, "GET", false, {});
     var options = "<option value='' disabled selected>请选择分析的桥梁</option>";
@@ -368,7 +397,10 @@ function updateDropdownListTestBridge(){
         }
     }
     $("#test_bridge_selected").append(options);
+    $("#spy_test_bridge_selected").append(options);
+
     $("#test_bridge_selected").selectpicker('refresh');
+    $("#spy_test_bridge_selected").selectpicker('refresh');
 }
 
 // function updateDropdownListUdfEvaluateBridge(){
@@ -415,6 +447,37 @@ function updateDropdownListTestBridge(){
 //     $("#test_bridge_selected").append(options);
 //     $("#test_bridge_selected").selectpicker('refresh');
 // }
+
+// function CGQTrain(){
+//     var token = $("meta[name='_csrf']").attr("content");
+//     var header = $("meta[name='_csrf_header']").attr("content");
+//     $(document).ajaxSend(function(e, xhr, options) {
+//         xhr.setRequestHeader(header, token);
+//     });
+//     $.ajax({
+//         url: "/overweight-analysis/trainCGQ",
+//         type: "POST",
+//         async: true,
+//         contentType: "application/json; charset=utf-8",
+//         data: JSON.stringify({
+//             "trainmodel" : "train_model",
+//             "savedmodel" : "saved_model",
+//             "bridgeId" : 29,
+//             "begintime" : "20060511102122",
+//             "endtime" : new Date().format("yyyyMMddHHmmss")
+//         }),
+//         dataType: "json",
+//         beforeSend: function () {
+//
+//         },
+//         success: function(response) {
+//
+//         },
+//         error: function(response) {
+//
+//         }
+//     });
+// }
 //初始化
 $(function () {
     var timer;
@@ -447,6 +510,8 @@ $(function () {
     updateDropdownListTrainBridge();
     updateDropdownListEvaluateBridge();
     updateDropdownListTestBridge();
+    updateDropdownListTrainLabel();
+    // CGQTrain();
 
    // updateDropdownListUdfTrainModel();
    // updateDropdownListUdfTrainBridge();
@@ -611,6 +676,29 @@ $(function () {
 
     });
 
+    $("#description_label_format").click(function(){
+        var popoverEl = $("#description_label_format");
+        popoverEl.popover("destroy");
+        // var content = "{<br/>"+
+        //     "feature1,feature2,feature3,label<br/>"+
+        //     "}";
+        // var content = "data1 : float<br/>" + "data2 : float<br/>" + "data3 : float<br/>" + "data4 : float<br/>" + "data5 : float<br/>"
+        //             + "data6 : float<br/>" + "data7 : float<br/>" + "data8 : float<br/>" + "data9 : float<br/>" + "data10 : float<br/>"
+        //             + "data11 : float<br/>" + "data12 : float<br/>" + "data13 : float<br/>" + "data14 : float<br/>" + "data15 : float<br/>"
+        //             + "label : integer<br/>" + "bridge : string<br/>" + "time : string"
+        // popoverEl.attr("data-content", content);
+        // popoverEl.popover("show");
+        var str = "s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,s11,s12,s13,s14,s15\n";
+        var url = "data:text/csv;charset=utf-8,\ufeff" + encodeURIComponent(str);
+        var link = document.createElement("a");
+        link.href = url;
+        link.download = 'example_label.csv';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+    });
+
     $("#description_evaluate_dataformat").click(function(){
         var popoverEl = $("#description_evaluate_dataformat");
         popoverEl.popover("destroy");
@@ -738,6 +826,36 @@ $(function () {
         showTransientDialog(msg);
     });
 
+    $("#trainlabel_upload").fileinput({
+        allowedFileExtensions: ['csv'],
+        uploadUrl: "overweight-analysis/trainlabelupload",
+        language: 'zh',
+        uploadAsync: true,
+        showUpload: true,
+        maxFileCount: 1,
+        autoReplace: true,
+        showPreview: false,
+        maxFileSize: 512000, // KB,当前限制为50MB
+        maxPreviewFileSize: 1
+    }).on("fileuploaded",function (event, data, previewId, index) {
+        var response = data.response;
+        console.log(response)
+        if(response.status != 0){
+            showTransientDialog(response.msg);
+        }else{
+            showModalDialog("提示", "<div style='text-align:center;'>文件正在上传...</div>",function(){},150,40);
+        }
+        // updateDropdownListTrainModel();
+    }).on('fileuploaderror', function (event, data, msg) {
+        var response = data.response;
+        console.log("data");
+        console.log(data);
+        var msg = "仅支持csv且单文件大小不超过50MB！";
+        if(response!=null && response.msg!="") msg = response.msg;
+        console(msg);
+        showTransientDialog(msg);
+    });
+
     $("#testfile_upload").fileinput({
         allowedFileExtensions: ['csv'],
         uploadUrl: "overweight-analysis/testfileupload",
@@ -817,117 +935,215 @@ $(function () {
         showTransientDialog(msg);
     });
 
+    var train_mode = 0;
+    $('#train-tab li').click(function () {
+        train_mode = $(this).index();
+    });
+
     $("#train_start").click(function () {
-        var train_file = $("#train_file_selected").val();
-        var train_model = $("#train_model_selected").val();
-        // var train_bridge = $("#train_bridge_selected").val();
-        var saved_model = $("#saved_model").val();
-        //console.log(saved_model);
-        if (train_file == null){
-            showTransientDialog("请选择训练文件");
-            //showDialog("请选择训练文件");
-            return;
-        }
-        if(train_model == null){
-            showTransientDialog("请选择训练模型");
-            //showDialog("请选择训练模型");
-            return;
-        }
-        // if(train_bridge == null){
-        //     showTransientDialog("请选择分析桥梁");
-        //     //showDialog("请选择训练模型");
-        //     return;
-        // }
-        if(!saved_model){
-            showTransientDialog("请输入保存模型名称");
-            //showDialog("请输入保存模型名称");
-            return;
-        }
-        var begin_time = $("#train_begin_time").val();
-        var end_time = $("#train_end_time").val();
-        if(begin_time >= end_time){
-            showTransientDialog("开始时间必须小于截止时间");
-            return;
-        }
-
-        var response = null;
-        var d = null;
-        var token = $("meta[name='_csrf']").attr("content");
-        var header = $("meta[name='_csrf_header']").attr("content");
-        $(document).ajaxSend(function(e, xhr, options) {
-            xhr.setRequestHeader(header, token);
-        });
-        $.ajax({
-            url: "/overweight-analysis/train",
-            type: "POST",
-            async: true,
-            contentType: "application/json; charset=utf-8",
-            data: JSON.stringify({
-                "trainfile" : train_file,
-                "trainmodel" : train_model,
-                "savedmodel" : saved_model,
-                // "bridge" : train_bridge,
-                "begintime" : new Date(begin_time).format('yyyyMMddHHmmss'),
-                "endtime" : new Date(end_time).format("yyyyMMddHHmmss")
-            }),
-            dataType: "json",
-            beforeSend: function () {
-                $("#train_start").text('训练中...');
-                $("#train_process").removeAttr("value");
-                $("#ov_train_computing").show();
-
-                // set_progress();
-                // timer = setInterval("set_progress()", 10000);
-
-                // function set_progress() {
-                //     var current = $("#train_process").val();
-                //     $("#train_process").val(current + 5);
-                // }
-                // var content = '' +
-                //     ' <div style="width: 200px; text-align:center;"><img alt="loadding" src="/assets/img/loading.gif" style="margin-bottom: 20px;"/><p>计算中，请耐心等待...</p></div> \
-                //     '
-                // d = dialog({
-                //     content: content
-                // });
-                // d.showModal();
-            },
-            success: function(response) {
-                $("#ov_train_computing").hide();
-                // d.close();
-                // window.clearInterval(timer);
-                // timer = setInterval("set_progress()", 10);
-                // // // sleep(2000);
-                // window.clearInterval(timer);
-                var data = response.data;
-                var result = data['result'];
-                if (result == 'success') {
-                    //showTransientDialog('训练完成!')
-                    //showModalDialog("提示", "训练完成")
-                    //showAlertDialog('训练完成')
-                    showDialog("训练完成")
-                } else if(result == 'failed'){
-                    showTransientDialog('训练失败！')
-                } else{
-                    showTransientDialog('没有符合条件的数据！');
-                }
-            },
-            complete:function () {
-                $("#train_start").text("开始训练");
-                $("#train_process").attr("value", "100");
-                updateDropdownListSavedModel();
-                updateDropdownListEvaluateModel();
-
-
-                // if (d != null) {
-                //     d.close().remove();
-                // }
-            },
-            error: function(response) {
-                //showTransientDialog('调用失败！')
-                alert("提交任务失败");
+        if (train_mode == 0){
+            var train_file = $("#train_file_selected").val();
+            var train_model = $("#train_model_selected").val();
+            // var train_bridge = $("#train_bridge_selected").val();
+            var saved_model = $("#saved_model").val();
+            var train_label = $("#train_label_selected").val()
+            //console.log(saved_model);
+            if (train_file == null){
+                showTransientDialog("请选择训练文件");
+                //showDialog("请选择训练文件");
+                return;
+            }
+            if(train_model == null){
+                showTransientDialog("请选择训练模型");
+                //showDialog("请选择训练模型");
+                return;
+            }
+            // if(train_bridge == null){
+            //     showTransientDialog("请选择分析桥梁");
+            //     //showDialog("请选择训练模型");
+            //     return;
+            // }
+            if(!saved_model){
+                showTransientDialog("请输入保存模型名称");
+                //showDialog("请输入保存模型名称");
+                return;
+            }
+            if(!train_label){
+                showTransientDialog("请选择训练标签");
+                return;
+            }
+            var begin_time = $("#train_begin_time").val();
+            var end_time = $("#train_end_time").val();
+            if(begin_time >= end_time){
+                showTransientDialog("开始时间必须小于截止时间");
+                return;
             }
 
-        });
+            var response = null;
+            var d = null;
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            $(document).ajaxSend(function(e, xhr, options) {
+                xhr.setRequestHeader(header, token);
+            });
+            $.ajax({
+                url: "/overweight-analysis/train",
+                type: "POST",
+                async: true,
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({
+                    "trainfile" : train_file,
+                    "trainmodel" : train_model,
+                    "savedmodel" : saved_model,
+                    // "bridge" : train_bridge,
+                    "begintime" : new Date(begin_time).format('yyyyMMddHHmmss'),
+                    "endtime" : new Date(end_time).format("yyyyMMddHHmmss"),
+                    "trainlabel" : train_label,
+                }),
+                dataType: "json",
+                beforeSend: function () {
+                    $("#train_start").text('训练中...');
+                    $("#train_process").removeAttr("value");
+                    $("#ov_train_computing").show();
+
+                    // set_progress();
+                    // timer = setInterval("set_progress()", 10000);
+
+                    // function set_progress() {
+                    //     var current = $("#train_process").val();
+                    //     $("#train_process").val(current + 5);
+                    // }
+                    // var content = '' +
+                    //     ' <div style="width: 200px; text-align:center;"><img alt="loadding" src="/assets/img/loading.gif" style="margin-bottom: 20px;"/><p>计算中，请耐心等待...</p></div> \
+                    //     '
+                    // d = dialog({
+                    //     content: content
+                    // });
+                    // d.showModal();
+                },
+                success: function(response) {
+                    $("#ov_train_computing").hide();
+                    // d.close();
+                    // window.clearInterval(timer);
+                    // timer = setInterval("set_progress()", 10);
+                    // // // sleep(2000);
+                    // window.clearInterval(timer);
+                    var data = response.data;
+                    var result = data['result'];
+                    if (result == 'success') {
+                        //showTransientDialog('训练完成!')
+                        //showModalDialog("提示", "训练完成")
+                        //showAlertDialog('训练完成')
+                        showDialog("训练完成")
+                    } else if(result == 'failed'){
+                        showTransientDialog('训练失败！')
+                    } else{
+                        showTransientDialog('没有符合条件的数据！');
+                    }
+                },
+                complete:function () {
+                    $("#train_start").text("开始训练");
+                    $("#train_process").attr("value", "100");
+                    updateDropdownListSavedModel();
+                    updateDropdownListEvaluateModel();
+
+
+                    // if (d != null) {
+                    //     d.close().remove();
+                    // }
+                },
+                error: function(response) {
+                    //showTransientDialog('调用失败！')
+                    alert("提交任务失败");
+                }
+
+            });
+        }
+        else if (train_mode == 1){
+            var train_model = $("#spy_train_model_selected").val();
+            var train_bridge = $("#spy_train_bridge_selected").val();
+            var saved_model = $("#saved_model").val();
+            var train_label = $('#spy_train_label_selected').val()
+            if(train_model == null){
+                showTransientDialog("请选择训练模型");
+                //showDialog("请选择训练模型");
+                return;
+            }
+            if(train_bridge == null){
+                showTransientDialog("请选择分析桥梁");
+                //showDialog("请选择训练模型");
+                return;
+            }
+            if(!saved_model){
+                showTransientDialog("请输入保存模型名称");
+                //showDialog("请输入保存模型名称");
+                return;
+            }
+            if(!train_label){
+                showTransientDialog("请选择训练标签");
+                //showDialog("请输入保存模型名称");
+                return;
+            }
+            var begin_time = $("#train_begin_time").val();
+            var end_time = $("#train_end_time").val();
+            if(begin_time >= end_time){
+                showTransientDialog("开始时间必须小于截止时间");
+                return;
+            }
+
+            var response = null;
+            var d = null;
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            $(document).ajaxSend(function(e, xhr, options) {
+                xhr.setRequestHeader(header, token);
+            });
+            $.ajax({
+                url: "/overweight-analysis/trainCGQ",
+                type: "POST",
+                async: true,
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({
+                    "trainmodel" : train_model,
+                    "savedmodel" : saved_model,
+                    "bridge" : train_bridge,
+                    "begintime" : new Date(begin_time).format('yyyyMMddHHmmss'),
+                    "endtime" : new Date(end_time).format("yyyyMMddHHmmss"),
+                    "trainlabel" :train_label,
+                }),
+                dataType: "json",
+                beforeSend: function () {
+                    $("#train_start").text('训练中...');
+                    $("#train_process").removeAttr("value");
+                    $("#ov_train_computing").show();
+                },
+                success: function(response) {
+                    $("#ov_train_computing").hide();
+                    var data = response.data;
+                    var result = data['result'];
+                    if (result == 'success') {
+                        showDialog("训练完成")
+                    } else if(result == 'failed'){
+                        showTransientDialog('训练失败！')
+                    } else{
+                        showTransientDialog('没有符合条件的数据！');
+                    }
+                },
+                complete:function () {
+                    $("#train_start").text("开始训练");
+                    $("#train_process").attr("value", "100");
+                    updateDropdownListSavedModel();
+                    updateDropdownListEvaluateModel();
+
+                },
+                error: function(response) {
+                    //showTransientDialog('调用失败！')
+                    alert("提交任务失败");
+                }
+
+            });
+        }
+
     });
 
     // $("#test_start").click(function () {
@@ -1229,7 +1445,7 @@ $(function () {
     $("#evaluate_start").click(function () {
         var evaluate_file = $("#evaluate_file_selected").val();
         var evaluate_model = $("#evaluate_model_selected").val();
-        var bridge = $("#evaluate_bridge_selected").val();
+        // var bridge = $("#evaluate_bridge_selected").val();
 
         if(evaluate_file == null){
             showTransientDialog("请选择验证文件");
@@ -1240,10 +1456,10 @@ $(function () {
             //showDialog("请选择训练模型");
             return;
         }
-        if(bridge == null){
-            showTransientDialog("请选择分析桥梁");
-            return;
-        }
+        // if(bridge == null){
+        //     showTransientDialog("请选择分析桥梁");
+        //     return;
+        // }
         var begin_time = $("#evaluate_begin_time").val();
         var end_time = $("#evaluate_end_time").val();
         if(begin_time >= end_time){
@@ -1262,7 +1478,7 @@ $(function () {
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({
                 "evaluatefile" : evaluate_file,
-                "bridge" : bridge,
+                // "bridge" : bridge,
                 "evaluatemodel" : evaluate_model,
                 "begintime" : new Date(begin_time).format('yyyyMMddHHmmss'),
                 "endtime" : new Date(end_time).format("yyyyMMddHHmmss")
@@ -1304,76 +1520,154 @@ $(function () {
         });
     })
 
+    var test_mode = 0;
+    $('#test-tab li').click(function () {
+        test_mode = $(this).index();
+    });
+
     $("#test_start").click(function () {
-        var test_file = $("#test_file_selected").val();
-        var test_model = $("#test_model_selected").val();
-        var bridge = $("#test_bridge_selected").val();
+        if (test_mode == 0){
+            var test_file = $("#test_file_selected").val();
+            var test_model = $("#test_model_selected").val();
+            var bridge = $("#test_bridge_selected").val();
 
-        if(test_file == null){
-            showTransientDialog("请选择预测文件");
-            return;
-        }
-        if(test_model == null){
-            showTransientDialog("请选择预测模型");
-            //showDialog("请选择训练模型");
-            return;
-        }
-        if(bridge == null){
-            showTransientDialog("请选择分析桥梁");
-            return;
-        }
-        var begin_time = $("#test_begin_time").val();
-        var end_time = $("#test_end_time").val();
-        if(begin_time >= end_time){
-            showTransientDialog("开始时间必须小于截止时间");
-            return;
-        }
-        var token = $("meta[name='_csrf']").attr("content");
-        var header = $("meta[name='_csrf_header']").attr("content");
-        $(document).ajaxSend(function(e, xhr, options) {
-            xhr.setRequestHeader(header, token);
-        });
+            if(test_file == null){
+                showTransientDialog("请选择预测文件");
+                return;
+            }
+            if(test_model == null){
+                showTransientDialog("请选择预测模型");
+                //showDialog("请选择训练模型");
+                return;
+            }
+            // if(bridge == null){
+            //     showTransientDialog("请选择分析桥梁");
+            //     return;
+            // }
+            var begin_time = $("#test_begin_time").val();
+            var end_time = $("#test_end_time").val();
+            if(begin_time >= end_time){
+                showTransientDialog("开始时间必须小于截止时间");
+                return;
+            }
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            $(document).ajaxSend(function(e, xhr, options) {
+                xhr.setRequestHeader(header, token);
+            });
 
-        $.ajax({
-            url: "/overweight-analysis/test",
-            type: "POST",
-            async: true,
-            contentType: "application/json; charset=utf-8",
-            data: JSON.stringify({
-                "testfile" : test_file,
-                "bridge" : bridge,
-                "testmodel" : test_model,
-                "begintime" : new Date(begin_time).format('yyyyMMddHHmmss'),
-                "endtime" : new Date(end_time).format("yyyyMMddHHmmss")
-            }),
-            dataType: "json",
-            beforeSend: function () {
-                $("#test_start").text('预测中...');
-                $("#test_process").removeAttr("value");
-                $("#ov_test_computing").show();
-            },
-            success: function(response) {
-                $("#ov_test_computing").hide();
-                var data = response.data;
-                var result = data['result'];
-                if (result == 'success') {
-                    showTransientDialog("预测完成");
-                } else if(result == 'failed'){
-                    showTransientDialog('预测失败！');
-                } else{
-                    showTransientDialog('没有符合条件的数据!');
+            $.ajax({
+                url: "/overweight-analysis/test",
+                type: "POST",
+                async: true,
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({
+                    "testfile" : test_file,
+                    // "bridge" : bridge,
+                    "testmodel" : test_model,
+                    "begintime" : new Date(begin_time).format('yyyyMMddHHmmss'),
+                    "endtime" : new Date(end_time).format("yyyyMMddHHmmss")
+                }),
+                dataType: "json",
+                beforeSend: function () {
+                    $("#test_start").text('预测中...');
+                    $("#test_process").removeAttr("value");
+                    $("#ov_test_computing").show();
+                },
+                success: function(response) {
+                    $("#ov_test_computing").hide();
+                    var data = response.data;
+                    var result = data['result'];
+                    if (result == 'success') {
+                        showTransientDialog("预测完成");
+                    } else if(result == 'failed'){
+                        showTransientDialog('预测失败！');
+                    } else{
+                        showTransientDialog('没有符合条件的数据!');
+                    }
+
+                },
+                complete:function () {
+                    $("#test_start").text("开始预测");
+                    $("#test_process").attr("value", "100");
+                },
+                error: function(response) {
+                    alert("提交任务失败");
                 }
 
-            },
-            complete:function () {
-                $("#test_start").text("开始预测");
-                $("#test_process").attr("value", "100");
-            },
-            error: function(response) {
-                alert("提交任务失败");
-            }
+            });
+        }else if (test_mode == 1){
+            // var test_bridge = $("#spy_test_bridge_selected").val();
+            var test_model = $("#spy_test_model_selected").val();
+            var bridge = $("#spy_test_bridge_selected").val();
 
-        });
+            // if(test_file == null){
+            //     showTransientDialog("请选择预测文件");
+            //     return;
+            // }
+            if(test_model == null){
+                showTransientDialog("请选择预测模型");
+                //showDialog("请选择训练模型");
+                return;
+            }
+            if(bridge == null){
+                showTransientDialog("请选择分析桥梁");
+                return;
+            }
+            var begin_time = $("#test_begin_time").val();
+            var end_time = $("#test_end_time").val();
+            if(begin_time >= end_time){
+                showTransientDialog("开始时间必须小于截止时间");
+                return;
+            }
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            $(document).ajaxSend(function(e, xhr, options) {
+                xhr.setRequestHeader(header, token);
+            });
+
+            $.ajax({
+                url: "/overweight-analysis/testCGQ",
+                type: "POST",
+                async: true,
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({
+                    // "testfile" : test_file,
+                    "bridge" : bridge,
+                    "testmodel" : test_model,
+                    "begintime" : new Date(begin_time).format('yyyyMMddHHmmss'),
+                    "endtime" : new Date(end_time).format("yyyyMMddHHmmss")
+                }),
+                dataType: "json",
+                beforeSend: function () {
+                    $("#test_start").text('预测中...');
+                    $("#test_process").removeAttr("value");
+                    $("#ov_test_computing").show();
+                },
+                success: function(response) {
+                    $("#ov_test_computing").hide();
+                    var data = response.data;
+                    var result = data['result'];
+                    if (result == 'success') {
+                        showTransientDialog("预测完成");
+                    } else if(result == 'failed'){
+                        showTransientDialog('预测失败！');
+                    } else{
+                        showTransientDialog('没有符合条件的数据!');
+                    }
+
+                },
+                complete:function () {
+                    $("#test_start").text("开始预测");
+                    $("#test_process").attr("value", "100");
+                },
+                error: function(response) {
+                    alert("提交任务失败");
+                }
+
+            });
+        }
+
     })
 
     $("#result_overweight").click(function () {

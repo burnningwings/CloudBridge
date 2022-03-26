@@ -72,14 +72,28 @@ public class CommandLineExecutor implements Executor {
             InputStream stdin = process.getInputStream();
             InputStreamReader isr = new InputStreamReader(stdin);
             BufferedReader br = new BufferedReader(isr);
+
+//            InputStream errorStream = process.getErrorStream();;
+//            InputStreamReader inputStreamReader = new InputStreamReader(errorStream);
+//            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
             String line = "";
             while ((line = br.readLine()) != null) {
                 logEntity.add(line);
                 System.out.println(line);
             }
+
+
+//            String errline = "";
+//            while ((errline = bufferedReader.readLine()) != null) {
+//                logEntity.add(errline);
+//                System.out.println(errline);
+//            }
+
             this.status = Constants.RUNNING;
             AnalysisMessage.getInstance().update(key,null,null,status,null,logEntity.toString());
             int exitVal = process.waitFor();
+//            System.out.println(System.err);
 //            while ((line = br.readLine()) != null) {
 //                logEntity.add(line);
 //                System.out.println(line);

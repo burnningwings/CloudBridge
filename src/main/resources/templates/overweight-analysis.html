@@ -65,15 +65,49 @@
                     <input id="trainmodel_upload" name="trainmodel_upload" type="file" class="file file-loading" data-preview-file-type="text"/>
                 </div>
                 <div class="panel-body" style="padding:0 20px 20px 20px">
-                    <select class="selectpicker" id="train_file_selected" data-width="20%"></select>&nbsp;&nbsp;
-                    <select class="selectpicker" id="train_model_selected" data-width="20%"></select>&nbsp;&nbsp;
-                    <span hidden="hidden"><select class="selectpicker" id="train_bridge_selected" data-width="20%" ></select></span>
+                    <h4 class="control-label" style="display:inline-block">从本地上传训练标签（csv格式，小于50MB）：</h4>
+                    <button id="description_label_format" title="标签文件格式" data-html="true" data-toggle="popover" data-container="body" type="button" class="btn btn-default"><i class="fa fa-fw fa-eye"></i></button>
+                    <input id="trainlabel_upload" name="trainlabel_upload" type="file" class="file file-loading" data-preview-file-type="text"/>
                 </div>
                 <div class="panel-body" style="padding:0 20px 20px 20px">
+                    <div class="form-inline">
+                        <select class="selectpicker" id="train_file_selected" data-width="20%"></select>&nbsp;&nbsp;
+                        <select class="selectpicker" id="train_model_selected" data-width="20%"></select>&nbsp;&nbsp;
+                        <span hidden="hidden"><select class="selectpicker" id="train_bridge_selected" data-width="20%" ></select></span>
+                        <select class="selectpicker" id="train_label_selected" data-width="20%"></select>
+                    </div>
+<!--                    <ul class="nav nav-tabs" id="train-tab">-->
+<!--                        <li class="active"><a href="#simulation_train" data-toggle="tab">模拟数据训练</a></li>-->
+<!--                        <li><a href="#spy_train" data-toggle="tab">监测数据训练</a></li>-->
+<!--                    </ul>-->
+<!--                    <div class="tab-content">-->
+<!--                        <div class="tab-pane fade in active" id="simulation_train" style="margin-top:20px">-->
+<!--                            <div class="form-inline">-->
+<!--                                <select class="selectpicker" id="train_file_selected" data-width="20%"></select>&nbsp;&nbsp;-->
+<!--                                <select class="selectpicker" id="train_model_selected" data-width="20%"></select>&nbsp;&nbsp;-->
+<!--                                <span hidden="hidden"><select class="selectpicker" id="train_bridge_selected" data-width="20%" ></select></span>-->
+<!--                                <select class="selectpicker" id="train_label_selected" data-width="20%"></select>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="tab-pane fade" id="spy_train" style="margin-top:20px">-->
+<!--                            <div class="form-inline">-->
+<!--                                <select class="selectpicker" id="spy_train_bridge_selected" data-width="20%"></select>&nbsp;&nbsp;-->
+<!--                                <select class="selectpicker" id="spy_train_model_selected" data-width="20%"></select>-->
+<!--                                <select class="selectpicker" id="spy_train_label_selected" data-width="20%"></select>&nbsp;-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+                </div>
+<!--                <div class="panel-body" style="padding:0 20px 20px 20px">-->
+<!--                    <select class="selectpicker" id="train_file_selected" data-width="20%"></select>&nbsp;&nbsp;-->
+<!--                    <select class="selectpicker" id="train_model_selected" data-width="20%"></select>&nbsp;&nbsp;-->
+<!--                    <span hidden="hidden"><select class="selectpicker" id="train_bridge_selected" data-width="20%" ></select></span>-->
+<!--                </div>-->
+                <div class="panel-body" style="padding:0 20px 20px 20px">
                     <label style="font-weight:normal;font-size:16px;margin-left: 7px">时段选择&nbsp;&nbsp;</label>
-                    <input size="17" type="text" id="train_begin_time"  class="btn btn-default" value="" readonly="readonly" >
+                    <input size="17" type="text" id="train_begin_time"  class="btn btn-default" value=""  >
                     <span style="line-height: 30px;">&nbsp;&nbsp;<label class="form-label">至</label>&nbsp;&nbsp;</span>
-                    <input size="17" type="text" id="train_end_time" class="btn btn-default" value="" readonly="readonly">
+                    <input size="17" type="text" id="train_end_time" class="btn btn-default" value="" >
                 </div>
                 <div class="panel-body" style="padding:0 20px 20px 20px">
                     <label style="font-weight:normal;font-size:16px;margin-left: 7px">保存模型&nbsp;&nbsp;</label>
@@ -107,9 +141,9 @@
                 </div>
                 <div class="panel-body" style="padding:0 20px 20px 20px">
                     <label style="font-weight:normal;font-size:16px;margin-left: 7px">时段选择&nbsp;&nbsp;</label>
-                    <input size="17" type="text" id="evaluate_begin_time"  class="btn btn-default" value="" readonly="readonly" >
+                    <input size="17" type="text" id="evaluate_begin_time"  class="btn btn-default" value=""  >
                     <span style="line-height: 30px;">&nbsp;&nbsp;<label class="form-label">至</label>&nbsp;&nbsp;</span>
-                    <input size="17" type="text" id="evaluate_end_time" class="btn btn-default" value="" readonly="readonly">
+                    <input size="17" type="text" id="evaluate_end_time" class="btn btn-default" value="" >
                 </div>
                 <div class="panel-body" style="padding: 0 20px 20px 20px">
                     <button id="evaluate_start" type="button" data-switch-color="success" class="btn btn-l btn-success" style="width:120px;height:40px;font-size:18px">验证模型</button>
@@ -133,15 +167,38 @@
                     <input id="testfile_upload" name="testfile_upload" type="file" class="file file-loading" data-preview-file-type="text"/>
                 </div>
                 <div class="panel-body" style="padding:0 20px 20px 20px">
-                    <select class="selectpicker" id="test_file_selected" data-width="20%"></select>&nbsp;&nbsp;
-                    <select class="selectpicker" id="test_model_selected" data-width="20%"></select>&nbsp;&nbsp;
-                    <span ><select class="selectpicker" id="test_bridge_selected" data-width="20%"></select></span>&nbsp;&nbsp;
+                    <ul class="nav nav-tabs" id="test-tab">
+                        <li class="active"><a href="#simulation_test" data-toggle="tab">模拟数据预测</a></li>
+                        <li><a href="#spy_test" data-toggle="tab">监测数据预测</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane fade in active" id="simulation_test" style="margin-top:20px">
+                            <div class="form-inline">
+                                <select class="selectpicker" id="test_file_selected" data-width="20%"></select>&nbsp;&nbsp;
+                                <select class="selectpicker" id="test_model_selected" data-width="20%"></select>&nbsp;&nbsp;
+                                <span hidden="hidden"><select class="selectpicker" id="test_bridge_selected" data-width="20%" ></select></span>
+<!--                                <select class="selectpicker" id="test_label_selected" data-width="20%"></select>-->
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="spy_test" style="margin-top:20px">
+                            <div class="form-inline">
+                                <select class="selectpicker" id="spy_test_bridge_selected" data-width="20%"></select>&nbsp;&nbsp;
+                                <select class="selectpicker" id="spy_test_model_selected" data-width="20%"></select>
+<!--                                <select class="selectpicker" id="spy_test_label_selected" data-width="20%"></select>&nbsp;-->
+                            </div>
+                        </div>
+                    </div>
                 </div>
+<!--                <div class="panel-body" style="padding:0 20px 20px 20px">-->
+<!--                    <select class="selectpicker" id="test_file_selected" data-width="20%"></select>&nbsp;&nbsp;-->
+<!--                    <select class="selectpicker" id="test_model_selected" data-width="20%"></select>&nbsp;&nbsp;-->
+<!--                    <span ><select class="selectpicker" id="test_bridge_selected" data-width="20%"></select></span>&nbsp;&nbsp;-->
+<!--                </div>-->
                 <div class="panel-body" style="padding:0 20px 20px 20px">
                     <label style="font-weight:normal;font-size:16px;margin-left: 7px">时段选择&nbsp;&nbsp;</label>
-                    <input size="17" type="text" id="test_begin_time"  class="btn btn-default" value="" readonly="readonly" >
+                    <input size="17" type="text" id="test_begin_time"  class="btn btn-default" value=""  >
                     <span style="line-height: 30px;">&nbsp;&nbsp;<label class="form-label">至</label>&nbsp;&nbsp;</span>
-                    <input size="17" type="text" id="test_end_time" class="btn btn-default" value="" readonly="readonly">
+                    <input size="17" type="text" id="test_end_time" class="btn btn-default" value="" >
                 </div>
                 <div class="panel-body" style="padding: 0 20px 20px 20px">
                     <button id="test_start" type="button" data-switch-color="success" class="btn btn-l btn-success" style="width:120px;height:40px;font-size:18px">开始预测</button>

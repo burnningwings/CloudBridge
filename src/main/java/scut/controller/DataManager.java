@@ -336,7 +336,7 @@ public class DataManager {
         // 获取数据
         JSONArray data = new JSONArray();
         String[] sensorInfoArray = sensorInfo.split(" - ");
-        if(sensorInfoArray.length == 2){
+        if(sensorInfoArray.length == 3){
             String sensorId = sensorInfoArray[0];
             String hbaseTableName = "CloudBridge:" + sensorId;
             Map<String,Object> dataSchema = getDataSchema(sensorId);
@@ -377,7 +377,6 @@ public class DataManager {
                 }
             }
         }
-
         JSONObject response = new JSONObject();
         response.put("data",data);
         response.put("total",total);
@@ -399,10 +398,10 @@ public class DataManager {
         JSONArray sensorArray = JSON.parseArray(sensorList);
         JSONArray columnArray = JSON.parseArray(columnList);
 
-        if(sensorArray.size()>1 && columnArray.size()>1){
+        /*if(sensorArray.size()>1 && columnArray.size()>1){
             response.setStatus(HttpResponse.FAIL_STATUS);
             response.setMsg("当前不支持同时获取多传感器多指标！");
-        }else if((startRowKey==null || startRowKey.equals("")) && (endRowKey==null || endRowKey.equals(""))){
+        }else */if((startRowKey==null || startRowKey.equals("")) && (endRowKey==null || endRowKey.equals(""))){
             response.setStatus(HttpResponse.FAIL_STATUS);
             response.setMsg("查询参数有误！");
         }else{

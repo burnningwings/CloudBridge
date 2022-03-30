@@ -211,7 +211,7 @@ var sensor_map = {
             attributes:{ class:"text-center" }
         }
     ],
-    "振弦传感器":[
+   "振弦传感器":[
         {
             // template:'<input type="checkbox" class="checkbox" name=sensordata-"#: sensor_info #" value="#: sensor_info #" />',
             // headerAttributes:{ style:"text-align:center"},
@@ -222,42 +222,45 @@ var sensor_map = {
             attributes:{ class:"text-center" }
         },
         {
-            title: "传感器编号",
             field: "sensor_number",
+            title: "sensor_number",
             template: '<a href="javascript: void(0);" onclick="sensorFigure(\'#: sensor_id #\',\'#: sensor_number #\')"/>#: sensor_number #</button>',
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         }, {
             field: "CLYB",
-            title: "测量值",
+            title: "CLYB",
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         }, {
             field: "XZYB",
-            title: "修正后的值",
+            title: "XZYB",
+            type: "number",
+            format: "{0:0.0}",
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         }, {
             field: "CLWD",
-            title: "测量温度",
+            title: "CLWD",
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         }, {
             field: "DZ",
-            title: "电阻",
+            title: "DZ",
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         }, {
             field: "CLSJ",
-            title: "测量时间",
+            title: "CLSJ",
+            template: '#=kendo.toString(CLSJ)#.0',
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
-        }, {
+        }/*, {
             title: "修改",
             template: "<button class='btn btn-success' type='button' id='modify-#: sensor_id #' onclick='modifyZXSensorData(\"#: sensor_id #\",\"#: CLSJ #\", \"#: CLYB #\", \"#: XZYB #\", \"#: DZ #\", \"#: CLWD #\" )'/>修改</button>",
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
-        }
+        }*/
     ]
 }
 
@@ -1037,11 +1040,12 @@ function updateGrid(bridge_id,box_id,sensor_info){
                 next: "下一页",
                 last: "最后一页",
                 refresh: "刷新"
-            }
+            },
         },
         // refresh: true,
         // resizeable: true,
         columns: table_columns
+
     });
     $("a.k-pager-last").addClass("k-state-disabled");
 
@@ -1293,7 +1297,7 @@ function sensorListDropdown(bridge_id, section_id, watch_point_id, watch_box_id,
         var data = response["data"];
         var options = "<option value='0'>全部传感器</option>";
         for (var i = 0; i < data.length; i++) {
-            options += "<option value='" + data[i]['sensor_id'] + " - " + data[i]['sensor_number'] + "'>" + data[i]['sensor_number'] + "--" + data[i]['sensor_type_name'] + "</option>";
+            options += "<option value='" + data[i]['sensor_id'] + " - " + data[i]['sensor_number'] + " - " + data[i]['sensor_type_name'] + "'>" + data[i]['sensor_number'] + "--" + data[i]['sensor_type_name'] + "</option>";
         }
     } else {
         options += "<option value='0'>无</option>";
@@ -2139,7 +2143,7 @@ $(function () {
 
         console.log(sensor_id_array,sensor_number_array)
         console.log(sensor_type,metric)
-        if(!sensor_type || !metric || !sensor_id_array || sensor_type.match(/^\s*$/) || metric.match(/^\s*$/) || sensor_id_array.length<=0){
+        if(!sensor_type || !metric || !sensor_id_array || sensor_type[0].match(/^\s*$/) || metric.match(/^\s*$/) || sensor_id_array.length<=0){
             showTransientDialog("没有符合条件的查询！");
         }else{
             var figure_id = "query_latest_udf_figure";

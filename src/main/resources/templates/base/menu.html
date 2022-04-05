@@ -47,16 +47,11 @@
                             <li th:class="${five_2}"><a href="/role-manager">角色管理</a></li>
                         </ul>
                     </li>
-                    <li class="cm-submenu" th:classappend="${six_1=='active' or six_2=='active' or six_3=='active'}? pre-open : ''">
-                        <a class="sf-file-text">日志管理<span class="caret"></span></a>
-                        <ul>
-                            <li th:class="${six_2}"><a href="/log_system.html">系统操作日志</a></li>
-                            <li th:class="${six_3}"><a href="/log_bridge.html">桥梁修改日志</a></li>
-                        </ul>
-                    </li>
                     <li class="cm-submenu" th:classappend="${seven_1=='active' or seven_2=='active' or seven_3=='active' or seven_4=='active'}? pre-open : ''">
                         <a class="sf-cogs">系统管理<span class="caret"></span></a>
                         <ul>
+                            <li th:class="${six_2}"><a href="/log_system.html">系统操作日志</a></li>
+                            <li th:class="${six_3}"><a href="/log_bridge.html">桥梁修改日志</a></li>
                             <li th:class="${seven_1}"><a href="/watchpoint_para.html">桥梁参数管理</a></li>
                             <li th:if="${CurrentUser.userName} == 'admin'"
                                 th:class="${seven_3}"><a href="/bridge_type.html">桥梁类型</a></li>

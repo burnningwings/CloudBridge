@@ -53,29 +53,30 @@ var sensor_map = {
             attributes:{ class:"text-center" }
         },
         {
-            title: "传感器编号",
+            title: "sensor_number",
             field: "sensor_number",
             template: '<a href="javascript: void(0);" onclick="sensorFigure(\'#: sensor_id #\',\'#: sensor_number #\')"/>#: sensor_number #</button>',
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         }, {
             field: "DY",
-            title: "电压",
+            title: "DY",
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         }, {
             field: "JSD",
-            title: "加速度",
+            title: "JSD",
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         }, {
             field: "SL",
-            title: "索力",
+            title: "SL",
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         }, {
             field: "CLSJ",
-            title: "测量时间",
+            title: "CLSJ",
+            template: '#=kendo.toString(CLSJ)#.0',
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         }, {

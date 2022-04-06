@@ -28,7 +28,7 @@ var condition_map = {
 }
 
 function getQueryCondition(start_time,end_time,condition){
-    var time_format = 'yyyyMMddHHmmssSS';
+    var time_format = 'yyyyMMddHHmmss';
     if(condition!=null && condition!=""){
         var limit = 0;
         var current_time = new Date();
@@ -149,7 +149,7 @@ function showTimeLineChart(figure_id,time_array,series_data,single){
             })
         }
         series.push({
-            name: sensor_metrics_CN[key.split("-")[1]],
+            name: key.split("-")[0],
             //name: key,
             data: temp,
             type: 'line',
@@ -160,7 +160,7 @@ function showTimeLineChart(figure_id,time_array,series_data,single){
     //console.log(legend_data[0].split("-")[1])
     var legend_cn = [];
     for(var j=0, len=legend_data.length; j<len;j++){
-        legend_cn.push(sensor_metrics_CN[legend_data[j].split("-")[1]]);
+        legend_cn.push(legend_data[j].split("-")[0]);
     }
     console.log(legend_cn)
     console.log(legend_data)
@@ -183,7 +183,8 @@ function showTimeLineChart(figure_id,time_array,series_data,single){
             }
         },
         yAxis: {
-            type: 'value'
+            type: 'value',
+            scale: true
         },
         toolbox: {
             show: true,

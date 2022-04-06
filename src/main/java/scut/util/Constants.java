@@ -39,6 +39,7 @@ public class Constants {
 
 
 
+
     //自定义条件目标文件路径
     public static String DAMAGE_TRAINFILE_TARGET_DIR = null;
     public static String DAMAGE_EVALUATEFILE_TARGET_DIR = null;
@@ -111,9 +112,12 @@ public class Constants {
     //模型标签保存路径
     public static String OVERWEIGHT_TRAIN_LABEL = null;
     public static String OVERWEIGHT_EVALUATE_LABEL = null;
+    public static String DAMAGE_TRAIN_LABEL_DIR = null;
+    public static String DAMAGE_EVALUATE_LABEL_DIR = null;
 
     //模型损失函数图像保存路径
     public static String OVERWEIGHT_TRAIN_LOSSIMAGE = null;
+    public static String DAMAGE_TRAIN_LOSSIMAGE = null;
 
 
 

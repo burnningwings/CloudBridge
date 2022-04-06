@@ -935,9 +935,10 @@ function updateGrid(bridge_id,box_id,sensor_info){
     console.log("updateGrid")
     console.log(bridge_id,box_id,sensor_info)
     if(sensor_info==null || sensor_info=="") return;
-    var sensor_info_list = sensor_info.split(" - ");
+    var sensor_info_list = sensor_info.split("--");
     console.log(sensor_info);
-    var table_columns = sensor_map[sensor_info_list[2]];
+    // var table_columns = sensor_map[sensor_info_list[2]];
+    var table_columns = sensor_map[sensor_info_list[1]];
     console.log("啊哈哈哈", table_columns);
     var dataSource = new kendo.data.DataSource({
         transport: {
@@ -1293,7 +1294,7 @@ function sensorListDropdown(bridge_id, section_id, watch_point_id, watch_box_id,
         var data = response["data"];
         var options = "<option value='0'>全部传感器</option>";
         for (var i = 0; i < data.length; i++) {
-            options += "<option value='" + data[i]['sensor_id'] + " - " + data[i]['sensor_number'] + "'>" + data[i]['sensor_number'] + "--" + data[i]['sensor_type_name'] + "</option>";
+            options += "<option value='" + data[i]['sensor_id'] + " - " + data[i]['sensor_number'] +  "'>" + data[i]['sensor_number'] + "--" + data[i]['sensor_type_name'] + "</option>";
         }
     } else {
         options += "<option value='0'>无</option>";
@@ -1769,7 +1770,7 @@ $(function () {
         $(this).button('loading').delay(1000).queue(function() {
             var bridge_id = $("#bridge_menu").val();
             var box_id = $("#watch_box_menu").val();
-            var sensor_info = $("#sensor_menu").val();
+            var sensor_info = $("#sensor_menu option:selected").text();
             if(!bridge_id || !box_id || !sensor_info || bridge_id.match(/^\s*$/) || box_id.match(/^\s*$/) || sensor_info.match(/^\s*$/)){
                 showTransientDialog("没有符合条件的查询！");
             }else{

@@ -485,6 +485,8 @@ public class DamageDetection {
             case "trainmodel" : targetPath = Constants.DAMAGE_UPLOAD_TRAIN_MODEL_DIR; break;
             case "savedmodel" : targetPath = Constants.DAMAGE_SAVE_TRAIN_MODEL_DIR; break;
             case "evaluatefile" : targetPath = Constants.DAMAGE_UPLOAD_EVALUATE_FILE_DIR; break;
+            case "trainLabel" : targetPath = Constants.DAMAGE_TRAIN_LABEL_DIR;break;
+            case "evaluateLabel" : targetPath = Constants.DAMAGE_EVALUATE_LABEL_DIR;break;
             default: break;
         }
         File dirFile = new File(targetPath);
@@ -496,6 +498,76 @@ public class DamageDetection {
         for(int i = 0;i<fileList.length;i++){
             //System.out.println(fileList[i]);
             data.put(fileList[i],"");
+        }
+        response.setData(data);
+        return response.getHttpResponse();
+    }
+
+    @RequestMapping(value = "/damage-detection/trainlabelupload", method = RequestMethod.POST)
+    public JSONObject trainLabelUpload(@RequestParam("dd_trainlabel_upload")MultipartFile file){
+        HttpResponse response = new HttpResponse();
+        JSONObject data = new JSONObject();
+        if (!file.isEmpty()){
+            try{
+                File targetFile = new File(Constants.DAMAGE_TRAIN_LABEL_DIR);
+                if(!targetFile.exists()) {
+                    targetFile.mkdirs();
+                }
+                String originFileName = file.getOriginalFilename();
+                String fileName = Constants.DAMAGE_TRAIN_LABEL_DIR + "/" + originFileName;
+                BufferedOutputStream out = new BufferedOutputStream(
+                        new FileOutputStream(new File(fileName)));
+                out.write(file.getBytes());
+                out.flush();
+                out.close();
+            }catch (FileNotFoundException e){
+                e.printStackTrace();
+                response.setStatus(HttpResponse.FAIL_STATUS);
+                response.setMsg("服务器路径错误！");
+            }catch (IOException e){
+                e.printStackTrace();
+                response.setStatus(HttpResponse.FAIL_STATUS);
+                response.setMsg("文件上传失败！");
+            }
+
+        }else{
+            response.setStatus(HttpResponse.FAIL_STATUS);
+            response.setMsg("相关上传参数错误！");
+        }
+        response.setData(data);
+        return response.getHttpResponse();
+    }
+
+    @RequestMapping(value = "/damage-detection/evaluatelabelupload", method = RequestMethod.POST)
+    public JSONObject evaluateLabelUpload(@RequestParam("dd_evaluatelabel_upload")MultipartFile file){
+        HttpResponse response = new HttpResponse();
+        JSONObject data = new JSONObject();
+        if (!file.isEmpty()){
+            try{
+                File targetFile = new File(Constants.DAMAGE_EVALUATE_LABEL_DIR);
+                if(!targetFile.exists()) {
+                    targetFile.mkdirs();
+                }
+                String originFileName = file.getOriginalFilename();
+                String fileName = Constants.DAMAGE_EVALUATE_LABEL_DIR + "/" + originFileName;
+                BufferedOutputStream out = new BufferedOutputStream(
+                        new FileOutputStream(new File(fileName)));
+                out.write(file.getBytes());
+                out.flush();
+                out.close();
+            }catch (FileNotFoundException e){
+                e.printStackTrace();
+                response.setStatus(HttpResponse.FAIL_STATUS);
+                response.setMsg("服务器路径错误！");
+            }catch (IOException e){
+                e.printStackTrace();
+                response.setStatus(HttpResponse.FAIL_STATUS);
+                response.setMsg("文件上传失败！");
+            }
+
+        }else{
+            response.setStatus(HttpResponse.FAIL_STATUS);
+            response.setMsg("相关上传参数错误！");
         }
         response.setData(data);
         return response.getHttpResponse();
@@ -535,13 +607,14 @@ public class DamageDetection {
         JSONObject data = new JSONObject();
 
         String trainfile = reqMsg.getString("trainfile");
-        String bridge = reqMsg.getString("bridge");
+//        String bridge = reqMsg.getString("bridge");
         String trainmodel = reqMsg.getString("trainmodel");
         String savedmodel = reqMsg.getString("savedmodel");
-        String beginTime = reqMsg.getString("begintime");
-        String endTime = reqMsg.getString("endtime");
-        long begintime = Long.parseLong(beginTime);
-        long endtime = Long.parseLong(endTime);
+        String trainlabel = reqMsg.getString("trainlabel");
+//        String beginTime = reqMsg.getString("begintime");
+//        String endTime = reqMsg.getString("endtime");
+//        long begintime = Long.parseLong(beginTime);
+//        long endtime = Long.parseLong(endTime);
 
         //根据条件过滤数据
         File selectedFile = new File(Constants.DAMAGE_UPLOAD_TRAIN_FILE_DIR + "/" + trainfile);
@@ -549,102 +622,131 @@ public class DamageDetection {
             response.setStatus(HttpResponse.FAIL_STATUS);
             response.setMsg("找不到训练文件！");
         }else{
-            boolean startflag = false;
-            boolean endflag = false;
-            try {
-                File targetFile = new File(Constants.DAMAGE_TRAINFILE_TARGET_DIR);
-                if(!targetFile.exists()){
-                    targetFile.createNewFile();
-                }
-                FileOutputStream fos = new FileOutputStream(targetFile);
-                OutputStreamWriter osw = new OutputStreamWriter(fos,"UTF-8");
-                BufferedWriter bw = new BufferedWriter(osw);
-                bw.write("s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,location,level,bridge,time" + "\n");
+//            boolean startflag = false;
+//            boolean endflag = false;
+//            try {
+////                File targetFile = new File(Constants.DAMAGE_TRAINFILE_TARGET_DIR);
+////                if(!targetFile.exists()){
+////                    targetFile.createNewFile();
+////                }
+////                FileOutputStream fos = new FileOutputStream(targetFile);
+////                OutputStreamWriter osw = new OutputStreamWriter(fos,"UTF-8");
+////                BufferedWriter bw = new BufferedWriter(osw);
+////                bw.write("s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,location,level,bridge,time" + "\n");
+////
+////                FileInputStream fis = new FileInputStream(selectedFile);
+////                InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
+////                BufferedReader br = new BufferedReader(isr);
+////                String line = "";
+////                int count = 0;
+////                while((line = br.readLine()) != null ){
+////
+////                    String[] split = line.split(",");
+////                    System.out.println(split.length);
+////                    if(split.length == 14){
+////                        String current_bridge = split[12];
+////                        if(!split[13].matches("\\d+")){
+////                            continue;
+////                        }
+////                        long current_time = Long.parseLong(split[13]);
+////                        //检查已有数据是否能覆盖所选时间
+//////                        if(current_time >= endtime){  endflag = true;  }
+//////                        if(current_time <= begintime){   startflag = true; }
+//////                        if(current_bridge.equals(bridge) && current_time >= begintime && current_time <= endtime){
+//////                            bw.write(line+"\n");
+//////                            count ++ ;
+//////                        }
+////                    }
+////
+////                }
+////                bw.close();
+////                osw.close();
+////                fos.close();
+////                br.close();
+////                isr.close();
+////                fis.close();
+//
+////                if(count != 0 && startflag && endflag){
+////                    //调用外部程序
+////                    String md5 = DigestUtils.md5Hex(trainfile + bridge + beginTime + endTime + trainmodel);
+////                    String TRAIN_FILE = Constants.DAMAGE_TRAINFILE_TARGET_DIR;
+////                    String MODEL_TRAIN_PROGRAM = Constants.DAMAGE_UPLOAD_TRAIN_MODEL_DIR + "/" + trainmodel;
+////                    String SAVED_MODE = Constants.DAMAGE_SAVE_TRAIN_MODEL_DIR + "/" + savedmodel;
+////
+////                    AnalysisMessage.getInstance().update(md5, trainfile+bridge+beginTime+endTime+trainmodel, savedmodel, Constants.READY, "TRAIN", null);
+////
+////                    String execStr = Constants.SCRIPT_EXEC_PREFIX + " " + MODEL_TRAIN_PROGRAM + " " + TRAIN_FILE + " " + SAVED_MODE;
+////                    //String execStr = "D:/os_environment/anaconda/python " + MODEL_TRAIN_PROGRAM + " " + TRAIN_FILE + " " + SAVED_MODE;
+////                    //String execStr = "python D:/tmp/a.py";
+////                    logger.debug(execStr);
+////                    Executor executor = new CommandLineExecutor(md5, execStr);
+////                    //Scheduler.getInstance().runExecutor(executor);
+////                    LogEntity logentity = ((CommandLineExecutor) executor).execute_analysis();
+////
+////                    logger.debug("exitVal: " + logentity.getExitVal());
+////                    logger.debug(logentity.toString());
+////
+////                    if (logentity.getExitVal() == 0){
+////                        data.put("result", "success");
+////                        AnalysisMessage.getInstance().update(md5,null,null,Constants.FINISHED,null,logentity.toString());
+////                    }else{
+////                        data.put("result", "failed");
+////                        AnalysisMessage.getInstance().update(md5,null,null,Constants.FAILED,null,logentity.toString());
+////                    }
+////
+////                    //data.put("result", "completed");
+//////                    response.setData(data);
+//////                    return response.getHttpResponse();
+////                }else{
+////                    data.put("result", "nodata");
+//////                    response.setData(data);
+//////                    return response.getHttpResponse();
+////                }
+//            }
+//            catch (FileNotFoundException e) {
+//                e.printStackTrace();
+//                response.setStatus(HttpResponse.FAIL_STATUS);
+//                response.setMsg("出错！找不到文件！");
+//            } catch (UnsupportedEncodingException e) {
+//                e.printStackTrace();
+//                response.setStatus(HttpResponse.FAIL_STATUS);
+//                response.setMsg("出错！编码有误!");
+//            } catch (IOException e){
+//                e.printStackTrace();
+//                response.setStatus(HttpResponse.FAIL_STATUS);
+//                response.setMsg("出错！IO 异常");
+//            }
+            //调用外部程序
+            String md5 = DigestUtils.md5Hex(trainfile + trainmodel);
+//                String TRAIN_FILE = Constants.DAMAGE_TRAINFILE_TARGET_DIR;
+            String TRAIN_FILE = Constants.DAMAGE_UPLOAD_TRAIN_FILE_DIR + "/" + trainfile;
+            String MODEL_TRAIN_PROGRAM = Constants.DAMAGE_UPLOAD_TRAIN_MODEL_DIR + "/" + trainmodel;
+            String SAVED_MODE = Constants.DAMAGE_SAVE_TRAIN_MODEL_DIR;
+            String TRAINLABEL = Constants.DAMAGE_TRAIN_LABEL_DIR + "/" + trainlabel;
+            String TRAINIMAGE = Constants.DAMAGE_TRAIN_LOSSIMAGE;
 
-                FileInputStream fis = new FileInputStream(selectedFile);
-                InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
-                BufferedReader br = new BufferedReader(isr);
-                String line = "";
-                int count = 0;
-                while((line = br.readLine()) != null ){
+            AnalysisMessage.getInstance().update(md5, trainfile+trainmodel, savedmodel, Constants.READY, "TRAIN", null);
 
-                    String[] split = line.split(",");
-                    System.out.println(split.length);
-                    if(split.length == 14){
-                        String current_bridge = split[12];
-                        if(!split[13].matches("\\d+")){
-                            continue;
-                        }
-                        long current_time = Long.parseLong(split[13]);
-                        //检查已有数据是否能覆盖所选时间
-                        if(current_time >= endtime){  endflag = true;  }
-                        if(current_time <= begintime){   startflag = true; }
-                        if(current_bridge.equals(bridge) && current_time >= begintime && current_time <= endtime){
-                            bw.write(line+"\n");
-                            count ++ ;
-                        }
-                    }
+//                String execStr = Constants.SCRIPT_EXEC_PREFIX + " " + MODEL_TRAIN_PROGRAM + " " + TRAIN_FILE + " " + SAVED_MODE;
+            //String execStr = "D:/os_environment/anaconda/python " + MODEL_TRAIN_PROGRAM + " " + TRAIN_FILE + " " + SAVED_MODE;
+            //String execStr = "python D:/tmp/a.py";
+            String execStr = Constants.SCRIPT_EXEC_PREFIX + " " + MODEL_TRAIN_PROGRAM + " --task_name " + savedmodel +" --data " + TRAIN_FILE +
+                    " --label " + TRAINLABEL + " --mode train --epochs 25 --batch_size 64 --save_loss_image True --loss_image_dir " +
+                    TRAINIMAGE + " --save_model True --model_dir " +SAVED_MODE;
+            logger.debug(execStr);
+            Executor executor = new CommandLineExecutor(md5, execStr);
+            //Scheduler.getInstance().runExecutor(executor);
+            LogEntity logentity = ((CommandLineExecutor) executor).execute_analysis();
 
-                }
-                bw.close();
-                osw.close();
-                fos.close();
-                br.close();
-                isr.close();
-                fis.close();
+            logger.debug("exitVal: " + logentity.getExitVal());
+            logger.debug(logentity.toString());
 
-                if(count != 0 && startflag && endflag){
-                    //调用外部程序
-                    String md5 = DigestUtils.md5Hex(trainfile + bridge + beginTime + endTime + trainmodel);
-                    String TRAIN_FILE = Constants.DAMAGE_TRAINFILE_TARGET_DIR;
-                    String MODEL_TRAIN_PROGRAM = Constants.DAMAGE_UPLOAD_TRAIN_MODEL_DIR + "/" + trainmodel;
-                    String SAVED_MODE = Constants.DAMAGE_SAVE_TRAIN_MODEL_DIR + "/" + savedmodel;
-
-                    AnalysisMessage.getInstance().update(md5, trainfile+bridge+beginTime+endTime+trainmodel, savedmodel, Constants.READY, "TRAIN", null);
-
-                    String execStr = Constants.SCRIPT_EXEC_PREFIX + " " + MODEL_TRAIN_PROGRAM + " " + TRAIN_FILE + " " + SAVED_MODE;
-                    //String execStr = "D:/os_environment/anaconda/python " + MODEL_TRAIN_PROGRAM + " " + TRAIN_FILE + " " + SAVED_MODE;
-                    //String execStr = "python D:/tmp/a.py";
-                    logger.debug(execStr);
-                    Executor executor = new CommandLineExecutor(md5, execStr);
-                    //Scheduler.getInstance().runExecutor(executor);
-                    LogEntity logentity = ((CommandLineExecutor) executor).execute_analysis();
-
-                    logger.debug("exitVal: " + logentity.getExitVal());
-                    logger.debug(logentity.toString());
-
-                    if (logentity.getExitVal() == 0){
-                        data.put("result", "success");
-                        AnalysisMessage.getInstance().update(md5,null,null,Constants.FINISHED,null,logentity.toString());
-                    }else{
-                        data.put("result", "failed");
-                        AnalysisMessage.getInstance().update(md5,null,null,Constants.FAILED,null,logentity.toString());
-                    }
-
-                    //data.put("result", "completed");
-//                    response.setData(data);
-//                    return response.getHttpResponse();
-                }else{
-                    data.put("result", "nodata");
-//                    response.setData(data);
-//                    return response.getHttpResponse();
-                }
-
-
-
-
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-                response.setStatus(HttpResponse.FAIL_STATUS);
-                response.setMsg("出错！找不到文件！");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-                response.setStatus(HttpResponse.FAIL_STATUS);
-                response.setMsg("出错！编码有误!");
-            } catch (IOException e){
-                e.printStackTrace();
-                response.setStatus(HttpResponse.FAIL_STATUS);
-                response.setMsg("出错！IO 异常");
+            if (logentity.getExitVal() == 0 || logentity.getExitVal() == 120){
+                data.put("result", "success");
+                AnalysisMessage.getInstance().update(md5,null,null,Constants.FINISHED,null,logentity.toString());
+            }else{
+                data.put("result", "failed");
+                AnalysisMessage.getInstance().update(md5,null,null,Constants.FAILED,null,logentity.toString());
             }
         }
 
@@ -658,12 +760,13 @@ public class DamageDetection {
         HttpResponse response = new HttpResponse();
         JSONObject data = new JSONObject();
         String evaluatefile = reqMsg.getString("evaluatefile");
-        String bridge = reqMsg.getString("bridge");
+//        String bridge = reqMsg.getString("bridge");
         String evaluatemodel = reqMsg.getString("evaluatemodel");
-        String beginTime = reqMsg.getString("begintime");
-        String endTime = reqMsg.getString("endtime");
-        long begintime = Long.parseLong(beginTime);
-        long endtime = Long.parseLong(endTime);
+        String evaluateLabel = reqMsg.getString("evaluatelabel");
+//        String beginTime = reqMsg.getString("begintime");
+//        String endTime = reqMsg.getString("endtime");
+//        long begintime = Long.parseLong(beginTime);
+//        long endtime = Long.parseLong(endTime);
 
         //根据条件过滤数据
         File selectedFile = new File(Constants.DAMAGE_UPLOAD_EVALUATE_FILE_DIR + "/" + evaluatefile);
@@ -673,117 +776,163 @@ public class DamageDetection {
         }else{
             boolean startflag = false;
             boolean endflag = false;
-            try {
-                File targetFile = new File(Constants.DAMAGE_EVALUATEFILE_TARGET_DIR);
-                if(!targetFile.exists()){
-                    targetFile.createNewFile();
+//            try {
+//                File targetFile = new File(Constants.DAMAGE_EVALUATEFILE_TARGET_DIR);
+//                if(!targetFile.exists()){
+//                    targetFile.createNewFile();
+//                }
+//                FileOutputStream fos = new FileOutputStream(targetFile);
+//                OutputStreamWriter osw = new OutputStreamWriter(fos,"UTF-8");
+//                BufferedWriter bw = new BufferedWriter(osw);
+//                bw.write("s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,location,level,bridge,time" + "\n");
+//
+//                FileInputStream fis = new FileInputStream(selectedFile);
+//                InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
+//                BufferedReader br = new BufferedReader(isr);
+//                String line = "";
+//                int count = 0;
+//                while((line = br.readLine()) != null ){
+//
+//                    String[] split = line.split(",");
+//                    System.out.println(split.length);
+//                    if(split.length == 14){
+//                        String current_bridge = split[12];
+//                        if(!split[13].matches("\\d+")){
+//                            continue;
+//                        }
+//                        long current_time = Long.parseLong(split[13]);
+//                        //检查已有数据是否能覆盖所选时间
+//                        if(current_time >= endtime){  endflag = true;  }
+//                        if(current_time <= begintime){   startflag = true; }
+//                        if(current_bridge.equals(bridge) && current_time >= begintime && current_time <= endtime){
+//                            bw.write(line+"\n");
+//                            count ++ ;
+//                        }
+//                    }
+//
+//                }
+//                bw.close();
+//                osw.close();
+//                fos.close();
+//                br.close();
+//                isr.close();
+//                fis.close();
+//
+//                if(count != 0 && startflag && endflag){
+//                    //调用外部程序
+//                    String md5 = DigestUtils.md5Hex(evaluatefile + bridge + beginTime + endTime + evaluatemodel);
+//                    String EVALUATE_FILE = Constants.DAMAGE_EVALUATEFILE_TARGET_DIR;
+//                    String MODEL_EVALUATE_PROGRAM = Constants.DAMAGE_EVALUATE_MODEL_PROGRAM;
+//                    String EVALUATE_MODEL = Constants.DAMAGE_SAVE_TRAIN_MODEL_DIR + "/" + evaluatemodel;
+//                    String outputFileName = evaluatefile + "_" + bridge +"_" + beginTime + "_" + endTime + "_" + evaluatemodel.split("\\.")[0] + ".csv";
+//                    String OUTPUT_FILE = Constants.DAMAGE_EVALUATE_MODEL_RESULT_DIR + "/" + outputFileName;
+//
+//                    AnalysisMessage.getInstance().update(md5, evaluatefile+bridge+beginTime+endTime+evaluatemodel, outputFileName, Constants.READY, "EVALUATE", null);
+//                    String execStr = Constants.SCRIPT_EXEC_PREFIX + " " + MODEL_EVALUATE_PROGRAM + " " + EVALUATE_FILE + " " + EVALUATE_MODEL + " " + OUTPUT_FILE;
+//                    //String execStr = "D:/os_environment/anaconda/python " + MODEL_EVALUATE_PROGRAM + " " + EVALUATE_FILE + " " + EVALUATE_MODEL + " " + OUTPUT_FILE;
+//                    //String execStr = "python D:/tmp/a.py";
+//                    logger.debug(execStr);
+//                    Executor executor = new CommandLineExecutor(md5, execStr);
+//                    //Scheduler.getInstance().runExecutor(executor);
+//                    LogEntity logentity = ((CommandLineExecutor) executor).execute_analysis();
+//
+//                    logger.debug("exitVal: " + logentity.getExitVal());
+//                    logger.debug(logentity.toString());
+//
+//                    if (logentity.getExitVal() == 0){
+//                        data.put("result", "success");
+//                        AnalysisMessage.getInstance().update(md5,null,null,Constants.FINISHED,null,logentity.toString());
+//                        try{
+//                            BufferedReader br1 = new BufferedReader(new FileReader(new File(OUTPUT_FILE)));
+//                            String header = br1.readLine();
+//                            String content = br1.readLine();
+//                            String[] metrics = content.split(",");
+//                            br.close();
+//                            data.put("precision", Float.parseFloat(metrics[0]));
+//                            data.put("recall", Float.parseFloat(metrics[1]));
+//                            data.put("f1", Float.parseFloat(metrics[2]));
+//
+//                        }catch(FileNotFoundException e){
+//                            e.printStackTrace();
+//                        }catch (IOException e){
+//                            e.printStackTrace();
+//                        }
+//
+//                    }else{
+//                        data.put("result", "failed");
+//                        AnalysisMessage.getInstance().update(md5,null,null,Constants.FAILED,null,logentity.toString());
+//                    }
+//
+//                    //data.put("result", "completed");
+////                    response.setData(data);
+////                    return response.getHttpResponse();
+//                }else{
+//                    data.put("result", "nodata");
+////                    response.setData(data);
+////                    return response.getHttpResponse();
+//                }
+//
+//
+//
+//
+//            } catch (FileNotFoundException e) {
+//                e.printStackTrace();
+//                response.setStatus(HttpResponse.FAIL_STATUS);
+//                response.setMsg("出错！找不到文件！");
+//            } catch (UnsupportedEncodingException e) {
+//                e.printStackTrace();
+//                response.setStatus(HttpResponse.FAIL_STATUS);
+//                response.setMsg("出错！编码有误!");
+//            } catch (IOException e){
+//                e.printStackTrace();
+//                response.setStatus(HttpResponse.FAIL_STATUS);
+//                response.setMsg("出错！IO 异常");
+//            }
+
+            String md5 = DigestUtils.md5Hex(evaluatefile + evaluatemodel + evaluateLabel);
+            String EVALUATE_FILE = Constants.DAMAGE_EVALUATEFILE_TARGET_DIR;
+            String MODEL_EVALUATE_PROGRAM = Constants.DAMAGE_EVALUATE_MODEL_PROGRAM;
+            String EVALUATE_MODEL = Constants.DAMAGE_SAVE_TRAIN_MODEL_DIR + "/" + evaluatemodel;
+            String EVALUATE_LABEL = Constants.DAMAGE_EVALUATE_LABEL_DIR + "/" + evaluateLabel;
+            String outputFileName = evaluatefile.split("\\.")[0] + "_" + evaluatemodel.split("\\.")[0] + ".csv";
+            String OUTPUT_FILE = Constants.DAMAGE_EVALUATE_MODEL_RESULT_DIR + "/" + outputFileName;
+
+            AnalysisMessage.getInstance().update(md5, evaluatefile+evaluatemodel, outputFileName, Constants.READY, "EVALUATE", null);
+
+            String execStr = Constants.SCRIPT_EXEC_PREFIX + " " + MODEL_EVALUATE_PROGRAM + " --data " + EVALUATE_FILE + " --mode evaluate --model " + EVALUATE_MODEL
+                    + " --label " + EVALUATE_LABEL + " --res_dir " + OUTPUT_FILE;
+            //String execStr = "D:/os_environment/anaconda/python " + MODEL_EVALUATE_PROGRAM + " " + EVALUATE_FILE + " " + EVALUATE_MODEL + " " + OUTPUT_FILE;
+            //String execStr = "python D:/tmp/a.py";
+            logger.debug(execStr);
+            Executor executor = new CommandLineExecutor(md5, execStr);
+            //Scheduler.getInstance().runExecutor(executor);
+            LogEntity logentity = ((CommandLineExecutor) executor).execute_analysis();
+
+            logger.debug("exitVal: " + logentity.getExitVal());
+            logger.debug(logentity.toString());
+
+            if (logentity.getExitVal() == 0 || logentity.getExitVal() == 120){
+                data.put("result", "success");
+                AnalysisMessage.getInstance().update(md5,null,null,Constants.FINISHED,null,logentity.toString());
+                try{
+                    BufferedReader br1 = new BufferedReader(new FileReader(new File(OUTPUT_FILE)));
+                    String header = br1.readLine();
+                    String content = br1.readLine();
+                    String[] metrics = content.split(",");
+                    br1.close();
+                    data.put("precision", Float.parseFloat(metrics[0]));
+                    data.put("recall", Float.parseFloat(metrics[1]));
+                    data.put("f1", Float.parseFloat(metrics[2]));
+
+                }catch(FileNotFoundException e){
+                    e.printStackTrace();
+                }catch (IOException e){
+                    e.printStackTrace();
                 }
-                FileOutputStream fos = new FileOutputStream(targetFile);
-                OutputStreamWriter osw = new OutputStreamWriter(fos,"UTF-8");
-                BufferedWriter bw = new BufferedWriter(osw);
-                bw.write("s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,location,level,bridge,time" + "\n");
 
-                FileInputStream fis = new FileInputStream(selectedFile);
-                InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
-                BufferedReader br = new BufferedReader(isr);
-                String line = "";
-                int count = 0;
-                while((line = br.readLine()) != null ){
-
-                    String[] split = line.split(",");
-                    System.out.println(split.length);
-                    if(split.length == 14){
-                        String current_bridge = split[12];
-                        if(!split[13].matches("\\d+")){
-                            continue;
-                        }
-                        long current_time = Long.parseLong(split[13]);
-                        //检查已有数据是否能覆盖所选时间
-                        if(current_time >= endtime){  endflag = true;  }
-                        if(current_time <= begintime){   startflag = true; }
-                        if(current_bridge.equals(bridge) && current_time >= begintime && current_time <= endtime){
-                            bw.write(line+"\n");
-                            count ++ ;
-                        }
-                    }
-
-                }
-                bw.close();
-                osw.close();
-                fos.close();
-                br.close();
-                isr.close();
-                fis.close();
-
-                if(count != 0 && startflag && endflag){
-                    //调用外部程序
-                    String md5 = DigestUtils.md5Hex(evaluatefile + bridge + beginTime + endTime + evaluatemodel);
-                    String EVALUATE_FILE = Constants.DAMAGE_EVALUATEFILE_TARGET_DIR;
-                    String MODEL_EVALUATE_PROGRAM = Constants.DAMAGE_EVALUATE_MODEL_PROGRAM;
-                    String EVALUATE_MODEL = Constants.DAMAGE_SAVE_TRAIN_MODEL_DIR + "/" + evaluatemodel;
-                    String outputFileName = evaluatefile + "_" + bridge +"_" + beginTime + "_" + endTime + "_" + evaluatemodel.split("\\.")[0] + ".csv";
-                    String OUTPUT_FILE = Constants.DAMAGE_EVALUATE_MODEL_RESULT_DIR + "/" + outputFileName;
-
-                    AnalysisMessage.getInstance().update(md5, evaluatefile+bridge+beginTime+endTime+evaluatemodel, outputFileName, Constants.READY, "EVALUATE", null);
-                    String execStr = Constants.SCRIPT_EXEC_PREFIX + " " + MODEL_EVALUATE_PROGRAM + " " + EVALUATE_FILE + " " + EVALUATE_MODEL + " " + OUTPUT_FILE;
-                    //String execStr = "D:/os_environment/anaconda/python " + MODEL_EVALUATE_PROGRAM + " " + EVALUATE_FILE + " " + EVALUATE_MODEL + " " + OUTPUT_FILE;
-                    //String execStr = "python D:/tmp/a.py";
-                    logger.debug(execStr);
-                    Executor executor = new CommandLineExecutor(md5, execStr);
-                    //Scheduler.getInstance().runExecutor(executor);
-                    LogEntity logentity = ((CommandLineExecutor) executor).execute_analysis();
-
-                    logger.debug("exitVal: " + logentity.getExitVal());
-                    logger.debug(logentity.toString());
-
-                    if (logentity.getExitVal() == 0){
-                        data.put("result", "success");
-                        AnalysisMessage.getInstance().update(md5,null,null,Constants.FINISHED,null,logentity.toString());
-                        try{
-                            BufferedReader br1 = new BufferedReader(new FileReader(new File(OUTPUT_FILE)));
-                            String header = br1.readLine();
-                            String content = br1.readLine();
-                            String[] metrics = content.split(",");
-                            br.close();
-                            data.put("precision", Float.parseFloat(metrics[0]));
-                            data.put("recall", Float.parseFloat(metrics[1]));
-                            data.put("f1", Float.parseFloat(metrics[2]));
-
-                        }catch(FileNotFoundException e){
-                            e.printStackTrace();
-                        }catch (IOException e){
-                            e.printStackTrace();
-                        }
-
-                    }else{
-                        data.put("result", "failed");
-                        AnalysisMessage.getInstance().update(md5,null,null,Constants.FAILED,null,logentity.toString());
-                    }
-
-                    //data.put("result", "completed");
-//                    response.setData(data);
-//                    return response.getHttpResponse();
-                }else{
-                    data.put("result", "nodata");
-//                    response.setData(data);
-//                    return response.getHttpResponse();
-                }
-
-
-
-
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-                response.setStatus(HttpResponse.FAIL_STATUS);
-                response.setMsg("出错！找不到文件！");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-                response.setStatus(HttpResponse.FAIL_STATUS);
-                response.setMsg("出错！编码有误!");
-            } catch (IOException e){
-                e.printStackTrace();
-                response.setStatus(HttpResponse.FAIL_STATUS);
-                response.setMsg("出错！IO 异常");
+            }else{
+                data.put("result", "failed");
+                AnalysisMessage.getInstance().update(md5,null,null,Constants.FAILED,null,logentity.toString());
             }
         }
 
@@ -797,12 +946,12 @@ public class DamageDetection {
         HttpResponse response = new HttpResponse();
         JSONObject data = new JSONObject();
         String testfile = reqMsg.getString("testfile");
-        String bridge = reqMsg.getString("bridge");
+//        String bridge = reqMsg.getString("bridge");
         String testmodel = reqMsg.getString("testmodel");
-        String beginTime = reqMsg.getString("begintime");
-        String endTime = reqMsg.getString("endtime");
-        long begintime = Long.parseLong(beginTime);
-        long endtime = Long.parseLong(endTime);
+//        String beginTime = reqMsg.getString("begintime");
+//        String endTime = reqMsg.getString("endtime");
+//        long begintime = Long.parseLong(beginTime);
+//        long endtime = Long.parseLong(endTime);
 
         //根据条件过滤数据
         File selectedFile = new File(Constants.DAMAGE_UPLOAD_TEST_FILE_DIR + "/" + testfile);
@@ -810,88 +959,111 @@ public class DamageDetection {
             response.setStatus(HttpResponse.FAIL_STATUS);
             response.setMsg("找不到预测数据！");
         }else{
-            boolean startflag = false;
-            boolean endflag = false;
-            try {
-                File targetFile = new File(Constants.DAMAGE_TESTFILE_TARGET_DIR);
-                if(!targetFile.exists()){
-                    targetFile.createNewFile();
-                }
-                FileOutputStream fos = new FileOutputStream(targetFile);
-                OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");
-                BufferedWriter bw = new BufferedWriter(osw);
-                bw.write("s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,location,level,bridge,time" + "\n");
+//            boolean startflag = false;
+//            boolean endflag = false;
+//            try {
+//                File targetFile = new File(Constants.DAMAGE_TESTFILE_TARGET_DIR);
+//                if(!targetFile.exists()){
+//                    targetFile.createNewFile();
+//                }
+//                FileOutputStream fos = new FileOutputStream(targetFile);
+//                OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");
+//                BufferedWriter bw = new BufferedWriter(osw);
+//                bw.write("s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,location,level,bridge,time" + "\n");
+//
+//                FileInputStream fis = new FileInputStream(selectedFile);
+//                InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
+//                BufferedReader br = new BufferedReader(isr);
+//                String line = "";
+//                int count = 0;
+//                while((line = br.readLine()) != null ){
+//
+//                    String[] split = line.split(",");
+//                    System.out.println(split.length);
+//                    if(split.length == 14){
+//                        String current_bridge = split[12];
+//                        if(!split[13].matches("\\d+")){
+//                            continue;
+//                        }
+//                        long current_time = Long.parseLong(split[13]);
+//                        //检查已有数据是否能覆盖所选时间
+//                        if(current_time >= endtime){  endflag = true;  }
+//                        if(current_time <= begintime){   startflag = true; }
+//                        if(current_bridge.equals(bridge) && current_time >= begintime && current_time <= endtime){
+//                            bw.write(line+"\n");
+//                            count ++ ;
+//                        }
+//                    }
+//                }
+//                bw.close();
+//                osw.close();
+//                fos.close();
+//                br.close();
+//                isr.close();
+//                fis.close();
+//
+//                if(count != 0 && startflag && endflag){
+//                    //调用外部程序
+//                    String TEST_FILE = Constants.DAMAGE_TESTFILE_TARGET_DIR;
+//                    String MODEL_TEST_PROGRAM = Constants.DAMAGE_PREDICT_PROGRAM;
+//                    String TEST_MODEL = Constants.DAMAGE_SAVE_TRAIN_MODEL_DIR + "/" + testmodel;
+//                    String outputFileName = testfile + "_" + bridge + "_" + beginTime + "_" + endTime + "_"+ testmodel.split("\\.")[0] + ".csv";
+//                    String OUTPUT_FILE = Constants.DAMAGE_PREDICT_FILE_DIR + "/" + outputFileName;
+//                    String md5 = DigestUtils.md5Hex(testfile + bridge + beginTime + endTime + testmodel);
+//
+//                    AnalysisMessage.getInstance().update(md5, testfile+bridge+beginTime+endTime+testmodel, outputFileName, Constants.READY, "TEST",null);
+//                    String execStr = Constants.SCRIPT_EXEC_PREFIX + " " + MODEL_TEST_PROGRAM + " " + TEST_FILE + " " + TEST_MODEL + " " + OUTPUT_FILE;
+//                    //String execStr = "D:/os_environment/anaconda/python " + MODEL_TEST_PROGRAM + " " + TEST_FILE + " " + TEST_MODEL + " " + OUTPUT_FILE;
+//                    //String execStr = "python D:/tmp/a.py";
+//                    logger.debug(execStr);
+//                    Executor executor = new CommandLineExecutor(md5, execStr);
+//                    //Scheduler.getInstance().runExecutor(executor);
+//                    LogEntity logentity = ((CommandLineExecutor) executor).execute_analysis();
+//                    if (logentity.getExitVal() == 0){
+//                        data.put("result", "success");
+//                        AnalysisMessage.getInstance().update(md5,null,null,Constants.FINISHED,null,logentity.toString());
+//                    }else{
+//                        data.put("result", "failed");
+//                        AnalysisMessage.getInstance().update(md5,null,null,Constants.FAILED,null,logentity.toString());
+//                    }
+//
+//                }else{
+//                    data.put("result","nodata");
+//                }
+//            }catch (FileNotFoundException e) {
+//                e.printStackTrace();
+//                response.setStatus(HttpResponse.FAIL_STATUS);
+//                response.setMsg("出错！找不到文件！");
+//            } catch (UnsupportedEncodingException e) {
+//                e.printStackTrace();
+//                response.setStatus(HttpResponse.FAIL_STATUS);
+//                response.setMsg("出错！编码有误!");
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//                response.setMsg("出错！IO 异常");
+//            }
+            //调用外部程序
+            String TEST_FILE = Constants.DAMAGE_TESTFILE_TARGET_DIR;
+            String MODEL_TEST_PROGRAM = Constants.DAMAGE_PREDICT_PROGRAM;
+            String TEST_MODEL = Constants.DAMAGE_SAVE_TRAIN_MODEL_DIR + "/" + testmodel;
+            String outputFileName = testfile.split("\\.")[0] + "_" + testmodel.split("\\.")[0] + ".csv";
+            String OUTPUT_FILE = Constants.DAMAGE_PREDICT_FILE_DIR + "/" + outputFileName;
+            String md5 = DigestUtils.md5Hex(testfile + testmodel);
 
-                FileInputStream fis = new FileInputStream(selectedFile);
-                InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
-                BufferedReader br = new BufferedReader(isr);
-                String line = "";
-                int count = 0;
-                while((line = br.readLine()) != null ){
-
-                    String[] split = line.split(",");
-                    System.out.println(split.length);
-                    if(split.length == 14){
-                        String current_bridge = split[12];
-                        if(!split[13].matches("\\d+")){
-                            continue;
-                        }
-                        long current_time = Long.parseLong(split[13]);
-                        //检查已有数据是否能覆盖所选时间
-                        if(current_time >= endtime){  endflag = true;  }
-                        if(current_time <= begintime){   startflag = true; }
-                        if(current_bridge.equals(bridge) && current_time >= begintime && current_time <= endtime){
-                            bw.write(line+"\n");
-                            count ++ ;
-                        }
-                    }
-                }
-                bw.close();
-                osw.close();
-                fos.close();
-                br.close();
-                isr.close();
-                fis.close();
-
-                if(count != 0 && startflag && endflag){
-                    //调用外部程序
-                    String TEST_FILE = Constants.DAMAGE_TESTFILE_TARGET_DIR;
-                    String MODEL_TEST_PROGRAM = Constants.DAMAGE_PREDICT_PROGRAM;
-                    String TEST_MODEL = Constants.DAMAGE_SAVE_TRAIN_MODEL_DIR + "/" + testmodel;
-                    String outputFileName = testfile + "_" + bridge + "_" + beginTime + "_" + endTime + "_"+ testmodel.split("\\.")[0] + ".csv";
-                    String OUTPUT_FILE = Constants.DAMAGE_PREDICT_FILE_DIR + "/" + outputFileName;
-                    String md5 = DigestUtils.md5Hex(testfile + bridge + beginTime + endTime + testmodel);
-
-                    AnalysisMessage.getInstance().update(md5, testfile+bridge+beginTime+endTime+testmodel, outputFileName, Constants.READY, "TEST",null);
-                    String execStr = Constants.SCRIPT_EXEC_PREFIX + " " + MODEL_TEST_PROGRAM + " " + TEST_FILE + " " + TEST_MODEL + " " + OUTPUT_FILE;
-                    //String execStr = "D:/os_environment/anaconda/python " + MODEL_TEST_PROGRAM + " " + TEST_FILE + " " + TEST_MODEL + " " + OUTPUT_FILE;
-                    //String execStr = "python D:/tmp/a.py";
-                    logger.debug(execStr);
-                    Executor executor = new CommandLineExecutor(md5, execStr);
-                    //Scheduler.getInstance().runExecutor(executor);
-                    LogEntity logentity = ((CommandLineExecutor) executor).execute_analysis();
-                    if (logentity.getExitVal() == 0){
-                        data.put("result", "success");
-                        AnalysisMessage.getInstance().update(md5,null,null,Constants.FINISHED,null,logentity.toString());
-                    }else{
-                        data.put("result", "failed");
-                        AnalysisMessage.getInstance().update(md5,null,null,Constants.FAILED,null,logentity.toString());
-                    }
-
-                }else{
-                    data.put("result","nodata");
-                }
-            }catch (FileNotFoundException e) {
-                e.printStackTrace();
-                response.setStatus(HttpResponse.FAIL_STATUS);
-                response.setMsg("出错！找不到文件！");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-                response.setStatus(HttpResponse.FAIL_STATUS);
-                response.setMsg("出错！编码有误!");
-            } catch (IOException e) {
-                e.printStackTrace();
-                response.setMsg("出错！IO 异常");
+            AnalysisMessage.getInstance().update(md5, testfile+testmodel, outputFileName, Constants.READY, "TEST",null);
+            String execStr = Constants.SCRIPT_EXEC_PREFIX + " " + MODEL_TEST_PROGRAM + " --data " + TEST_FILE + " --mode test" + " --model " + TEST_MODEL + " --res_dir " + OUTPUT_FILE;
+            //String execStr = "D:/os_environment/anaconda/python " + MODEL_TEST_PROGRAM + " " + TEST_FILE + " " + TEST_MODEL + " " + OUTPUT_FILE;
+            //String execStr = "python D:/tmp/a.py";
+            logger.debug(execStr);
+            Executor executor = new CommandLineExecutor(md5, execStr);
+            //Scheduler.getInstance().runExecutor(executor);
+            LogEntity logentity = ((CommandLineExecutor) executor).execute_analysis();
+            if (logentity.getExitVal() == 0 || logentity.getExitVal() == 0){
+                data.put("result", "success");
+                AnalysisMessage.getInstance().update(md5,null,null,Constants.FINISHED,null,logentity.toString());
+            }else{
+                data.put("result", "failed");
+                AnalysisMessage.getInstance().update(md5,null,null,Constants.FAILED,null,logentity.toString());
             }
         }
         response.setData(data);

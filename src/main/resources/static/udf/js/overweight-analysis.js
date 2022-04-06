@@ -552,16 +552,16 @@ $(function () {
     var t_begin_train = new Date(2018,09,11,00,00,00).format(data_format_str);
     var t_end_train = new Date(2018,09,11,23,59,59).format(data_format_str);
 
-    $('#train_begin_time').datetimepicker({
-        timeFormat: "HH:mm:ss",
-        dateFormat: "yy-mm-dd"
-    });
-    $('#train_end_time').datetimepicker({
-        timeFormat: "HH:mm:ss",
-        dateFormat: "yy-mm-dd"
-    });
-    $('#train_begin_time').val(t_begin_train);
-    $('#train_end_time').val(t_end_train);
+    // $('#train_begin_time').datetimepicker({
+    //     timeFormat: "HH:mm:ss",
+    //     dateFormat: "yy-mm-dd"
+    // });
+    // $('#train_end_time').datetimepicker({
+    //     timeFormat: "HH:mm:ss",
+    //     dateFormat: "yy-mm-dd"
+    // });
+    // $('#train_begin_time').val(t_begin_train);
+    // $('#train_end_time').val(t_end_train);
 
 
     $('#train_file_selected').change(function(){
@@ -587,21 +587,21 @@ $(function () {
 
     var t_begin_evaluate = new Date(2018,09,12,00,00,00).format(data_format_str);
     var t_end_evaluate = new Date(2018,09,12,23,59,59).format(data_format_str);
-    $('#evaluate_begin_time').datetimepicker({
-        timeFormat: "HH:mm:ss",
-        dateFormat: "yy-mm-dd"
-    });
-    $('#evaluate_end_time').datetimepicker({
-        timeFormat: "HH:mm:ss",
-        dateFormat: "yy-mm-dd"
-    });
-    $('#evaluate_begin_time').val(t_begin_evaluate);
-    $('#evaluate_end_time').val(t_end_evaluate);
-
-    $('#test_begin_time').datetimepicker({
-        timeFormat: "HH:mm:ss",
-        dateFormat: "yy-mm-dd"
-    });
+    // $('#evaluate_begin_time').datetimepicker({
+    //     timeFormat: "HH:mm:ss",
+    //     dateFormat: "yy-mm-dd"
+    // });
+    // $('#evaluate_end_time').datetimepicker({
+    //     timeFormat: "HH:mm:ss",
+    //     dateFormat: "yy-mm-dd"
+    // });
+    // $('#evaluate_begin_time').val(t_begin_evaluate);
+    // $('#evaluate_end_time').val(t_end_evaluate);
+    //
+    // $('#test_begin_time').datetimepicker({
+    //     timeFormat: "HH:mm:ss",
+    //     dateFormat: "yy-mm-dd"
+    // });
 
     $('#evaluate_file_selected').change(function () {
         var file = $(this).children('option:selected').val();

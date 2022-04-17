@@ -176,6 +176,12 @@ public class Home {
         return "log_system";
     }
 
+    @RequestMapping("/log_warning")
+    public String log_warning(Model model) {
+        setUser(model);
+        return "log_warning";
+    }
+
     @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping("/log_option")
     public String log_option(Model model) {

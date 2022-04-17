@@ -3,7 +3,7 @@
        xmlns:th="http://www.thymeleaf.org"
        xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
-<div th:fragment="menu (one,two_1,two_2,three_1,three_2,four_1,four_2,four_3,four_4,five_1,five_2,six_1,six_2,six_3,seven_1,seven_2,seven_3,seven_4,eight_1,eight_2,eight_3)"
+<div th:fragment="menu (one,two_1,two_2,three_1,three_2,three_3,four_1,four_2,four_3,four_4,five_1,five_2,six_1,six_2,six_3,seven_1,seven_2,seven_3,seven_4,eight_1,eight_2,eight_3)"
      id="cm-menu">
     <nav class="cm-navbar cm-navbar-primary">
         <div class="cm-flex"><a href="/" class="cm-logo"></a></div>
@@ -23,11 +23,12 @@
                         </ul>
                     </li>
 
-                    <li class="cm-submenu" th:classappend="${three_1=='active' or three_2=='active'}? pre-open : ''">
+                    <li class="cm-submenu" th:classappend="${three_1=='active' or three_2=='active' or three_3=='active'}? pre-open : ''">
                         <a class="sf-database">监控数据<span class="caret"></span></a>
                         <ul>
                             <li th:class="${three_1}"><a href="/query-data">数据查询</a></li>
                             <li th:class="${three_2}"><a href="/upload-data">数据上传</a></li>
+                            <li th:class="${three_3}"><a href="/log_warning">阈值报警</a></li>
                         </ul>
                     </li>
                     <li class="cm-submenu" th:classappend="${four_1=='active' or four_2=='active' or four_3=='active' or four_4=='active'}? pre-open : ''">
@@ -47,7 +48,7 @@
                             <li th:class="${five_2}"><a href="/role-manager">角色管理</a></li>
                         </ul>
                     </li>
-                    <li class="cm-submenu" th:classappend="${seven_1=='active' or seven_2=='active' or seven_3=='active' or seven_4=='active'}? pre-open : ''">
+                    <li class="cm-submenu" th:classappend="${six_2=='active' or six_3=='active' or seven_1=='active' or seven_2=='active' or seven_3=='active' or seven_4=='active'}? pre-open : ''">
                         <a class="sf-cogs">系统管理<span class="caret"></span></a>
                         <ul>
                             <li th:class="${six_2}"><a href="/log_system.html">系统操作日志</a></li>

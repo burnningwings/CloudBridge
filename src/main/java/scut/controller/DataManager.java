@@ -46,7 +46,7 @@ public class DataManager {
     @Resource
     SysUserService sysUserService;
 
-    private Map<String,Object> getDataSchema(String sensorId){
+    public Map<String,Object> getDataSchema(String sensorId){
         String sql = "select b.data_schema " +
                 "from sensor_info as a " +
                 "left join sensor_type as b on a.type_id=b.type_id " +

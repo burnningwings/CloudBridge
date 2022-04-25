@@ -207,6 +207,45 @@ public class LogManager {
      * @param model
      * @param page
      * @param pageSize 切换为All时需强制为null，因此必须为Integer
+     *                 sensorName 为之后的开发预留
+     * @return
+     */
+
+    @RequestMapping(value = "/log_warning/list", method = RequestMethod.GET, produces = "application/json")
+    public JSONObject log_warningList(Model model, int page, Integer pageSize,String sensorName) {
+        // 渲染模板
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
+        model.addAttribute(Constants.CURRENT_USER, currentUser);
+
+        JSONObject response = new JSONObject();
+        // 获取数据
+        logger.info(page+","+pageSize+","+sensorName);
+        String sql = "";
+
+        if (sensorName == null || sensorName.equals("全部"))
+            sql = String.format("select sensor_number, DATE_FORMAT(end_time,\"%%Y-%%m-%%d %%H:%%i:%%s\") as end_time, warning_info from sensor_warning " +
+                            "limit %s,%s ",
+                    (page - 1) * pageSize, pageSize);
+
+        String[] fields = new String[]{"sensor_number","end_time","warning_info"};
+        JSONArray data = baseDao.queryData(sql, fields);
+
+        response.put("data", data);
+        logger.info(sql);
+        logger.info(data.toString());
+        sql = String.format("SELECT COUNT(*) AS total FROM sensor_warning ");
+        fields = new String[]{"total"};
+        data = baseDao.queryData(sql, fields);
+        response.put("total", data.getJSONObject(0).get("total"));
+        return response;
+    }
+
+    /**
+     * 异步翻页
+     * @param model
+     * @param page
+     * @param pageSize 切换为All时需强制为null，因此必须为Integer
      * @return
      */
 

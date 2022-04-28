@@ -412,8 +412,10 @@ function SensorListDropdown(bridge_id, section_id, watch_point_id, watch_box_id,
     if (response != null && response['data']) {
         sensor_detail = {}//清空
         var data = response["data"];
-        var options = "<option value='0'>全部传感器类型</option>";
+        // var options = "<option value='0'>全部传感器类型</option>";
+        var options = "";
         for (var i = 0; i < data.length; i++) {
+
             // options += "<option value='" + data[i]['sensor_type_name'] + "'>" + data[i]['sensor_number'] + "--" + data[i]['sensor_type_name'] + "</option>";
             // options += "<option value='" + data[i]['sensor_type_name'] + "'>" + data[i]['sensor_type_name'] + "</option>"
             if (!sensor_detail.hasOwnProperty(data[i]['sensor_type_name']))
@@ -643,7 +645,7 @@ $(function () {
 
     $("#dataschema_tips_btn").click(function(){
         var popoverEl = $("#dataschema_tips_btn");
-        // popoverEl.popover("destroy");
+        popoverEl.popover("destroy");
         var sensor_type_selected = $("#sensor_type_menu").val();
         var content = "";
         if(sensor_type_selected && !(sensor_type_selected.match(/^\s*$/))){
@@ -694,6 +696,14 @@ $(function () {
                 "sensor_id": $("#sensor_menu").val(),
                 "sensor_number": $("#sensor_menu option:selected").text()
             };
+        }
+    }).on('filebatchpreupload',function (){
+        var sn = $("#sensor_menu option:selected").index()
+        if (sn == 0){
+            showTransientDialog("请先选择传感器");
+            return {
+                message: "请先选择传感器",
+            }
         }
     }).on("fileuploaded", function (event, data, previewId, index) {
         var response = data.response;

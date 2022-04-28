@@ -154,6 +154,7 @@ public class LogManager {
                 "   from sys_user su" +
                 "   where su.organization_id in %s " +
                 ") " +
+                "order by 1 desc " +
                 "limit %s,%s ",
             userManageableOrgIdsStr, (page - 1) * pageSize, pageSize);
 
@@ -201,6 +202,58 @@ public class LogManager {
         response.setMsg("删除系统操作日志失败！");
         return response.getHttpResponse();
     }
+
+//    /**
+//     * 异步翻页
+//     * @param model
+//     * @param page
+//     * @param pageSize 切换为All时需强制为null，因此必须为Integer
+//     * @return
+//     */
+//
+//    @RequestMapping(value = "/log_sensorUpdateList/list", method = RequestMethod.GET, produces = "application/json")
+//    public JSONObject log_sensorUpdateList(Model model, int page, Integer pageSize) {
+//        // 渲染模板
+//        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
+//        model.addAttribute(Constants.CURRENT_USER, currentUser);
+//
+//        JSONObject response = new JSONObject();
+//        // 获取数据
+//        logger.info(page+","+pageSize);
+//        String sql = "";
+//
+//        String userManageableOrgIdsStr = sysUserService.getUserSelfAndInferiorOrganizationIds()
+//                .toString().replace("[", "(").replace("]", ")");
+//
+//        sql = String.format("select ls.log_id, ls.username, DATE_FORMAT(ls.log_time,\"%%Y-%%m-%%d %%H:%%i:%%s\") as log_time, ls.log_info from log_system ls " +
+//                        "where ls.username in (" +
+//                        "   select su.username " +
+//                        "   from sys_user su" +
+//                        "   where su.organization_id in %s " +
+//                        ") " +
+//                        "limit %s,%s ",
+//                userManageableOrgIdsStr, (page - 1) * pageSize, pageSize);
+//
+//        String[] fields = new String[]{"log_id","username","log_time","log_info"};
+//        JSONArray data = baseDao.queryData(sql, fields);
+//        response.put("data", data);
+//
+//        logger.info(sql);
+//        logger.info(data.toString());
+//
+//        sql = String.format("SELECT COUNT(*) AS total FROM log_system ls " +
+//                        "where ls.username in (" +
+//                        "   select su.username " +
+//                        "   from sys_user su" +
+//                        "   where su.organization_id in %s " +
+//                        ") ",
+//                userManageableOrgIdsStr);
+//        fields = new String[]{"total"};
+//        data = baseDao.queryData(sql, fields);
+//        response.put("total", data.getJSONObject(0).get("total"));
+//        return response;
+//    }
 
     /**
      * 异步翻页

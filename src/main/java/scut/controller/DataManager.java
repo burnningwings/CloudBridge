@@ -8,10 +8,13 @@ import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.log4j.Logger;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import scut.base.HttpResponse;
 import scut.service.SysUserService;
+import scut.service.log.LogBase;
 import scut.service.scheduler.Message;
 import scut.service.scheduler.Scheduler;
 import scut.service.scheduler.executor.CommandLineExecutor;
@@ -183,6 +186,9 @@ public class DataManager {
         if (!file.isEmpty() && sensor_id!=null && !sensor_id.equalsIgnoreCase("null")
                 && !sensor_id.equalsIgnoreCase("")) {
             try {
+
+
+
                 // 临时文件目录
                 File targetFile = new File(Constants.SENSOR_DATA_ROOT_DIR);
                 if(!targetFile.exists()){
@@ -209,6 +215,18 @@ public class DataManager {
                 data.put("url","http://192.168.0.100:8088/cluster/scheduler");
                 // 前端获取该key，可监听上传情况
                 data.put("id",md5);
+
+                LogBase logbase = new LogBase();
+                boolean logoption = logbase.sys_logoption(23);
+                if (logoption)
+                {
+                    //section相关操作写进数据库
+                    UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                    String log_sql = LogBase.log_upload_sensor_data(userDetails.getUsername(), sensor_number, "FINISHED");
+                    logger.info(log_sql);
+                    baseDao.updateData(log_sql);
+
+                }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
                 response.setStatus(HttpResponse.FAIL_STATUS);

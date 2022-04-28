@@ -62,18 +62,22 @@ function updateSectionInfoGrid(bridge_id) {
                 headerAttributes: {style: "text-align:center"},
                 attributes: {class: "text-center"},
                 width: '30px'
-            },
-            {
-                field: "section_name",
-                title: "名称",
-                headerAttributes: {style: "text-align:center"},
-                attributes: {class: "text-center"}
-            }, {
+            },{
                 field: "section_number",
                 title: "编号",
                 headerAttributes: {style: "text-align:center"},
                 attributes: {class: "text-center"}
             }, {
+                field: "section_name",
+                title: "名称",
+                headerAttributes: {style: "text-align:center"},
+                attributes: {class: "text-center"}
+            },{
+                field: "bridge_name",
+                title: "所属桥梁",
+                headerAttributes: {style: "text-align:center"},
+                attributes: {class: "text-center"}
+            },{
                 field: "position",
                 title: "位置",
                 headerAttributes: {style: "text-align:center"},
@@ -83,22 +87,7 @@ function updateSectionInfoGrid(bridge_id) {
                 title: "说明",
                 headerAttributes: {style: "text-align:center"},
                 attributes: {class: "text-center"}
-            }, {
-                field: "bridge_name",
-                title: "所属桥梁",
-                headerAttributes: {style: "text-align:center"},
-                attributes: {class: "text-center"}
-            }, {
-                template: "<a class='" + detailBtnClass + "' id='modify-#:section_id#' onclick='modifySectionInfo(#:section_id#)'/>" + detailBtnText + "</a>",
-                title: detailTitle,
-                headerAttributes: {style: "text-align:center"},
-                attributes: {class: "text-center"}
-            }, {
-                template: "<a class='btn btn-success' id='picture-#:section_id#' href='/section/image/#:section_id#'/>管理</a>",
-                title: "截面图片",
-                headerAttributes: {style: "text-align:center"},
-                attributes: {class: "text-center"}
-            }, {
+            },{
                 template: "<a class='btn btn-success' id='point-#:section_id#' href='watch-point?bridgeId=#:bridge_id#&sectionId=#:section_id#'/>查看</a>",
                 title: "测点",
                 headerAttributes: {style: "text-align:center"},
@@ -106,6 +95,16 @@ function updateSectionInfoGrid(bridge_id) {
             }, {
                 template: "<a class='btn btn-success' id='sensor-#:section_id#' href='sensor?bridgeId=#:bridge_id#&sectionId=#:section_id#'/>查看</a>",
                 title: "传感器",
+                headerAttributes: {style: "text-align:center"},
+                attributes: {class: "text-center"}
+            },{
+                template: "<a class='btn btn-success' id='picture-#:section_id#' href='/section/image/#:section_id#'/>管理</a>",
+                title: "截面图片",
+                headerAttributes: {style: "text-align:center"},
+                attributes: {class: "text-center"}
+            },{
+                template: "<a class='" + detailBtnClass + "' id='modify-#:section_id#' onclick='modifySectionInfo(#:section_id#)'/>" + detailBtnText + "</a>",
+                title: detailTitle,
                 headerAttributes: {style: "text-align:center"},
                 attributes: {class: "text-center"}
             }

@@ -67,15 +67,14 @@ function updateBoxGrid(bridge_id){
                 template:'<input type="checkbox" class="checkbox" name=box-"#: box_id #" value="#: box_id #" />',
                 headerAttributes:{ style:"text-align:center"},
                 attributes:{ class:"text-center" }
-            },
-            {
-                field: "name",
-                title: "名称",
+            },{
+                field: "box_number",
+                title: "控制箱编号",
                 headerAttributes:{ style:"text-align:center"},
                 attributes:{ class:"text-center" }
-            }, {
-                field: "box_number",
-                title: "控制箱号",
+            },{
+                field: "name",
+                title: "名称",
                 headerAttributes:{ style:"text-align:center"},
                 attributes:{ class:"text-center" }
             }, {
@@ -84,34 +83,34 @@ function updateBoxGrid(bridge_id){
                 headerAttributes:{ style:"text-align:center"},
                 attributes:{ class:"text-center" }
             }, {
+                field: "bridge_name",
+                title: "所属桥梁",
+                headerAttributes:{ style:"text-align:center"},
+                attributes:{ class:"text-center" }
+            },{
+                field: "port_id",
+                title: "连接端口",
+                headerAttributes:{ style:"text-align:center"},
+                attributes:{ class:"text-center" }
+            },{
+                field: "node",
+                title: "连接节点",
+                headerAttributes:{ style:"text-align:center"},
+                attributes:{ class:"text-center" }
+            },{
                 field: "description",
                 title: "说明",
                 headerAttributes:{ style:"text-align:center"},
                 attributes:{ class:"text-center" }
             }, {
-                field: "node",
-                title: "连接节点",
-                headerAttributes:{ style:"text-align:center"},
-                attributes:{ class:"text-center" }
-            }, {
-                field: "port_id",
-                title: "连接端口",
-                headerAttributes:{ style:"text-align:center"},
-                attributes:{ class:"text-center" }
-            }, {
-                field: "bridge_name",
-                title: "所属桥梁",
-                headerAttributes:{ style:"text-align:center"},
-                attributes:{ class:"text-center" }
-            }, {
-                title: detailTitle,
-                template: "<button class='" + detailBtnClass + "' type='button' id='modify-#: box_id #' onclick='modifyWatchBox(#: box_id #,#: bridge_id #,#: type_id #)'/>" + detailBtnText + "</button>",
-                headerAttributes:{ style:"text-align:center"},
-                attributes:{ class:"text-center" }
-            }, {
                 title: "传感器",
                 //template: "<a href='/sensor/#: box_id #' />查看传感器</a>",
-                template: "<a href='/sensor?watchBoxId=#: box_id #&bridgeId=#: bridge_id #' />查看传感器</a>",
+                template: "<a href='/sensor?watchBoxId=#: box_id #&bridgeId=#: bridge_id #' />查看</a>",
+                headerAttributes:{ style:"text-align:center"},
+                attributes:{ class:"text-center" }
+            },{
+                title: detailTitle,
+                template: "<button class='" + detailBtnClass + "' type='button' id='modify-#: box_id #' onclick='modifyWatchBox(#: box_id #,#: bridge_id #,#: type_id #)'/>" + detailBtnText + "</button>",
                 headerAttributes:{ style:"text-align:center"},
                 attributes:{ class:"text-center" }
             }

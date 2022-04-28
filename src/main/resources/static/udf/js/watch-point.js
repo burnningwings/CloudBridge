@@ -63,18 +63,22 @@ function updateWatchPointGrid(bridge_id, section_id) {
                 headerAttributes: {style: "text-align:center"},
                 attributes: {class: "text-center"},
                 width: '30px'
-            },
-            {
-                field: "watch_point_name",
-                title: "名称",
-                headerAttributes: {style: "text-align:center"},
-                attributes: {class: "text-center"}
-            }, {
+            },{
                 field: "watch_point_number",
                 title: "编号",
                 headerAttributes: {style: "text-align:center"},
                 attributes: {class: "text-center"}
-            }, {
+            },{
+                field: "watch_point_name",
+                title: "名称",
+                headerAttributes: {style: "text-align:center"},
+                attributes: {class: "text-center"}
+            },{
+                field: "bridge_name",
+                title: "所属桥梁",
+                headerAttributes: {style: "text-align:center"},
+                attributes: {class: "text-center"}
+            },{
                 field: "position",
                 title: "位置",
                 headerAttributes: {style: "text-align:center"},
@@ -90,23 +94,18 @@ function updateWatchPointGrid(bridge_id, section_id) {
                 headerAttributes: {style: "text-align:center"},
                 attributes: {class: "text-center"}
             }, {
-                field: "bridge_name",
-                title: "所属桥梁",
+                template: "<a class='btn btn-success' id='sensor-#:watch_point_id#' href='sensor?bridgeId=#:bridge_id#&sectionId=#:section_id#&watchPointId=#:watch_point_id#'/>查看</a>",
+                title: "传感器",
                 headerAttributes: {style: "text-align:center"},
                 attributes: {class: "text-center"}
-            }, {
-                template: "<a class='" + detailBtnClass + "' id='modify-#:watch_point_id#' onclick='modifyWatchPointInfo(#:watch_point_id#)'/>" + detailBtnText + "</a>",
-                title: detailTitle,
-                headerAttributes: {style: "text-align:center"},
-                attributes: {class: "text-center"}
-            }, {
+            },{
                 template: "<a class='btn btn-success' id='picture-#:watch_point_id#' href='/watch-point/image/#:watch_point_id#'/>管理</a>",
                 title: "位置图片",
                 headerAttributes: {style: "text-align:center"},
                 attributes: {class: "text-center"}
-            }, {
-                template: "<a class='btn btn-success' id='sensor-#:watch_point_id#' href='sensor?bridgeId=#:bridge_id#&sectionId=#:section_id#&watchPointId=#:watch_point_id#'/>查看</a>",
-                title: "传感器",
+            },{
+                template: "<a class='" + detailBtnClass + "' id='modify-#:watch_point_id#' onclick='modifyWatchPointInfo(#:watch_point_id#)'/>" + detailBtnText + "</a>",
+                title: detailTitle,
                 headerAttributes: {style: "text-align:center"},
                 attributes: {class: "text-center"}
             }

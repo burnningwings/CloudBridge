@@ -65,15 +65,14 @@ function updateSensorGrid(bridge_id, section_id, watch_point_id, watch_box_id) {
                 headerAttributes: {style: "text-align:center"},
                 attributes: {class: "text-center"},
                 width: '30px'
-            },
-            {
-                field: "sensor_name",
-                title: "名称",
-                headerAttributes: {style: "text-align:center"},
-                attributes: {class: "text-center"}
-            }, {
+            },{
                 field: "sensor_number",
                 title: "编号",
+                headerAttributes: {style: "text-align:center"},
+                attributes: {class: "text-center"}
+            },{
+                field: "sensor_name",
+                title: "名称",
                 headerAttributes: {style: "text-align:center"},
                 attributes: {class: "text-center"}
             }, {
@@ -82,8 +81,18 @@ function updateSensorGrid(bridge_id, section_id, watch_point_id, watch_box_id) {
                 headerAttributes: {style: "text-align:center"},
                 attributes: {class: "text-center"}
             }, {
+                field: "bridge_name",
+                title: "所属桥梁",
+                headerAttributes: {style: "text-align:center"},
+                attributes: {class: "text-center"}
+            },{
+                field: "section_name",
+                title: "所属截面",
+                headerAttributes: {style: "text-align:center"},
+                attributes: {class: "text-center"}
+            },{
                 field: "watch_point_name",
-                title: "所属监测点",
+                title: "所属测点",
                 headerAttributes: {style: "text-align:center"},
                 attributes: {class: "text-center"}
             }, {
@@ -91,17 +100,7 @@ function updateSensorGrid(bridge_id, section_id, watch_point_id, watch_box_id) {
                 title: "所属控制箱",
                 headerAttributes: {style: "text-align:center"},
                 attributes: {class: "text-center"}
-            }, {
-                field: "section_name",
-                title: "所属截面",
-                headerAttributes: {style: "text-align:center"},
-                attributes: {class: "text-center"}
-            }, {
-                field: "bridge_name",
-                title: "所属桥梁",
-                headerAttributes: {style: "text-align:center"},
-                attributes: {class: "text-center"}
-            }, {
+            },{
                 template: "<a class='" + detailBtnClass + "' id='modify-#:sensor_id#' onclick='modifySensorInfo(#:sensor_id#)'/>" + detailBtnText + "</a>",
                 title: detailTitle,
                 headerAttributes: {style: "text-align:center"},

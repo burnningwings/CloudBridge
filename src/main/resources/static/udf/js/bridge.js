@@ -35,6 +35,7 @@ function updateBridgeInfoGrid() {
         },
         serverPaging: true
     });
+    dataSource.sort({field: "bridge_number", dir: "asc"})
 
     $("#bridge-grid").empty();
     $("#bridge-grid").kendoGrid({
@@ -62,14 +63,14 @@ function updateBridgeInfoGrid() {
                 attributes: {class: "text-center"},
                 width: '30px'
             },
-            {
-                field: "bridge_name",
-                title: "名称",
-                headerAttributes: {style: "text-align:center"},
-                attributes: {class: "text-center"}
-            }, {
+             {
                 field: "bridge_number",
                 title: "编号",
+                headerAttributes: {style: "text-align:center"},
+                attributes: {class: "text-center"}
+            },{
+                field: "bridge_name",
+                title: "名称",
                 headerAttributes: {style: "text-align:center"},
                 attributes: {class: "text-center"}
             }, {
@@ -88,16 +89,6 @@ function updateBridgeInfoGrid() {
                 headerAttributes: {style: "text-align:center"},
                 attributes: {class: "text-center"}
             }, {
-                template: "<a class='btn btn-success' id='picture-#:bridge_id#' href='/bridge/image/#:bridge_id#'/>管理</a>",
-                title: "图片",
-                headerAttributes: {style: "text-align:center"},
-                attributes: {class: "text-center"}
-            }, {
-                template: "<a class='" + detailBtnClass + "' id='modify-#:bridge_id#' onclick='modifyBridgeInfo(#:bridge_id#)'/>" + detailBtnText + "</a>",
-                title: detailTitle,
-                headerAttributes: {style: "text-align:center"},
-                attributes: {class: "text-center"}
-            }, {
                 template: "<a class='btn btn-success' id='section-#:bridge_id#' href='section?bridgeId=#:bridge_id#'/>查看</a>",
                 title: "截面",
                 headerAttributes: {style: "text-align:center"},
@@ -105,16 +96,26 @@ function updateBridgeInfoGrid() {
             }, {
                 template: "<a class='btn btn-success'  id='point-#:bridge_id#' href='watch-point?bridgeId=#:bridge_id#'/>查看</a>",
                 title: "测点",
-                headerAttributes: {style: "text-align:center"},
-                attributes: {class: "text-center"}
+                 headerAttributes: {style: "text-align:center"},
+                 attributes: {class: "text-center"}
             }, {
                 template: "<a class='btn btn-success' id='watchbox-#:bridge_id#' href='watch-box?bridgeId=#:bridge_id#'/>查看</a>",
                 title: "控制箱",
                 headerAttributes: {style: "text-align:center"},
                 attributes: {class: "text-center"}
             }, {
-                template: "<a class='btn btn-success' id='sensor-#:bridge_id#' href='sensor?bridgeId=#:bridge_id#'/>查看</a>",
-                title: "传感器",
+               template: "<a class='btn btn-success' id='sensor-#:bridge_id#' href='sensor?bridgeId=#:bridge_id#'/>查看</a>",
+               title: "传感器",
+               headerAttributes: {style: "text-align:center"},
+               attributes: {class: "text-center"}
+            },{
+                template: "<a class='btn btn-success' id='picture-#:bridge_id#' href='/bridge/image/#:bridge_id#'/>管理</a>",
+                title: "图片",
+                headerAttributes: {style: "text-align:center"},
+                attributes: {class: "text-center"}
+            }, {
+                template: "<a class='" + detailBtnClass + "' id='modify-#:bridge_id#' onclick='modifyBridgeInfo(#:bridge_id#)'/>" + detailBtnText + "</a>",
+                title: detailTitle,
                 headerAttributes: {style: "text-align:center"},
                 attributes: {class: "text-center"}
             }

@@ -582,5 +582,27 @@ public class LogBase {
         return ressql;
     }
 
+    /*
+     *记录上传传感器数据的日志
+     */
+    public static String log_upload_sensor_data(
+            String username,
+            String sensor_number,String status)
+    {
+        String info = "";
+        if (status.equals("FINISHED"))
+        {
+            info = "上传传感器"+sensor_number +"数据文件成功";
+        }
+        else if (status.equals("FAILED"))
+        {
+            info = "上传传感器"+sensor_number +"数据文件失败";
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String curTime = sdf.format(new Date());
+        String ressql = String.format("insert into log_system(username,log_time,log_info) " +
+                "values('%s','%s','%s')",username,curTime,info);;
+        return ressql;
+    }
 }
 

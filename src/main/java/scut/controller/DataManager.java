@@ -336,7 +336,7 @@ public class DataManager {
         // 获取数据
         JSONArray data = new JSONArray();
         String[] sensorInfoArray = sensorInfo.split(" - ");
-        if(sensorInfoArray.length == 2){
+        if(sensorInfoArray.length == 3){
             String sensorId = sensorInfoArray[0];
             String hbaseTableName = "CloudBridge:" + sensorId;
             Map<String,Object> dataSchema = getDataSchema(sensorId);

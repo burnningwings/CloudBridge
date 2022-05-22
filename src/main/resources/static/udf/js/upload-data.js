@@ -198,7 +198,7 @@ function updateMessageGrid(){
                 attributes:{ class:"text-center" }
             }, {
                 title: "操作",
-                template: '<button class="btn btn-primary" title="重新上传" type="button" onclick="reUpload(\'#: id #\')"/>上传</button>&nbsp;',
+                template: '<button class="btn btn-primary" title="删除" type="button" onclick="deleteSensor(\'#: id #\',\'#: target #\',\'#: source #\')"/>删除</button>&nbsp;',
                 // template: '<button class="btn btn-primary" title="重新上传" type="button" onclick="reUpload(\'#: id #\')"/>上传</button>&nbsp;<button class="btn btn-success" type="button" onclick="browseUploadLog(\'#: id #\')"/>查看日志</button>',
                 headerAttributes:{ style:"text-align:center"},
                 attributes:{ class:"text-center" }
@@ -207,9 +207,22 @@ function updateMessageGrid(){
     });
 }
 
+function deleteSensor(id,target,source){
+    function callback(){
+        var response = webRequest("/upload-data/delete","GET",false,{"id":id,"originFileName":source,"sensor_number":target});
+        console.log(response)
+        if(response!=null && response.status==0){
+            updateMessageGrid();
+            showModalDialog("提示", "<div style='text-align:center;'>文件正在删除...</div>",function(){},120,40);
+        }else{
+            showTransientDialog(response.msg);
+        }
+    }
+    showAlertDialog("确定删除？",callback);
+}
 function reUpload(id){
     function callback(){
-        var response = webRequest("/upload-data/replay","GET",false,{"id":id});
+        var response = webRequest("/upload-data/upload","GET",false,{"id":id});
         console.log(response)
         if(response!=null && response.status==0){
             updateMessageGrid();
@@ -700,7 +713,9 @@ $(function () {
     }).on('filebatchpreupload',function (){
         var sn = $("#sensor_menu option:selected").index()
         if (sn == 0){
-            showTransientDialog("请先选择传感器");
+            showTransientDialog("请先选择传感器")
+            $("#f_upload").fileinput('clear').fileinput('unlock')
+            $("#f_upload").parent().siblings('.fileinput-remove').hide()
             return {
                 message: "请先选择传感器",
             }

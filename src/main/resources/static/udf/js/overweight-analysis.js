@@ -229,6 +229,252 @@ function updateDropdownListTrainLabel(){
 
 }
 
+function selectIsExitItem(objSelect,objItemValue){
+    var isExit = false;
+    console.log(objSelect["0"])
+    for(var i = 0;i < objSelect["0"].options.length;i++){
+        if (objSelect[0].options[i].value == objItemValue){
+            isExit = true;
+            break
+        }
+    }
+    return isExit;
+}
+
+function updateDropdownListTrainModelType(){
+    $("#train_single_model_type_selected").empty();
+    $('#train_multi_model_type_selected').empty();
+    var single_options ="<option value=\'\' disabled selected>请选择单任务算法模型</option>"
+    var multi_options ="<option value=\'\' disabled selected>请选择多任务算法模型</option>"
+    var single = ["tcn","dnn","rnn","lstm","gru","dnnlstm"]
+    var multi = ["tcnmt","rnnmt","lstmmt","dnnlstmmt"]
+
+    for(var key in single){
+        single_options = single_options + "<option value='" + key + "'>" + single[key] + "</option>";
+    }
+
+    for(var key in multi){
+        multi_options = multi_options + "<option value='" + key +"'>" + multi[key] + "</option>";
+    }
+
+    $("#train_single_model_type_selected").append(single_options);
+    $('#train_multi_model_type_selected').append(multi_options)
+    $(".selectpicker").selectpicker('refresh');
+
+    var $dropmenu1 = $('#train_single_model_type_selected')
+    var $dropmenu2 = $('#train_multi_model_type_selected')
+
+    $dropmenu1.off('changed.bs.select').on("changed.bs.select", function () {
+        if (selectIsExitItem($dropmenu1,"-1")){
+            for (var i =0;i<$dropmenu1["0"].options.length;i++){
+                if ($dropmenu1["0"].options[i].value == "-1"){
+                    $dropmenu1["0"].remove(i);
+                    break;
+                }
+            }
+        }
+        if (!selectIsExitItem($dropmenu2,"-1")){
+            var em = "<option value='-1'>未选中</option>";
+            $dropmenu2.append(em)
+            $dropmenu2.val("-1")
+        }
+        $('.selectpicker').selectpicker('refresh');
+    });
+
+    $dropmenu2.off('changed.bs.select').on("changed.bs.select", function () {
+        if (selectIsExitItem($dropmenu2,"-1")){
+            for (var i =0;i<$dropmenu2["0"].options.length;i++){
+                if ($dropmenu2["0"].options[i].value == "-1"){
+                    $dropmenu2["0"].remove(i);
+                    break;
+                }
+            }
+        }
+        if (!selectIsExitItem($dropmenu1,"-1")){
+            var em = "<option value='-1'>未选中</option>";
+            $dropmenu1.append(em)
+            $dropmenu1.val("-1")
+        }
+        $('.selectpicker').selectpicker('refresh');
+    });
+
+
+}
+
+function updateDropdownListEvaluateModelType(){
+    $("#evaluate_single_model_type_selected").empty();
+    $('#evaluate_multi_model_type_selected').empty();
+    var single_options ="<option value=\'\' disabled selected>请选择单任务算法模型</option>"
+    var multi_options ="<option value=\'\' disabled selected>请选择多任务算法模型</option>"
+    var single = ["tcn","dnn","rnn","lstm","gru","dnnlstm"]
+    var multi = ["tcnmt","rnnmt","lstmmt","dnnlstmmt"]
+
+    for(var key in single){
+        single_options = single_options + "<option value='" + key + "'>" + single[key] + "</option>";
+    }
+
+    for(var key in multi){
+        multi_options = multi_options + "<option value='" + key +"'>" + multi[key] + "</option>";
+    }
+
+    $("#evaluate_single_model_type_selected").append(single_options);
+    $('#evaluate_multi_model_type_selected').append(multi_options)
+    $(".selectpicker").selectpicker('refresh');
+
+    var $dropmenu1 = $('#evaluate_single_model_type_selected')
+    var $dropmenu2 = $('#evaluate_multi_model_type_selected')
+
+    $dropmenu1.off('changed.bs.select').on("changed.bs.select", function () {
+        if (selectIsExitItem($dropmenu1,"-1")){
+            for (var i =0;i<$dropmenu1["0"].options.length;i++){
+                if ($dropmenu1["0"].options[i].value == "-1"){
+                    $dropmenu1["0"].remove(i);
+                    break;
+                }
+            }
+        }
+        if (!selectIsExitItem($dropmenu2,"-1")){
+            var em = "<option value='-1'>未选中</option>";
+            $dropmenu2.append(em)
+            $dropmenu2.val("-1")
+        }
+        $('.selectpicker').selectpicker('refresh');
+    });
+
+    $dropmenu2.off('changed.bs.select').on("changed.bs.select", function () {
+        if (selectIsExitItem($dropmenu2,"-1")){
+            for (var i =0;i<$dropmenu2["0"].options.length;i++){
+                if ($dropmenu2["0"].options[i].value == "-1"){
+                    $dropmenu2["0"].remove(i);
+                    break;
+                }
+            }
+        }
+        if (!selectIsExitItem($dropmenu1,"-1")){
+            var em = "<option value='-1'>未选中</option>";
+            $dropmenu1.append(em)
+            $dropmenu1.val("-1")
+        }
+        $('.selectpicker').selectpicker('refresh');
+    });
+}
+
+function updateDropdownListTestModelType(){
+    $("#test_single_model_type_selected").empty();
+    $('#test_multi_model_type_selected').empty();
+    var single_options ="<option value=\'\' disabled selected>请选择单任务算法模型</option>"
+    var multi_options ="<option value=\'\' disabled selected>请选择多任务算法模型</option>"
+    var single = ["tcn","dnn","rnn","lstm","gru","dnnlstm"]
+    var multi = ["tcnmt","rnnmt","lstmmt","dnnlstmmt"]
+
+    for(var key in single){
+        single_options = single_options + "<option value='" + key + "'>" + single[key] + "</option>";
+    }
+
+    for(var key in multi){
+        multi_options = multi_options + "<option value='" + key +"'>" + multi[key] + "</option>";
+    }
+
+    $("#test_single_model_type_selected").append(single_options);
+    $('#test_multi_model_type_selected').append(multi_options)
+    $(".selectpicker").selectpicker('refresh');
+
+    var $dropmenu1 = $('#test_single_model_type_selected')
+    var $dropmenu2 = $('#test_multi_model_type_selected')
+
+    $dropmenu1.off('changed.bs.select').on("changed.bs.select", function () {
+        if (selectIsExitItem($dropmenu1,"-1")){
+            for (var i =0;i<$dropmenu1["0"].options.length;i++){
+                if ($dropmenu1["0"].options[i].value == "-1"){
+                    $dropmenu1["0"].remove(i);
+                    break;
+                }
+            }
+        }
+        if (!selectIsExitItem($dropmenu2,"-1")){
+            var em = "<option value='-1'>未选中</option>";
+            $dropmenu2.append(em)
+            $dropmenu2.val("-1")
+        }
+        $('.selectpicker').selectpicker('refresh');
+    });
+
+    $dropmenu2.off('changed.bs.select').on("changed.bs.select", function () {
+        if (selectIsExitItem($dropmenu2,"-1")){
+            for (var i =0;i<$dropmenu2["0"].options.length;i++){
+                if ($dropmenu2["0"].options[i].value == "-1"){
+                    $dropmenu2["0"].remove(i);
+                    break;
+                }
+            }
+        }
+        if (!selectIsExitItem($dropmenu1,"-1")){
+            var em = "<option value='-1'>未选中</option>";
+            $dropmenu1.append(em)
+            $dropmenu1.val("-1")
+        }
+        $('.selectpicker').selectpicker('refresh');
+    });
+}
+
+function updateDropdownListSpyTestModelType(){
+    $("#spy_test_single_model_type_selected").empty();
+    $('#spy_test_multi_model_type_selected').empty();
+    var single_options ="<option value=\'\' disabled selected>请选择单任务算法模型</option>"
+    var multi_options ="<option value=\'\' disabled selected>请选择多任务算法模型</option>"
+    var single = ["tcn","dnn","rnn","lstm","gru","dnnlstm"]
+    var multi = ["tcnmt","rnnmt","lstmmt","dnnlstmmt"]
+
+    for(var key in single){
+        single_options = single_options + "<option value='" + key + "'>" + single[key] + "</option>";
+    }
+
+    for(var key in multi){
+        multi_options = multi_options + "<option value='" + key +"'>" + multi[key] + "</option>";
+    }
+
+    $("#spy_test_single_model_type_selected").append(single_options);
+    $('#spy_test_multi_model_type_selected').append(multi_options)
+    $(".selectpicker").selectpicker('refresh');
+
+    var $dropmenu1 = $('#spy_test_single_model_type_selected')
+    var $dropmenu2 = $('#spy_test_multi_model_type_selected')
+
+    $dropmenu1.off('changed.bs.select').on("changed.bs.select", function () {
+        if (selectIsExitItem($dropmenu1,"-1")){
+            for (var i =0;i<$dropmenu1["0"].options.length;i++){
+                if ($dropmenu1["0"].options[i].value == "-1"){
+                    $dropmenu1["0"].remove(i);
+                    break;
+                }
+            }
+        }
+        if (!selectIsExitItem($dropmenu2,"-1")){
+            var em = "<option value='-1'>未选中</option>";
+            $dropmenu2.append(em)
+            $dropmenu2.val("-1")
+        }
+        $('.selectpicker').selectpicker('refresh');
+    });
+
+    $dropmenu2.off('changed.bs.select').on("changed.bs.select", function () {
+        if (selectIsExitItem($dropmenu2,"-1")){
+            for (var i =0;i<$dropmenu2["0"].options.length;i++){
+                if ($dropmenu2["0"].options[i].value == "-1"){
+                    $dropmenu2["0"].remove(i);
+                    break;
+                }
+            }
+        }
+        if (!selectIsExitItem($dropmenu1,"-1")){
+            var em = "<option value='-1'>未选中</option>";
+            $dropmenu1.append(em)
+            $dropmenu1.val("-1")
+        }
+        $('.selectpicker').selectpicker('refresh');
+    });
+}
+
 function updateDropdownListTestFile(){
     $("#test_file_selected").empty();
     var url = "/overweight-analysis/dropdown";
@@ -511,6 +757,10 @@ $(function () {
     updateDropdownListEvaluateBridge();
     updateDropdownListTestBridge();
     updateDropdownListTrainLabel();
+    updateDropdownListTrainModelType();
+    updateDropdownListEvaluateModelType();
+    updateDropdownListTestModelType();
+    updateDropdownListSpyTestModelType();
     // CGQTrain();
 
    // updateDropdownListUdfTrainModel();
@@ -946,7 +1196,11 @@ $(function () {
             // var train_bridge = $("#train_bridge_selected").val();
             var saved_model = $("#saved_model").val();
             var train_label = $("#train_label_selected").val()
-            //console.log(saved_model);
+            var model_type = $("#train_single_model_type_selected").val() >= 0?$("#train_single_model_type_selected option:selected").text():$("#train_multi_model_type_selected option:selected").text()
+            var epochs = $("#epochs").val()
+            var lr = $("#lr").val()
+            var batch_size = $("#batch_size").val()
+            console.log(model_type);
             if (train_file == null){
                 showTransientDialog("请选择训练文件");
                 //showDialog("请选择训练文件");
@@ -969,6 +1223,14 @@ $(function () {
             }
             if(!train_label){
                 showTransientDialog("请选择训练标签");
+                return;
+            }
+            if(!model_type){
+                showTransientDialog("请选择模型类型");
+                return;
+            }
+            if (!epochs || !lr || !batch_size){
+                showTransientDialog("请输入参数")
                 return;
             }
             var begin_time = $("#train_begin_time").val();
@@ -998,6 +1260,10 @@ $(function () {
                     "begintime" : new Date(begin_time).format('yyyyMMddHHmmss'),
                     "endtime" : new Date(end_time).format("yyyyMMddHHmmss"),
                     "trainlabel" : train_label,
+                    "trainmodeltype" : model_type,
+                    "epochs" : epochs,
+                    "lr" : lr,
+                    "batch_size" : batch_size,
                 }),
                 dataType: "json",
                 beforeSend: function () {
@@ -1444,6 +1710,8 @@ $(function () {
     $("#evaluate_start").click(function () {
         var evaluate_file = $("#evaluate_file_selected").val();
         var evaluate_model = $("#evaluate_model_selected").val();
+        var model_type = $("#evaluate_single_model_type_selected").val() >= 0?$("#evaluate_single_model_type_selected option:selected").text():$("#evaluate_multi_model_type_selected option:selected").text();
+
         // var bridge = $("#evaluate_bridge_selected").val();
 
         if(evaluate_file == null){
@@ -1453,6 +1721,10 @@ $(function () {
         if(evaluate_model == null){
             showTransientDialog("请选择验证模型");
             //showDialog("请选择训练模型");
+            return;
+        }
+        if(model_type == null){
+            showTransientDialog("请选择模型类型")
             return;
         }
         // if(bridge == null){
@@ -1480,7 +1752,8 @@ $(function () {
                 // "bridge" : bridge,
                 "evaluatemodel" : evaluate_model,
                 "begintime" : new Date(begin_time).format('yyyyMMddHHmmss'),
-                "endtime" : new Date(end_time).format("yyyyMMddHHmmss")
+                "endtime" : new Date(end_time).format("yyyyMMddHHmmss"),
+                "modelType" : model_type,
             }),
             dataType: "json",
             beforeSend: function () {
@@ -1529,6 +1802,7 @@ $(function () {
             var test_file = $("#test_file_selected").val();
             var test_model = $("#test_model_selected").val();
             var bridge = $("#test_bridge_selected").val();
+            var model_type = $("#test_single_model_type_selected").val() >= 0?$("#test_single_model_type_selected option:selected").text():$("#test_multi_model_type_selected option:selected").text()
 
             if(test_file == null){
                 showTransientDialog("请选择预测文件");
@@ -1537,6 +1811,10 @@ $(function () {
             if(test_model == null){
                 showTransientDialog("请选择预测模型");
                 //showDialog("请选择训练模型");
+                return;
+            }
+            if (model_type == null){
+                showTransientDialog("请选择模型类型");
                 return;
             }
             // if(bridge == null){
@@ -1565,7 +1843,8 @@ $(function () {
                     // "bridge" : bridge,
                     "testmodel" : test_model,
                     "begintime" : new Date(begin_time).format('yyyyMMddHHmmss'),
-                    "endtime" : new Date(end_time).format("yyyyMMddHHmmss")
+                    "endtime" : new Date(end_time).format("yyyyMMddHHmmss"),
+                    "modelType" : model_type,
                 }),
                 dataType: "json",
                 beforeSend: function () {
@@ -1599,6 +1878,7 @@ $(function () {
             // var test_bridge = $("#spy_test_bridge_selected").val();
             var test_model = $("#spy_test_model_selected").val();
             var bridge = $("#spy_test_bridge_selected").val();
+            var model_type = $("#spy_test_single_model_type_selected").val() >= 0?$("#spy_test_single_model_type_selected option:selected").text():$("#spy_test_multi_model_type_selected option:selected").text()
 
             // if(test_file == null){
             //     showTransientDialog("请选择预测文件");
@@ -1611,6 +1891,10 @@ $(function () {
             }
             if(bridge == null){
                 showTransientDialog("请选择分析桥梁");
+                return;
+            }
+            if(model_type == null){
+                showTransientDialog("请选择模型类型");
                 return;
             }
             var begin_time = $("#test_begin_time").val();
@@ -1635,7 +1919,8 @@ $(function () {
                     "bridge" : bridge,
                     "testmodel" : test_model,
                     "begintime" : new Date(begin_time).format('yyyyMMddHHmmss'),
-                    "endtime" : new Date(end_time).format("yyyyMMddHHmmss")
+                    "endtime" : new Date(end_time).format("yyyyMMddHHmmss"),
+                    "modelType" : model_type,
                 }),
                 dataType: "json",
                 beforeSend: function () {
@@ -1672,7 +1957,7 @@ $(function () {
     $("#result_overweight").click(function () {
         var test_file = $("#test_file_selected").val();
         var test_model = $("#test_model_selected").val();
-        var bridge = $("#test_bridge_selected").val();
+        // var bridge = $("#test_bridge_selected").val();
         var begin_time = $("#test_begin_time").val();
         var end_time = $("#test_end_time").val();
 
@@ -1685,10 +1970,10 @@ $(function () {
             //showDialog("请选择训练模型");
             return;
         }
-        if(bridge == null){
-            showTransientDialog("请选择分析桥梁");
-            return;
-        }
+        // if(bridge == null){
+        //     showTransientDialog("请选择分析桥梁");
+        //     return;
+        // }
         if(begin_time >= end_time){
             showTransientDialog("开始时间必须小于截止时间");
             return;
@@ -1706,7 +1991,7 @@ $(function () {
             var param ={
                 "testfile" : test_file,
                 "testmodel" : test_model,
-                "bridge" : bridge,
+                // "bridge" : bridge,
                 "begintime" : new Date(begin_time).format('yyyyMMddHHmmss'),
                 "endtime" : new Date(end_time).format('yyyyMMddHHmmss')
             }

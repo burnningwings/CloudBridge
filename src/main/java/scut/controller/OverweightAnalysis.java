@@ -603,6 +603,10 @@ public class OverweightAnalysis {
         String trainLabel = reqMsg.getString("trainlabel");
         long begintime = Long.parseLong(beginTime);
         long endtime = Long.parseLong(endTime);
+        String modelType = reqMsg.getString("trainmodeltype");
+        String epochs = reqMsg.getString("epochs");
+        String lr = reqMsg.getString("lr");
+        String batchSize = reqMsg.getString("batch_size");
 
         //根据条件过滤数据
         File selectFile = new File(Constants.OVERWEIGHT_UPLOAD_TRAIN_FILE_DIR + "/" +trainfile);
@@ -662,6 +666,7 @@ public class OverweightAnalysis {
                             count ++ ;
                         }
                     }
+                    //使用displacement进行测试
 //                    endflag = true;
 //                    startflag = true;
 //                    bw.write(line+"\n");
@@ -684,16 +689,21 @@ public class OverweightAnalysis {
                     String SAVED_MODE = Constants.OVERWEIGHT_SAVE_TRAIN_MODEL_DIR;
                     String TRAINLABEL = Constants.OVERWEIGHT_TRAIN_LABEL + "/" + trainLabel;
                     String TRAINIMAGE = Constants.OVERWEIGHT_TRAIN_LOSSIMAGE;
-
+                    boolean multi = false;
+                    if ("tcnmt".equals(modelType) || "rnnmt".equals(modelType) || "lstmmt".equals(modelType) || "dnnlstmmt".equals(modelType)){
+                        multi = true;
+                    }
 //                    TRAIN_FILE = "D:/tmp/CloudBridge/data_analysis/overweight_analysis/train_file/displacement.csv";
-
                     AnalysisMessage.getInstance().update(md5, trainfile+beginTime+endTime+trainmodel, savedmodel, Constants.READY, "TRAIN", null);
 
                     //String execStr = "D:/os_environment/anaconda/python " + MODEL_TRAIN_PROGRAM + " " + TRAIN_FILE + " " + SAVED_MODE;
                     //String execStr = Constants.SCRIPT_EXEC_PREFIX + " " + MODEL_TRAIN_PROGRAM + " " + TRAIN_FILE + " " + SAVED_MODE;
-                    String execStr = Constants.SCRIPT_EXEC_PREFIX + " " + MODEL_TRAIN_PROGRAM + " --task_name " + savedmodel +" --data " + TRAIN_FILE +
-                            " --label " + TRAINLABEL + " --mode train --epochs 25 --lr 0.0005 --batch_size 64 --save_loss_image True --loss_image_dir " +
+                    String execStr = Constants.SCRIPT_EXEC_PREFIX + " " + MODEL_TRAIN_PROGRAM + " --task_name " + savedmodel + " --model_type " + modelType +" --data " + TRAIN_FILE +
+                            " --label " + TRAINLABEL + " --mode train --epochs " + epochs + " --lr " + lr + " --batch_size " + batchSize + " --save_loss_image True --loss_image_dir " +
                              TRAINIMAGE + " --save_model True --model_dir " +SAVED_MODE;
+                    if (!multi){
+                        execStr += " --multi=False";
+                    }
                     //String execStr = "python D:/tmp/a.py";
                     logger.debug(execStr);
                     Executor executor = new CommandLineExecutor(md5, execStr);
@@ -892,6 +902,7 @@ public class OverweightAnalysis {
         String endTime = reqMsg.getString("endtime");
         long begintime = Long.parseLong(beginTime);
         long endtime = Long.parseLong(endTime);
+        String modelType = reqMsg.getString("modelType");
 
         //根据条件过滤数据
         File selectFile = new File(Constants.OVERWEIGHT_UPLOAD_EVALUATE_FILE_DIR + "/" + evaluatefile);
@@ -972,13 +983,23 @@ public class OverweightAnalysis {
                     String EVALUATE_LABEL = Constants.OVERWEIGHT_EVALUATE_LABEL;
                     String MODEL_EVALUATE_PROGRAM = Constants.OVERWEIGHT_EVALUATE_MODEL_PROGRAM;
                     String EVALUATE_MODEL = Constants.OVERWEIGHT_SAVE_TRAIN_MODEL_DIR + "/" + evaluatemodel;
-                    String outputFileName = evaluatefile + "_" + beginTime + "_" + endTime + "_" + evaluatemodel.split("\\.")[0] + ".csv";
+                    String outputFileName = evaluatefile.split("\\.")[0] + "_" + beginTime + "_" + endTime + "_" + evaluatemodel.split("\\.")[0] + ".csv";
                     String OUTPUT_FILE = Constants.OVERWEIGHT_EVALUATE_MODEL_RESULT_DIR + "/" + outputFileName;
+
+                    boolean multi = false;
+                    if ("tcnmt".equals(modelType) || "rnnmt".equals(modelType) || "lstmmt".equals(modelType) || "dnnlstmmt".equals(modelType)){
+                        multi = true;
+                    }
 
                     AnalysisMessage.getInstance().update(md5, evaluatefile+beginTime+endTime+evaluatemodel, outputFileName, Constants.READY, "EVALUATE", null);
                     //String execStr = "D:/os_environment/anaconda/python " + MODEL_EVALUATE_PROGRAM + " " + EVALUATE_FILE + " " + EVALUATE_MODEL + " " + OUTPUT_FILE;
                     String execStr = Constants.SCRIPT_EXEC_PREFIX + " " + MODEL_EVALUATE_PROGRAM + " --data " + EVALUATE_FILE + " --label " + EVALUATE_LABEL + " --mode evaluate --model " + EVALUATE_MODEL + " --evaluate_res_dir " + OUTPUT_FILE;
                     //String execStr = "python D:/tmp/a.py";
+
+                    if (!multi){
+                        execStr += " --multi=False";
+                    }
+
                     logger.debug(execStr);
                     Executor executor = new CommandLineExecutor(md5, execStr);
                     //Scheduler.getInstance().runExecutor(executor);
@@ -1054,6 +1075,7 @@ public class OverweightAnalysis {
         String endTime = reqMsg.getString("endtime");
         long begintime = Long.parseLong(beginTime);
         long endtime = Long.parseLong(endTime);
+        String modelType = reqMsg.getString("modelType");
 
 //        TODO: select the sensor from mysql with the bridgeId, and the sensors privode the displacement responnse data
         String sql = "select sensor_id from sensor_info as a " +
@@ -1147,15 +1169,25 @@ public class OverweightAnalysis {
                 String OUTPUT_FILE = Constants.OVERWEIGHT_PREDICT_FILE_DIR + "/" + outputFileName;
                 String md5 = DigestUtils.md5Hex( bridge + beginTime + endTime + testmodel);
 
+                boolean multi = false;
+                if ("tcnmt".equals(modelType) || "rnnmt".equals(modelType) || "lstmmt".equals(modelType) || "dnnlstmmt".equals(modelType)){
+                    multi = true;
+                }
+
                 AnalysisMessage.getInstance().update(md5, bridge + beginTime + endTime + testmodel, outputFileName, Constants.READY, "TEST",null);
                 //String execStr = "D:/os_environment/anaconda/python " + MODEL_TEST_PROGRAM + " " + TEST_FILE + " " + TEST_MODEL + " " + OUTPUT_FILE;
                 String execStr = Constants.SCRIPT_EXEC_PREFIX + " " + MODEL_TEST_PROGRAM + " --data " + TEST_FILE + " --mode test --model " + TEST_MODEL + " --res_dir " + OUTPUT_FILE;
                 //String execStr = "python D:/tmp/a.py";
+
+                if (!multi){
+                    execStr += " --multi=False";
+                }
+
                 logger.debug(execStr);
                 Executor executor = new CommandLineExecutor(md5, execStr);
                 //Scheduler.getInstance().runExecutor(executor);
                 LogEntity logentity = ((CommandLineExecutor) executor).execute_analysis();
-                if (logentity.getExitVal() == 0){
+                if (logentity.getExitVal() == 0 || logentity.getExitVal() == 120){
                     data.put("result", "success");
                     AnalysisMessage.getInstance().update(md5,null,null,Constants.FINISHED,null,logentity.toString());
                 }else{
@@ -1185,6 +1217,7 @@ public class OverweightAnalysis {
         String endTime = reqMsg.getString("endtime");
         long begintime = Long.parseLong(beginTime);
         long endtime = Long.parseLong(endTime);
+        String modelType = reqMsg.getString("modelType");
         System.out.println("start time-----"+beginTime);
         System.out.println("end time--------"+endTime);
         System.out.println(bridge);
@@ -1216,7 +1249,7 @@ public class OverweightAnalysis {
                 while((line = br.readLine()) != null ){
 
                     String[] split = line.split(",");
-                    System.out.println(split.length);
+//                    System.out.println(split.length);
                     if(split.length == 17){
                         String current_bridge = split[15];
                         if(!split[16].matches("\\d+")){
@@ -1225,7 +1258,11 @@ public class OverweightAnalysis {
                         long current_time = Long.parseLong(split[16]);
                         if(current_time >= endtime){ endflag = true; };
                         if(current_time <= begintime){startflag = true;};
-                        if(current_bridge.equals(bridge) && current_time >= begintime && current_time <= endtime){
+//                        if(current_bridge.equals(bridge) && current_time >= begintime && current_time <= endtime){
+//                            bw.write(line+"\n");
+//                            count ++ ;
+//                        }
+                        if(current_time >= begintime && current_time <= endtime){
                             bw.write(line+"\n");
                             count ++ ;
                         }
@@ -1252,20 +1289,27 @@ public class OverweightAnalysis {
                     String TEST_FILE = Constants.OVERWEIGHT_TESTFILE_TARGET_DIR;
                     String MODEL_TEST_PROGRAM = Constants.OVERWEIGHT_PREDICT_PROGRAM;
 //                    String TEST_MODEL = Constants.OVERWEIGHT_SAVE_TRAIN_MODEL_DIR + "/" + testmodel;
-                    String TEST_MODEL = Constants.OVERWEIGHT_SAVE_TRAIN_MODEL_DIR + "/" + testmodel + "/" + testmodel + ".h5";
-                    String outputFileName = testfile + "_" + bridge + "_" + beginTime + "_" + endTime + "_" + testmodel.split("\\.")[0] + ".csv";
+                    String TEST_MODEL = Constants.OVERWEIGHT_SAVE_TRAIN_MODEL_DIR + "/" + testmodel;
+                    String outputFileName = testfile.split("\\.")[0] + "_" + beginTime + "_" + endTime + "_" + testmodel.split("\\.")[0] + ".csv";
                     String OUTPUT_FILE = Constants.OVERWEIGHT_PREDICT_FILE_DIR + "/" + outputFileName;
                     String md5 = DigestUtils.md5Hex(testfile + bridge + beginTime + endTime + testmodel);
+                    boolean multi = false;
+                    if ("tcnmt".equals(modelType) || "rnnmt".equals(modelType) || "lstmmt".equals(modelType) || "dnnlstmmt".equals(modelType)){
+                        multi = true;
+                    }
 
                     AnalysisMessage.getInstance().update(md5, testfile + bridge + beginTime + endTime + testmodel, outputFileName, Constants.READY, "TEST",null);
                     //String execStr = "D:/os_environment/anaconda/python " + MODEL_TEST_PROGRAM + " " + TEST_FILE + " " + TEST_MODEL + " " + OUTPUT_FILE;
                     String execStr = Constants.SCRIPT_EXEC_PREFIX + " " + MODEL_TEST_PROGRAM + " --data " + TEST_FILE + " --mode test --model " + TEST_MODEL + " --res_dir " + OUTPUT_FILE;
                     //String execStr = "python D:/tmp/a.py";
+                    if (!multi){
+                        execStr += " --multi=False";
+                    }
                     logger.debug(execStr);
                     Executor executor = new CommandLineExecutor(md5, execStr);
                     //Scheduler.getInstance().runExecutor(executor);
                     LogEntity logentity = ((CommandLineExecutor) executor).execute_analysis();
-                    if (logentity.getExitVal() == 0){
+                    if (logentity.getExitVal() == 0 || logentity.getExitVal() == 120){
                         data.put("result", "success");
                         AnalysisMessage.getInstance().update(md5,null,null,Constants.FINISHED,null,logentity.toString());
                     }else{
@@ -1295,10 +1339,10 @@ public class OverweightAnalysis {
     }
 
     @RequestMapping(value = "/overweight-analysis/getPredictResult", method = RequestMethod.GET, produces = "application/json")
-    public JSONObject getUDFPredictResult(String testfile, String testmodel, String bridge, String begintime, String endtime){
+    public JSONObject getUDFPredictResult(String testfile, String testmodel, String begintime, String endtime){
         HttpResponse response = new HttpResponse();
         JSONObject data = new JSONObject();
-        String targetFileName = testfile + "_" + bridge + "_" + begintime + "_" + endtime + "_" + testmodel.split("\\.")[0] + ".csv";
+        String targetFileName = testfile.split("\\.")[0] + "_" + begintime + "_" + endtime + "_" + testmodel.split("\\.")[0] + ".csv";
         System.out.println(targetFileName);
         String targetPath =  Constants.OVERWEIGHT_PREDICT_FILE_DIR + "/" + targetFileName;
         File file = new File(targetPath);

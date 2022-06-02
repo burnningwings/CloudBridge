@@ -23,4 +23,14 @@ public class LogEntity {
     public String toString(){
         return logSb.toString();
     }
+
+    /**
+     * Author: liujun
+     * @return res
+     */
+    public String getDamageResult() {
+        String res = "";
+        res = this.logSb.substring(this.logSb.indexOf("result:")+7,this.logSb.indexOf("end"));
+        return res;
+    }
 }

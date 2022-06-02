@@ -161,38 +161,46 @@ $(function () {
         // var content = "{<br/>"+
         //     "time, bridge, section, point, measure_data....<br/>"+
         //     "}";
-        var content = "time : string<br/>" + "bridge : string<br/>" + "section : string" + "watch_point : string" +
-                        "sensor_num : string<br/>" + "s : float";
-        popoverEl.attr("data-content", content);
-        popoverEl.popover("show");
+        // var content = "time : string<br/>" + "bridge : string<br/>" + "section : string" + "watch_point : string" +
+        //                 "sensor_num : string<br/>" + "s : float";
+        // popoverEl.attr("data-content", content);
+        // popoverEl.popover("show");
+        var str = "date,air_temp,strain\n";
+        var url = "data:text/csv;charset=utf-8,\ufeff" + encodeURIComponent(str);
+        var link = document.createElement("a");
+        link.href = url;
+        link.download = 'example_test.csv';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
 
     });
 
     $("#reliability_analysis_start").click(function () {
         var reliability_file = $("#reliability_file_selected").val();
-        var reliability_bridge_id = $("#reliability_bridge").val();
-        var reliability_watchpoint_id = $("#reliability_watchpoint").val();
-        var reliability_bridge = $("#reliability_bridge option:selected").text();
-        var reliability_section = $("#reliability_section option:selected").text();
-        var reliability_watchpoint = $("#reliability_watchpoint option:selected").text();
+        // var reliability_bridge_id = $("#reliability_bridge").val();
+        // var reliability_watchpoint_id = $("#reliability_watchpoint").val();
+        // var reliability_bridge = $("#reliability_bridge option:selected").text();
+        // var reliability_section = $("#reliability_section option:selected").text();
+        // var reliability_watchpoint = $("#reliability_watchpoint option:selected").text();
 
         if (reliability_file == null){
             showTransientDialog("请选择分析文件");
             //showDialog("请选择训练文件");
             return;
         }
-        if(reliability_bridge == null){
-            showTransientDialog("请选择分析桥梁");
-            return;
-        }
-        if(reliability_section == null){
-            showTransientDialog("请选择桥梁截面");
-            return;
-        }
-        if(reliability_watchpoint == null){
-            showTransientDialog("请选择观测点");
-            return;
-        }
+        // if(reliability_bridge == null){
+        //     showTransientDialog("请选择分析桥梁");
+        //     return;
+        // }
+        // if(reliability_section == null){
+        //     showTransientDialog("请选择桥梁截面");
+        //     return;
+        // }
+        // if(reliability_watchpoint == null){
+        //     showTransientDialog("请选择观测点");
+        //     return;
+        // }
 
         var begin_time = $("#reliability_begin_time").val();
         var end_time = $("#reliability_end_time").val();
@@ -225,11 +233,11 @@ $(function () {
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({
                 "reliabilityfile" : reliability_file,
-                "bridge" : reliability_bridge,
-                "section" : reliability_section,
-                "watchpoint" : reliability_watchpoint,
-                "bridge_id" : reliability_bridge_id,
-                "watchpoint_id" : reliability_watchpoint_id,
+                // "bridge" : reliability_bridge,
+                // "section" : reliability_section,
+                // "watchpoint" : reliability_watchpoint,
+                // "bridge_id" : reliability_bridge_id,
+                // "watchpoint_id" : reliability_watchpoint_id,
                 "begintime" : new Date(begin_time).format('yyyyMMddHHmmss'),
                 "endtime" :  new Date(end_time).format('yyyyMMddHHmmss')
             }),

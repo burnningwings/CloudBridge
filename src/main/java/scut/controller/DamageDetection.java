@@ -610,7 +610,11 @@ public class DamageDetection {
 //        String bridge = reqMsg.getString("bridge");
         String trainmodel = reqMsg.getString("trainmodel");
         String savedmodel = reqMsg.getString("savedmodel");
-        String trainlabel = reqMsg.getString("trainlabel");
+//        String trainlabel = reqMsg.getString("trainlabel");
+        String trainModelType = reqMsg.getString("modelType");
+        String epochs = reqMsg.getString("epochs");
+        String batchSize = reqMsg.getString("batch_size");
+        String sample = reqMsg.getString("sample");
 //        String beginTime = reqMsg.getString("begintime");
 //        String endTime = reqMsg.getString("endtime");
 //        long begintime = Long.parseLong(beginTime);
@@ -720,9 +724,9 @@ public class DamageDetection {
             String md5 = DigestUtils.md5Hex(trainfile + trainmodel);
 //                String TRAIN_FILE = Constants.DAMAGE_TRAINFILE_TARGET_DIR;
             String TRAIN_FILE = Constants.DAMAGE_UPLOAD_TRAIN_FILE_DIR + "/" + trainfile;
-            String MODEL_TRAIN_PROGRAM = Constants.DAMAGE_UPLOAD_TRAIN_MODEL_DIR + "/" + trainmodel;
+            String MODEL_TRAIN_PROGRAM = Constants.DAMAGE_UPLOAD_TRAIN_MODEL_DIR + "/" + trainmodel + "/" + trainmodel + ".py";
             String SAVED_MODE = Constants.DAMAGE_SAVE_TRAIN_MODEL_DIR;
-            String TRAINLABEL = Constants.DAMAGE_TRAIN_LABEL_DIR + "/" + trainlabel;
+//            String TRAINLABEL = Constants.DAMAGE_TRAIN_LABEL_DIR + "/" + trainlabel;
             String TRAINIMAGE = Constants.DAMAGE_TRAIN_LOSSIMAGE;
 
             AnalysisMessage.getInstance().update(md5, trainfile+trainmodel, savedmodel, Constants.READY, "TRAIN", null);
@@ -730,9 +734,9 @@ public class DamageDetection {
 //                String execStr = Constants.SCRIPT_EXEC_PREFIX + " " + MODEL_TRAIN_PROGRAM + " " + TRAIN_FILE + " " + SAVED_MODE;
             //String execStr = "D:/os_environment/anaconda/python " + MODEL_TRAIN_PROGRAM + " " + TRAIN_FILE + " " + SAVED_MODE;
             //String execStr = "python D:/tmp/a.py";
-            String execStr = Constants.SCRIPT_EXEC_PREFIX + " " + MODEL_TRAIN_PROGRAM + " --task_name " + savedmodel +" --data " + TRAIN_FILE +
-                    " --label " + TRAINLABEL + " --mode train --epochs 25 --batch_size 64 --save_loss_image True --loss_image_dir " +
-                    TRAINIMAGE + " --save_model True --model_dir " +SAVED_MODE;
+            String execStr = Constants.DAMAGE_SCRIPT_EXEC_PREFIX + " " + MODEL_TRAIN_PROGRAM + " --task_name " + savedmodel + " --model_type " + trainModelType +" --dataset " + TRAIN_FILE +
+                    " --sample " + sample + " --mode train " + "--epochs " + epochs + " --batch_size " + batchSize +
+                    " --save_loss_image True --loss_image_dir " + TRAINIMAGE + " --save_model True --model_dir " +SAVED_MODE;
             logger.debug(execStr);
             Executor executor = new CommandLineExecutor(md5, execStr);
             //Scheduler.getInstance().runExecutor(executor);
@@ -762,7 +766,7 @@ public class DamageDetection {
         String evaluatefile = reqMsg.getString("evaluatefile");
 //        String bridge = reqMsg.getString("bridge");
         String evaluatemodel = reqMsg.getString("evaluatemodel");
-        String evaluateLabel = reqMsg.getString("evaluatelabel");
+//        String evaluateLabel = reqMsg.getString("evaluatelabel");
 //        String beginTime = reqMsg.getString("begintime");
 //        String endTime = reqMsg.getString("endtime");
 //        long begintime = Long.parseLong(beginTime);
@@ -889,18 +893,18 @@ public class DamageDetection {
 //                response.setMsg("出错！IO 异常");
 //            }
 
-            String md5 = DigestUtils.md5Hex(evaluatefile + evaluatemodel + evaluateLabel);
-            String EVALUATE_FILE = Constants.DAMAGE_EVALUATEFILE_TARGET_DIR;
+            String md5 = DigestUtils.md5Hex(evaluatefile + evaluatemodel);
+            String EVALUATE_FILE = Constants.DAMAGE_UPLOAD_EVALUATE_FILE_DIR + evaluatefile;
             String MODEL_EVALUATE_PROGRAM = Constants.DAMAGE_EVALUATE_MODEL_PROGRAM;
             String EVALUATE_MODEL = Constants.DAMAGE_SAVE_TRAIN_MODEL_DIR + "/" + evaluatemodel;
-            String EVALUATE_LABEL = Constants.DAMAGE_EVALUATE_LABEL_DIR + "/" + evaluateLabel;
+//            String EVALUATE_LABEL = Constants.DAMAGE_EVALUATE_LABEL_DIR + "/" + evaluateLabel;
             String outputFileName = evaluatefile.split("\\.")[0] + "_" + evaluatemodel.split("\\.")[0] + ".csv";
             String OUTPUT_FILE = Constants.DAMAGE_EVALUATE_MODEL_RESULT_DIR + "/" + outputFileName;
 
             AnalysisMessage.getInstance().update(md5, evaluatefile+evaluatemodel, outputFileName, Constants.READY, "EVALUATE", null);
 
-            String execStr = Constants.SCRIPT_EXEC_PREFIX + " " + MODEL_EVALUATE_PROGRAM + " --data " + EVALUATE_FILE + " --mode evaluate --model " + EVALUATE_MODEL
-                    + " --label " + EVALUATE_LABEL + " --res_dir " + OUTPUT_FILE;
+            String execStr = Constants.DAMAGE_SCRIPT_EXEC_PREFIX + " " + MODEL_EVALUATE_PROGRAM + " --dataset " + EVALUATE_FILE + " --mode evaluate --model " + EVALUATE_MODEL
+                    + " --image_name " + md5 + " --res_dir " + OUTPUT_FILE;
             //String execStr = "D:/os_environment/anaconda/python " + MODEL_EVALUATE_PROGRAM + " " + EVALUATE_FILE + " " + EVALUATE_MODEL + " " + OUTPUT_FILE;
             //String execStr = "python D:/tmp/a.py";
             logger.debug(execStr);
@@ -1043,7 +1047,8 @@ public class DamageDetection {
 //                response.setMsg("出错！IO 异常");
 //            }
             //调用外部程序
-            String TEST_FILE = Constants.DAMAGE_TESTFILE_TARGET_DIR;
+//            String TEST_FILE = Constants.DAMAGE_TESTFILE_TARGET_DIR;
+            String TEST_FILE = Constants.DAMAGE_UPLOAD_TEST_FILE_DIR + "/" + testfile;
             String MODEL_TEST_PROGRAM = Constants.DAMAGE_PREDICT_PROGRAM;
             String TEST_MODEL = Constants.DAMAGE_SAVE_TRAIN_MODEL_DIR + "/" + testmodel;
             String outputFileName = testfile.split("\\.")[0] + "_" + testmodel.split("\\.")[0] + ".csv";
@@ -1051,7 +1056,8 @@ public class DamageDetection {
             String md5 = DigestUtils.md5Hex(testfile + testmodel);
 
             AnalysisMessage.getInstance().update(md5, testfile+testmodel, outputFileName, Constants.READY, "TEST",null);
-            String execStr = Constants.SCRIPT_EXEC_PREFIX + " " + MODEL_TEST_PROGRAM + " --data " + TEST_FILE + " --mode test" + " --model " + TEST_MODEL + " --res_dir " + OUTPUT_FILE;
+            String execStr = Constants.DAMAGE_SCRIPT_EXEC_PREFIX + " " + MODEL_TEST_PROGRAM + " --dataset " + TEST_FILE + " --mode test" + " --model " + TEST_MODEL +
+                    " --image_name " + md5+ " --res_dir " + OUTPUT_FILE;
             //String execStr = "D:/os_environment/anaconda/python " + MODEL_TEST_PROGRAM + " " + TEST_FILE + " " + TEST_MODEL + " " + OUTPUT_FILE;
             //String execStr = "python D:/tmp/a.py";
             logger.debug(execStr);

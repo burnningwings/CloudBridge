@@ -2096,6 +2096,421 @@ function showAnalysisResultChart_fourlayer(figure_id, timeList, strain, sa4, sd1
     var chart = echarts.init(document.getElementById(figure_id));
     chart.setOption(option);
 }
+
+function showAnalysisResultChart_threelayer(figure_id, timeList, sa4, sd3, sd4, ta4, td3, td4){
+    var option = {
+        title : [
+            // {
+            //     left : 'center',
+            //     text : '原始温度/原始应变',
+            //     top : '1%'
+            // },
+            // {
+            //     top : '16%',
+            //     left : 'center',
+            //     text : '小波a4层温度/小波a4层应变'
+            // },
+            // {
+            //     top: '31%',
+            //     left : 'center',
+            //     text : '小波d1层温度/小波d1层应变'
+            // },
+            // {
+            //     top: '46%',
+            //     left : 'center',
+            //     text : '小波d2层温度/小波d2层应变'
+            // },
+            {
+                top: '1%',
+                left : 'center',
+                text : '小波d3层温度/小波d3层应变(T=12h)'
+            },
+            {
+                top: '16%',
+                left : 'center',
+                text : '小波d4层温度/小波d4层应变(T=24h)'
+            }
+        ],
+        tooltip: {},
+        grid : [
+            // {
+            //     id : 0,
+            //     // top : '1%',
+            //     height : '12%'
+            // },
+            // {
+            //     id : 1,
+            //     top : '17%',
+            //     height : '12%'
+            // },
+            // {
+            //     id : 2,
+            //     top : '32%',
+            //     height : '12%'
+            // },
+            // {
+            //     id : 3,
+            //     top : '47%',
+            //     height : '12%'
+            // },
+            {
+                id : 4,
+                top : '1%',
+                height : '12%'
+            },
+            {
+                id : 5,
+                top : '17%',
+                height : '12%'
+            }
+        ],
+        legend : [
+            {
+                data : ['应变','温度'],
+                x : 'left',
+                top : 'top'
+            },
+            // {
+            //     data : ['应变','温度'],
+            //     x : 'left'
+            // }
+        ],
+        dataZoom : [
+            {
+                type : 'inside',
+                xAxisIndex : 0,
+                filterMode : 'empty',
+                // yAxisIndex : null
+            },
+            {
+                type : 'slider',
+                show : false,
+                xAxisIndex : 0,
+                filterMode : 'empty',
+                // yAxisIndex : null
+            },
+            {
+                type : 'slider',
+                yAxisIndex : [0,1],
+                width : 12,
+                left : '95%',
+                filterMode : 'empty'
+            },
+            {
+                type : 'inside',
+                xAxisIndex : 1,
+                //yAxisIndex : [2,3]
+                filterMode : 'empty'
+            },
+            {
+                type : 'slider',
+                show : false,
+                xAxisIndex : 1,
+                // yAxisIndex : [2,3]
+                filterMode : 'empty'
+            },
+            {
+                type : 'slider',
+                yAxisIndex : [2,3],
+                width : 12,
+                left : '95%',
+                filterMode : 'empty'
+            },
+            // {
+            //     type : 'inside',
+            //     xAxisIndex : 2,
+            //     // yAxisIndex : [4,5]
+            //     filterMode : 'empty'
+            // },
+            // {
+            //     type : 'slider',
+            //     show : false,
+            //     xAxisIndex : 2,
+            //     // yAxisIndex : [4,5]
+            //     filterMode : 'empty'
+            // },
+            // {
+            //     type : 'slider',
+            //     yAxisIndex : [4,5],
+            //     width : 12,
+            //     left : '95%',
+            //     filterMode : 'empty'
+            // },
+            // {
+            //     type : 'inside',
+            //     xAxisIndex : 3,
+            //     // yAxisIndex : [6,7]
+            //     filterMode : 'empty'
+            // },
+            // {
+            //     type : 'slider',
+            //     show : false,
+            //     xAxisIndex : 3,
+            //     // yAxisIndex : [6,7]
+            //     filterMode : 'empty'
+            // },
+            // {
+            //     type : 'slider',
+            //     yAxisIndex : [6,7],
+            //     width : 12,
+            //     left : '95%',
+            //     filterMode : 'empty'
+            // },
+            // {
+            //     type : 'inside',
+            //     xAxisIndex : 4,
+            //     // yAxisIndex : [8,9]
+            //     filterMode : 'empty'
+            // },
+            // {
+            //     type : 'slider',
+            //     show : false,
+            //     xAxisIndex : 4,
+            //     // yAxisIndex : [8,9]
+            //     filterMode : 'empty'
+            // },
+            // {
+            //     type : 'slider',
+            //     yAxisIndex : [8,9],
+            //     width : 12,
+            //     left : '95%',
+            //     filterMode : 'empty'
+            // },
+            // {
+            //     type : 'inside',
+            //     xAxisIndex : 5,
+            //     // yAxisIndex : [10,11]
+            // },
+            // {
+            //     type : 'slider',
+            //     show : false,
+            //     xAxisIndex : 5,
+            //     // yAxisIndex : [10,11]
+            // },
+            // {
+            //     type : 'slider',
+            //     yAxisIndex : [10,11],
+            //     width : 12,
+            //     left : '95%',
+            //     filterMode : 'empty'
+            // },
+        ],
+        xAxis: [
+            {
+                name : '时间',
+                data : timeList,
+                id : 0,
+                gridIndex : 0,
+                nameLocation : 'middle',
+                nameGap : 23
+            },
+            {
+                name : '时间',
+                data : timeList,
+                id : 1,
+                gridIndex : 1,
+                nameLocation : 'middle',
+                nameGap : 23
+            },
+            // {
+            //     name : '时间',
+            //     data : timeList,
+            //     id : 2,
+            //     gridIndex : 2,
+            //     nameLocation : 'middle',
+            //     nameGap : 23
+            // },
+            // {
+            //     name : '时间',
+            //     data : timeList,
+            //     id : 3,
+            //     gridIndex : 3,
+            //     nameLocation : 'middle',
+            //     nameGap : 23
+            // },
+            // {
+            //     name : '时间',
+            //     data : timeList,
+            //     id : 4,
+            //     gridIndex : 4,
+            //     nameLocation : 'middle',
+            //     nameGap : 23
+            // },
+            // {
+            //     name : '时间',
+            //     data : timeList,
+            //     id : 5,
+            //     gridIndex : 5,
+            //     nameLocation : 'middle',
+            //     nameGap : 23
+            // },
+
+        ],
+        yAxis: [
+            {
+                name : '应变',
+                id : 0,
+                min : 'dataMin',
+                max : 'dataMax',
+                gridIndex : 0
+            },{
+                name : '温度/℃',
+                id : 1,
+                min : 'dataMin',
+                max : 'dataMax',
+                gridIndex : 0
+            },{
+                name : '应变',
+                id : 2,
+                min : 'dataMin',
+                max : 'dataMax',
+                gridIndex : 1
+            },{
+                name : '温度/℃',
+                id : 3,
+                min : 'dataMin',
+                max : 'dataMax',
+                gridIndex : 1
+            },
+            // {
+            //     name : '应变',
+            //     id : 4,
+            //     min : 'dataMin',
+            //     max : 'dataMax',
+            //     gridIndex : 2
+            // },{
+            //     name : '温度/℃',
+            //     id : 5,
+            //     min : 'dataMin',
+            //     max : 'dataMax',
+            //     gridIndex : 2
+            // },{
+            //     name : '应变',
+            //     id : 6,
+            //     min : 'dataMin',
+            //     max : 'dataMax',
+            //     gridIndex : 3
+            // },{
+            //     name : '温度/℃',
+            //     id : 7,
+            //     min : 'dataMin',
+            //     max : 'dataMax',
+            //     gridIndex : 3
+            // },{
+            //     name : '应变',
+            //     id : 8,
+            //     min : 'dataMin',
+            //     max : 'dataMax',
+            //     gridIndex : 4
+            // },{
+            //     name : '温度/℃',
+            //     id : 9,
+            //     min : 'dataMin',
+            //     max : 'dataMax',
+            //     gridIndex : 4
+            // },{
+            //     name : '应变',
+            //     id : 10,
+            //     min : 'dataMin',
+            //     max : 'dataMax',
+            //     gridIndex : 5
+            // },{
+            //     name : '温度/℃',
+            //     id : 11,
+            //     min : 'dataMin',
+            //     max : 'dataMax',
+            //     gridIndex : 5
+            // },
+        ],
+        series : [
+            {
+                name : '应变',
+                type : 'line',
+                data : sd3,
+                yAxisIndex : 0
+            },
+            {
+                name : '温度',
+                type : 'line',
+                data : td3,
+                yAxisIndex : 1
+            },
+            {
+                name : '应变',
+                type : 'line',
+                data : sd4,
+                xAxisIndex : 1,
+                yAxisIndex : 2
+            },
+            {
+                name : '温度',
+                type : 'line',
+                data : td4,
+                xAxisIndex : 1,
+                yAxisIndex : 3
+            },
+            // {
+            //     name : '应变',
+            //     type : 'line',
+            //     data : sd1,
+            //     xAxisIndex : 2,
+            //     yAxisIndex : 4
+            // },
+            // {
+            //     name : '温度',
+            //     type : 'line',
+            //     data : td1,
+            //     xAxisIndex : 2,
+            //     yAxisIndex : 5
+            // },
+            // {
+            //     name : '应变',
+            //     type : 'line',
+            //     data : sd2,
+            //     xAxisIndex : 3,
+            //     yAxisIndex : 6
+            // },
+            // {
+            //     name : '温度',
+            //     type : 'line',
+            //     data : td2,
+            //     xAxisIndex : 3,
+            //     yAxisIndex : 7
+            // },
+            // {
+            //     name : '应变',
+            //     type : 'line',
+            //     data : sd3,
+            //     xAxisIndex : 4,
+            //     yAxisIndex : 8
+            // },
+            // {
+            //     name : '温度',
+            //     type : 'line',
+            //     data : td3,
+            //     xAxisIndex : 4,
+            //     yAxisIndex : 9
+            // },
+            // {
+            //     name : '应变',
+            //     type : 'line',
+            //     data : sd4,
+            //     xAxisIndex : 5,
+            //     yAxisIndex : 10
+            // },
+            // {
+            //     name : '温度',
+            //     type : 'line',
+            //     data : td4,
+            //     xAxisIndex : 5,
+            //     yAxisIndex : 11
+            // },
+
+        ]
+    }
+    var chart = echarts.init(document.getElementById(figure_id));
+    chart.setOption(option);
+}
 function  showWaveletResultChart(figure_id, timeList, temperatureList, strainList) {
     console.log(timeList)
     console.log(temperatureList)

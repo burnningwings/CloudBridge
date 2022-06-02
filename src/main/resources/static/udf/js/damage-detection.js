@@ -287,6 +287,19 @@ function updateDropdownListEvaluateLabel(){
     $("#dd_evaluate_label_selected").append(options);
     $("#dd_evaluate_label_selected").selectpicker('refresh');
 }
+
+function updateDropdownListTrainModelType(){
+    $("#dd_train_modeltype_selected").empty();
+    var options ="<option value=\'\' disabled selected>请选择算法模型</option>"
+    var single = ["AttBiLSTM","1dcnn","HCG"]
+
+    for(var key in single){
+        options = options + "<option value='" + key + "'>" + single[key] + "</option>";
+    }
+
+    $("#dd_train_modeltype_selected").append(options);
+    $(".selectpicker").selectpicker('refresh');
+}
 //初始化
 $(function () {
     // $("#train_file_selected").selectpicker({
@@ -317,8 +330,9 @@ $(function () {
     updateDropdownListTrainBridge();
     updateDropdownListEvaluateBridge();
     updateDropdownListTestBridge();
-    updateDropdownListTrainLabel();
-    updateDropdownListEvaluateLabel();
+    // updateDropdownListTrainLabel();
+    // updateDropdownListEvaluateLabel();
+    updateDropdownListTrainModelType()
 
     // updateDropdownListUdfTrainModel();
     // updateDropdownListUdfTrainBridge();
@@ -385,44 +399,74 @@ $(function () {
     // })
 
     $("#dd_description_train_dataformat").click(function(){
+        // var popoverEl = $("#dd_description_train_dataformat");
+        // popoverEl.popover("destroy");
+        // // var content = "{<br/>"+
+        // //     "feature1,feature2,feature3,label<br/>"+
+        // //     "}";
+        // var content = "data1 : float<br/>" + "data2 : float<br/>" + "data3 : float<br/>" + "data4 : float<br/>" + "data5 : float<br/>"+
+        //               "data6 : float<br/>" + "data7 : float<br/>" + "data8 : float<br/>" + "data9 : float<br/>" + "data10 : float<br/>"+
+        //               "location : integer<br/>" + "level : integer<br/>" + "bridge : string<br/>" + "time : string";
+        // popoverEl.attr("data-content", content);
+        // popoverEl.popover("show");
         var popoverEl = $("#dd_description_train_dataformat");
         popoverEl.popover("destroy");
-        // var content = "{<br/>"+
-        //     "feature1,feature2,feature3,label<br/>"+
-        //     "}";
-        var content = "data1 : float<br/>" + "data2 : float<br/>" + "data3 : float<br/>" + "data4 : float<br/>" + "data5 : float<br/>"+
-                      "data6 : float<br/>" + "data7 : float<br/>" + "data8 : float<br/>" + "data9 : float<br/>" + "data10 : float<br/>"+
-                      "location : integer<br/>" + "level : integer<br/>" + "bridge : string<br/>" + "time : string";
-        popoverEl.attr("data-content", content);
-        popoverEl.popover("show");
+        var str = "s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,s11,s12,s13,s14,s15,s16,s17,s18,s19,s20,s21,s22,s23,s24,s25,s26,s27,s28,s29,s30,temp,loc,quant\n";
+        var url = "data:text/csv;charset=utf-8,\ufeff" + encodeURIComponent(str);
+        var link = document.createElement("a");
+        link.href = url;
+        link.download = 'example_train.csv';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
 
     });
 
     $("#dd_description_evaluate_dataformat").click(function(){
+        // var popoverEl = $("#dd_description_evaluate_dataformat");
+        // popoverEl.popover("destroy");
+        // // var content = "{<br/>"+
+        // //     "feature1,feature2,feature3,label<br/>"+
+        // //     "}";
+        // var content = "data1 : float<br/>" + "data2 : float<br/>" + "data3 : float<br/>" + "data4 : float<br/>" + "data5 : float<br/>"+
+        //     "data6 : float<br/>" + "data7 : float<br/>" + "data8 : float<br/>" + "data9 : float<br/>" + "data10 : float<br/>"+
+        //     "location : integer<br/>" + "level : integer<br/>" + "bridge : string<br/>" + "time : string";
+        // popoverEl.attr("data-content", content);
+        // popoverEl.popover("show");
         var popoverEl = $("#dd_description_evaluate_dataformat");
         popoverEl.popover("destroy");
-        // var content = "{<br/>"+
-        //     "feature1,feature2,feature3,label<br/>"+
-        //     "}";
-        var content = "data1 : float<br/>" + "data2 : float<br/>" + "data3 : float<br/>" + "data4 : float<br/>" + "data5 : float<br/>"+
-            "data6 : float<br/>" + "data7 : float<br/>" + "data8 : float<br/>" + "data9 : float<br/>" + "data10 : float<br/>"+
-            "location : integer<br/>" + "level : integer<br/>" + "bridge : string<br/>" + "time : string";
-        popoverEl.attr("data-content", content);
-        popoverEl.popover("show");
+        var str = "s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,s11,s12,s13,s14,s15,s16,s17,s18,s19,s20,s21,s22,s23,s24,s25,s26,s27,s28,s29,s30,temp,loc,quant\n";
+        var url = "data:text/csv;charset=utf-8,\ufeff" + encodeURIComponent(str);
+        var link = document.createElement("a");
+        link.href = url;
+        link.download = 'example_train.csv';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
 
     });
 
     $("#dd_description_test_dataformat").click(function(){
-        var popoverEl = $("#dd_description_test_dataformat");
-        popoverEl.popover("destroy");
+        // var popoverEl = $("#dd_description_test_dataformat");
+        // popoverEl.popover("destroy");
         // var content = "{<br/>"+
         //     "feature1,feature2,feature3<br/>"+
         //     "}";
-        var content = "data1 : float<br/>" + "data2 : float<br/>" + "data3 : float<br/>" + "data4 : float<br/>" + "data5 : float<br/>"+
-            "data6 : float<br/>" + "data7 : float<br/>" + "data8 : float<br/>" + "data9 : float<br/>" + "data10 : float<br/>"+
-            "bridge : string<br/>" + "time : string";
-        popoverEl.attr("data-content", content);
-        popoverEl.popover("show");
+        // var content = "data1 : float<br/>" + "data2 : float<br/>" + "data3 : float<br/>" + "data4 : float<br/>" + "data5 : float<br/>"+
+        //     "data6 : float<br/>" + "data7 : float<br/>" + "data8 : float<br/>" + "data9 : float<br/>" + "data10 : float<br/>"+
+        //     "bridge : string<br/>" + "time : string";
+        // popoverEl.attr("data-content", content);
+        // popoverEl.popover("show");
+        var popoverEl = $("#dd_description_test_dataformat");
+        popoverEl.popover("destroy");
+        var str = "s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,s11,s12,s13,s14,s15,s16,s17,s18,s19,s20,s21,s22,s23,s24,s25,s26,s27,s28,s29,s30,temp,loc,quant\n";
+        var url = "data:text/csv;charset=utf-8,\ufeff" + encodeURIComponent(str);
+        var link = document.createElement("a");
+        link.href = url;
+        link.download = 'example_train.csv';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
 
     });
 
@@ -473,7 +517,7 @@ $(function () {
     });
 
     $("#dd_trainfile_upload").fileinput({
-        allowedFileExtensions: ['npy'],
+        allowedFileExtensions: ['csv'],
         uploadUrl: "damage-detection/trainfileupload",
         language: 'zh',
         uploadAsync: true,
@@ -481,7 +525,7 @@ $(function () {
         maxFileCount: 1,
         autoReplace: true,
         showPreview: false,
-        maxFileSize: 512000, // KB,当前限制为50MB
+        maxFileSize: 51200000, // KB,当前限制为5GB
         maxPreviewFileSize: 1
     }).on("fileuploaded",function (event, data, previewId, index) {
         var response = data.response;
@@ -497,7 +541,7 @@ $(function () {
         var response = data.response;
         console.log("data");
         console.log(data);
-        var msg = "仅支持npy且单文件大小不超过50MB！";
+        var msg = "仅支持npy且单文件大小不超过5GB！";
         if(response!=null && response.msg!="") msg = response.msg;
         console.log(msg);
         showTransientDialog(msg);
@@ -566,7 +610,7 @@ $(function () {
     });
 
     $("#dd_evaluatefile_upload").fileinput({
-        allowedFileExtensions: ['npy'],
+        allowedFileExtensions: ['csv'],
         uploadUrl: "damage-detection/evaluatefileupload",
         language: 'zh',
         uploadAsync: true,
@@ -628,7 +672,7 @@ $(function () {
     });
 
     $("#dd_testfile_upload").fileinput({
-        allowedFileExtensions: ['npy'],
+        allowedFileExtensions: ['csv'],
         uploadUrl: "damage-detection/testfileupload",
         language: 'zh',
         uploadAsync: true,
@@ -939,7 +983,11 @@ $(function () {
         var train_model = $("#dd_train_model_selected").val();
         // var bridge = $("#dd_train_bridge_selected").val();
         var saved_model = $("#dd_saved_model").val();
-        var train_label = $("#dd_train_label_selected").val();
+        // var train_label = $("#dd_train_label_selected").val();
+        var model_type = $("#dd_train_modeltype_selected option:selected").text();
+        var epochs = $("#epochs").val();
+        var batch_size = $("#batch_size").val();
+        var sample = $("#sample").val();
 
         if(train_file == null){
             showTransientDialog("请选择训练文件");
@@ -954,12 +1002,20 @@ $(function () {
         //     showTransientDialog("请选择分析桥梁");
         //     return;
         // }
-        if (train_label == null){
-            showTransientDialog("请选择训练标签")
-        }
+        // if (train_label == null){
+        //     showTransientDialog("请选择训练标签")
+        // }
         if(!saved_model){
             showTransientDialog("请输入保存模型名称");
             //showDialog("请输入保存模型名称");
+            return;
+        }
+        if(!model_type){
+            showTransientDialog("请选择模型类型");
+            return;
+        }
+        if (!epochs || !sample || !batch_size){
+            showTransientDialog("请输入参数")
             return;
         }
         // var begin_time = $("#dd_train_begin_time").val();
@@ -984,9 +1040,13 @@ $(function () {
                 "trainfile" : train_file,
                 "trainmodel" : train_model,
                 "savedmodel" : saved_model,
-                "trainlabel" : train_label,
+                // "trainlabel" : train_label,
                 // "begintime" : new Date(begin_time).format('yyyyMMddHHmmss'),
                 // "endtime" : new Date(end_time).format("yyyyMMddHHmmss")
+                "modelType" : model_type,
+                "epochs" : epochs,
+                "batch_size" : batch_size,
+                "sample" : sample,
             }),
             dataType: "json",
             beforeSend: function () {
@@ -1039,7 +1099,7 @@ $(function () {
         var evaluate_file = $("#dd_evaluate_file_selected").val();
         var evaluate_model = $("#dd_evaluate_model_selected").val();
         // var bridge = $("#dd_evaluate_bridge_selected").val();
-        var evaluate_label = $("#dd_evaluate_label_selected").val();
+        // var evaluate_label = $("#dd_evaluate_label_selected").val();
 
         if(evaluate_file == null){
             showTransientDialog("请选择验证文件");
@@ -1054,10 +1114,10 @@ $(function () {
         //     showTransientDialog("请选择分析桥梁");
         //     return;
         // }
-        if (evaluate_label == null){
-            showTransientDialog("请选择验证标签");
-            return;
-        }
+        // if (evaluate_label == null){
+        //     showTransientDialog("请选择验证标签");
+        //     return;
+        // }
         // var begin_time = $("#dd_evaluate_begin_time").val();
         // var end_time = $("#dd_evaluate_end_time").val();
         // if(begin_time >= end_time){
@@ -1078,7 +1138,7 @@ $(function () {
                 "evaluatefile" : evaluate_file,
                 // "bridge" : bridge,
                 "evaluatemodel" : evaluate_model,
-                "evaluatelabel" : evaluate_label,
+                // "evaluatelabel" : evaluate_label,
                 // "begintime" : new Date(begin_time).format('yyyyMMddHHmmss'),
                 // "endtime" : new Date(end_time).format("yyyyMMddHHmmss")
             }),
@@ -1284,10 +1344,10 @@ $(function () {
             //showDialog("请选择训练模型");
             return;
         }
-        if(bridge == null){
-            showTransientDialog("请选择分析桥梁");
-            return;
-        }
+        // if(bridge == null){
+        //     showTransientDialog("请选择分析桥梁");
+        //     return;
+        // }
         if(begin_time >= end_time){
             showTransientDialog("开始时间必须小于截止时间");
             return;
@@ -1305,9 +1365,9 @@ $(function () {
             var param ={
                 "testfile" : test_file,
                 "testmodel" : test_model,
-                "bridge" : bridge,
-                "begintime" : new Date(begin_time).format('yyyyMMddHHmmss'),
-                "endtime" : new Date(end_time).format('yyyyMMddHHmmss')
+                // "bridge" : bridge,
+                // "begintime" : new Date(begin_time).format('yyyyMMddHHmmss'),
+                // "endtime" : new Date(end_time).format('yyyyMMddHHmmss')
             }
             var current_dialog = $(this);
             getAndshowPredictResult(figure_id, current_dialog, param);

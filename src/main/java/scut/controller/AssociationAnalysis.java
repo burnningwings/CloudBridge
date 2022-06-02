@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.log4j.Logger;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.tomcat.util.bcel.Const;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,10 +24,10 @@ import java.io.*;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+import static org.apache.hadoop.yarn.webapp.hamlet.HamletSpec.LinkType.section;
 
 /**
  * created by xiaoah
@@ -175,14 +176,14 @@ public class AssociationAnalysis {
         HttpResponse response = new HttpResponse();
         JSONObject data = new JSONObject();
         String associationFile = reqMsg.getString("associationfile");
-        String bridge = reqMsg.getString("bridge");
-        String section = reqMsg.getString("section");
-        String watchpoint = reqMsg.getString("watchpoint");
+//        String bridge = reqMsg.getString("bridge");
+//        String section = reqMsg.getString("section");
+//        String watchpoint = reqMsg.getString("watchpoint");
         String beginTime = reqMsg.getString("begintime");
         String endTime = reqMsg.getString("endtime");
-        System.out.println(bridge);
-        System.out.println(section);
-        System.out.println(watchpoint);
+//        System.out.println(bridge);
+//        System.out.println(section);
+//        System.out.println(watchpoint);
         long begintime = Long.parseLong(beginTime);
         long endtime = Long.parseLong(endTime);
 
@@ -202,7 +203,8 @@ public class AssociationAnalysis {
                 FileOutputStream fos = new FileOutputStream(targetFile);
                 OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");
                 BufferedWriter bw = new BufferedWriter(osw);
-                bw.write("time,bridge,section,test_point,unknow1,通道,传感器编号,measure_strain,unknow2,单位1,数据2,单位2,电阻值,T,unknow3,S" + "\n");
+//                bw.write("time,bridge,section,test_point,unknow1,通道,传感器编号,measure_strain,unknow2,单位1,数据2,单位2,电阻值,T,unknow3,S" + "\n");
+                bw.write("time,air_temp,strain\n");
 
                 FileInputStream fis = new FileInputStream(selectedFile);
                 InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
@@ -211,23 +213,26 @@ public class AssociationAnalysis {
                 int count = 0;
                 while((line = br.readLine()) != null){
                     String[] split = line.split(",");
-                    System.out.println(split.length);
-                    if(split.length == 16){
-                        if(!split[0].matches("\\d+")){
+//                    System.out.println(split.length);
+                    if(split.length == 3){
+                        if(!split[0].matches("\\d+\\.?\\d+")){
                             continue;
                         }
-                        long current_time = Long.parseLong(split[0]);
-                        String current_bridge = split[1];
-                        String current_section = split[2];
-                        String current_watechpoint = split[3];
-                        System.out.println(current_bridge);
-                        System.out.println(current_section);
-                        System.out.println(current_watechpoint);
+//                        long current_time = Long.parseLong(split[0]);
+//                        String current_bridge = split[1];
+//                        String current_section = split[2];
+//                        String current_watechpoint = split[3];
+//                        System.out.println(current_bridge);
+//                        System.out.println(current_section);
+//                        System.out.println(current_watechpoint);
+                        Date javaDate = DateUtil.getJavaDate(Double.parseDouble(split[0]));
+                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+                        long current_time = Long.parseLong(simpleDateFormat.format(javaDate));
                         //检查已有数据是否能覆盖所选时间
                         if(current_time >= endtime){  endflag = true;  }
                         if(current_time <= begintime){   startflag = true; }
-                        if(current_bridge.equals(bridge) && current_section.equals(section) && current_watechpoint.equals(watchpoint) && current_time >= begintime && current_time <= endtime){
-                            System.out.println("ok");
+                        if(current_time >= begintime && current_time <= endtime){
+//                            System.out.println("ok");
                             bw.write(line + "\n");
                             count ++;
                         }
@@ -244,19 +249,19 @@ public class AssociationAnalysis {
                 if(count != 0 && startflag && endflag){
                     String INPUT_FILE = Constants.ASSOCIATION_TARGET_DIR;
                     String WAVELET_PROGRAM = Constants.ASSOCIATION_ANALYSIS_PROGRAM;
-                    String outputfileName = bridge + "_" + section + "_" + watchpoint + "_" + beginTime + "_" + endTime + "_result" + ".csv";
+                    String outputfileName = associationFile.split("\\.")[0] + "_" + beginTime + "_" + endTime + "_result" + ".csv";
                     String OUTPUT_FILE = Constants.ASSOCIATION_ANALYSIS_RESULT_DIR + "/" + outputfileName;
                     String md5 = DigestUtils.md5Hex(associationFile + beginTime + endTime);
 
-                    AnalysisMessage.getInstance().update(md5, bridge + "_" + section + "_" + watchpoint + "_" + beginTime + "_" + endTime,outputfileName, Constants.READY, "WAVELET",null);
-                    String execStr = Constants.SCRIPT_EXEC_PREFIX + " " + WAVELET_PROGRAM + " " + INPUT_FILE + " " + OUTPUT_FILE;
+                    AnalysisMessage.getInstance().update(md5, associationFile.split("\\.")[0] + "_" + beginTime + "_" + endTime,outputfileName, Constants.READY, "WAVELET",null);
+                    String execStr =  WAVELET_PROGRAM + " " + INPUT_FILE + " " + OUTPUT_FILE;
                     //String execStr = "D:/os_environment/anaconda/python " + WAVELET_PROGRAM + " " + INPUT_FILE + " " + OUTPUT_FILE;
                     //String execStr = "python D:/tmp/a.py";
                     logger.debug(execStr);
                     Executor executor = new CommandLineExecutor(md5, execStr);
                     //Scheduler.getInstance().runExecutor(executor);
-                    LogEntity logentity = ((CommandLineExecutor) executor).execute_analysis();
-                    if (logentity.getExitVal() == 0){
+                    LogEntity logentity = ((CommandLineExecutor) executor).execute_for_association_relability();
+                    if (logentity.getExitVal() == 0 || logentity.getExitVal() == 120){
                         data.put("result", "success");
                         AnalysisMessage.getInstance().update(md5,null,null,Constants.FINISHED,null,logentity.toString());
                     }else{
@@ -398,10 +403,10 @@ public class AssociationAnalysis {
 //    }
 
     @RequestMapping(value = "/association-analysis/getAnalysisResult", method = RequestMethod.GET, produces = "application/json")
-    public JSONObject getAnalysisResult1(String bridge, String section, String watchpoint, String begintime, String endtime){
+    public JSONObject getAnalysisResult1(String filename, String bridge, String section, String watchpoint, String begintime, String endtime){
         HttpResponse response = new HttpResponse();
         JSONObject data = new JSONObject();
-        String resultfileName = bridge + "_" + section + "_" + watchpoint + "_" + begintime + "_" + endtime + "_result" + ".csv";
+        String resultfileName = filename.split("\\.")[0] + "_" + begintime + "_" + endtime + "_result" + ".csv";
         String analysisResultPath =Constants.ASSOCIATION_ANALYSIS_RESULT_DIR + "/" + resultfileName;
         System.out.println(analysisResultPath);
         File file = new File(analysisResultPath);
@@ -414,123 +419,160 @@ public class AssociationAnalysis {
                 BufferedReader br = new BufferedReader(fr);
                 String header = br.readLine();
                 String[] split = header.split(",");
-                if(split.length == 19){
-                    //7层小波分析
-                    ArrayList<String> timeList = new ArrayList<>();
-                    ArrayList<Float> strain = new ArrayList<>();
-                    ArrayList<Float> sa7 = new ArrayList<>();
-                    ArrayList<Float> sd1 = new ArrayList<>();
-                    ArrayList<Float> sd2 = new ArrayList<>();
-                    ArrayList<Float> sd3 = new ArrayList<>();
-                    ArrayList<Float> sd4 = new ArrayList<>();
-                    ArrayList<Float> sd5 = new ArrayList<>();
-                    ArrayList<Float> sd6 = new ArrayList<>();
-                    ArrayList<Float> sd7 = new ArrayList<>();
-                    ArrayList<Float> temperature = new ArrayList<>();
-                    ArrayList<Float> ta7 = new ArrayList<>();
-                    ArrayList<Float> td1 = new ArrayList<>();
-                    ArrayList<Float> td2 = new ArrayList<>();
-                    ArrayList<Float> td3 = new ArrayList<>();
-                    ArrayList<Float> td4 = new ArrayList<>();
-                    ArrayList<Float> td5 = new ArrayList<>();
-                    ArrayList<Float> td6 = new ArrayList<>();
-                    ArrayList<Float> td7 = new ArrayList<>();
-                    String content = br.readLine();
-                    while(content != null){
-                        split = content.split(",");
-                        timeList.add(split[0]);
-                        strain.add(Float.parseFloat(split[1]));
-                        sa7.add(Float.parseFloat(split[2]));
-                        sd1.add(Float.parseFloat(split[3]));
-                        sd2.add(Float.parseFloat(split[4]));
-                        sd3.add(Float.parseFloat(split[5]));
-                        sd4.add(Float.parseFloat(split[6]));
-                        sd5.add(Float.parseFloat(split[7]));
-                        sd6.add(Float.parseFloat(split[8]));
-                        sd7.add(Float.parseFloat(split[9]));
-                        temperature.add(Float.parseFloat(split[10]));
-                        ta7.add(Float.parseFloat(split[11]));
-                        td1.add(Float.parseFloat(split[12]));
-                        td2.add(Float.parseFloat(split[13]));
-                        td3.add(Float.parseFloat(split[14]));
-                        td4.add(Float.parseFloat(split[15]));
-                        td5.add(Float.parseFloat(split[16]));
-                        td6.add(Float.parseFloat(split[17]));
-                        td7.add(Float.parseFloat(split[18]));
-                        content = br.readLine();
-                    }
-                    data.put("layer",7);
+//                if(split.length == 19){
+//                    //7层小波分析
+//                    ArrayList<String> timeList = new ArrayList<>();
+//                    ArrayList<Float> strain = new ArrayList<>();
+//                    ArrayList<Float> sa7 = new ArrayList<>();
+//                    ArrayList<Float> sd1 = new ArrayList<>();
+//                    ArrayList<Float> sd2 = new ArrayList<>();
+//                    ArrayList<Float> sd3 = new ArrayList<>();
+//                    ArrayList<Float> sd4 = new ArrayList<>();
+//                    ArrayList<Float> sd5 = new ArrayList<>();
+//                    ArrayList<Float> sd6 = new ArrayList<>();
+//                    ArrayList<Float> sd7 = new ArrayList<>();
+//                    ArrayList<Float> temperature = new ArrayList<>();
+//                    ArrayList<Float> ta7 = new ArrayList<>();
+//                    ArrayList<Float> td1 = new ArrayList<>();
+//                    ArrayList<Float> td2 = new ArrayList<>();
+//                    ArrayList<Float> td3 = new ArrayList<>();
+//                    ArrayList<Float> td4 = new ArrayList<>();
+//                    ArrayList<Float> td5 = new ArrayList<>();
+//                    ArrayList<Float> td6 = new ArrayList<>();
+//                    ArrayList<Float> td7 = new ArrayList<>();
+//                    String content = br.readLine();
+//                    while(content != null){
+//                        split = content.split(",");
+//                        timeList.add(split[0]);
+//                        strain.add(Float.parseFloat(split[1]));
+//                        sa7.add(Float.parseFloat(split[2]));
+//                        sd1.add(Float.parseFloat(split[3]));
+//                        sd2.add(Float.parseFloat(split[4]));
+//                        sd3.add(Float.parseFloat(split[5]));
+//                        sd4.add(Float.parseFloat(split[6]));
+//                        sd5.add(Float.parseFloat(split[7]));
+//                        sd6.add(Float.parseFloat(split[8]));
+//                        sd7.add(Float.parseFloat(split[9]));
+//                        temperature.add(Float.parseFloat(split[10]));
+//                        ta7.add(Float.parseFloat(split[11]));
+//                        td1.add(Float.parseFloat(split[12]));
+//                        td2.add(Float.parseFloat(split[13]));
+//                        td3.add(Float.parseFloat(split[14]));
+//                        td4.add(Float.parseFloat(split[15]));
+//                        td5.add(Float.parseFloat(split[16]));
+//                        td6.add(Float.parseFloat(split[17]));
+//                        td7.add(Float.parseFloat(split[18]));
+//                        content = br.readLine();
+//                    }
+//                    data.put("layer",7);
+//
+//                    data.put("timeList", timeList);
+//                    data.put("strain", strain);
+//                    data.put("sa7", sa7);
+//                    data.put("sd1", sd1);
+//                    data.put("sd2", sd2);
+//                    data.put("sd3", sd3);
+//                    data.put("sd4", sd4);
+//                    data.put("sd5", sd5);
+//                    data.put("sd6", sd6);
+//                    data.put("sd7", sd7);
+//
+//                    data.put("temperature", temperature);
+//                    data.put("ta7", ta7);
+//                    data.put("td1", td1);
+//                    data.put("td2", td2);
+//                    data.put("td3", td3);
+//                    data.put("td4", td4);
+//                    data.put("td5", td5);
+//                    data.put("td6", td6);
+//                    data.put("td7", td7);
+//                }else{
+//                    //4层
+//                    ArrayList<String> timeList = new ArrayList<>();
+//                    ArrayList<Float> strain = new ArrayList<>();
+//                    ArrayList<Float> sa4 = new ArrayList<>();
+//                    ArrayList<Float> sd1 = new ArrayList<>();
+//                    ArrayList<Float> sd2 = new ArrayList<>();
+//                    ArrayList<Float> sd3 = new ArrayList<>();
+//                    ArrayList<Float> sd4 = new ArrayList<>();
+//                    ArrayList<Float> temperature = new ArrayList<>();
+//                    ArrayList<Float> ta4 = new ArrayList<>();
+//                    ArrayList<Float> td1 = new ArrayList<>();
+//                    ArrayList<Float> td2 = new ArrayList<>();
+//                    ArrayList<Float> td3 = new ArrayList<>();
+//                    ArrayList<Float> td4 = new ArrayList<>();
+//                    String content = br.readLine();
+//                    while(content != null){
+//                        split = content.split(",");
+//                        timeList.add(split[0]);
+//                        strain.add(Float.parseFloat(split[1]));
+//                        sa4.add(Float.parseFloat(split[2]));
+//                        sd1.add(Float.parseFloat(split[3]));
+//                        sd2.add(Float.parseFloat(split[4]));
+//                        sd3.add(Float.parseFloat(split[5]));
+//                        sd4.add(Float.parseFloat(split[6]));
+//                        temperature.add(Float.parseFloat(split[7]));
+//                        ta4.add(Float.parseFloat(split[8]));
+//                        td1.add(Float.parseFloat(split[9]));
+//                        td2.add(Float.parseFloat(split[10]));
+//                        td3.add(Float.parseFloat(split[11]));
+//                        td4.add(Float.parseFloat(split[12]));
+//                        content = br.readLine();
+//                    }
+//                    data.put("layer", 4);
+//
+//                    data.put("timeList", timeList);
+//                    data.put("strain", strain);
+//                    data.put("sa7", sa4);
+//                    data.put("sd1", sd1);
+//                    data.put("sd2", sd2);
+//                    data.put("sd3", sd3);
+//                    data.put("sd4", sd4);
+//
+//                    data.put("temperature", temperature);
+//                    data.put("ta7", ta4);
+//                    data.put("td1", td1);
+//                    data.put("td2", td2);
+//                    data.put("td3", td3);
+//                    data.put("td4", td4);
+//
+//                }
 
-                    data.put("timeList", timeList);
-                    data.put("strain", strain);
-                    data.put("sa7", sa7);
-                    data.put("sd1", sd1);
-                    data.put("sd2", sd2);
-                    data.put("sd3", sd3);
-                    data.put("sd4", sd4);
-                    data.put("sd5", sd5);
-                    data.put("sd6", sd6);
-                    data.put("sd7", sd7);
-
-                    data.put("temperature", temperature);
-                    data.put("ta7", ta7);
-                    data.put("td1", td1);
-                    data.put("td2", td2);
-                    data.put("td3", td3);
-                    data.put("td4", td4);
-                    data.put("td5", td5);
-                    data.put("td6", td6);
-                    data.put("td7", td7);
-                }else{
-                    //4层
+                if (split.length == 7){
                     ArrayList<String> timeList = new ArrayList<>();
-                    ArrayList<Float> strain = new ArrayList<>();
                     ArrayList<Float> sa4 = new ArrayList<>();
-                    ArrayList<Float> sd1 = new ArrayList<>();
-                    ArrayList<Float> sd2 = new ArrayList<>();
                     ArrayList<Float> sd3 = new ArrayList<>();
                     ArrayList<Float> sd4 = new ArrayList<>();
                     ArrayList<Float> temperature = new ArrayList<>();
                     ArrayList<Float> ta4 = new ArrayList<>();
-                    ArrayList<Float> td1 = new ArrayList<>();
-                    ArrayList<Float> td2 = new ArrayList<>();
                     ArrayList<Float> td3 = new ArrayList<>();
                     ArrayList<Float> td4 = new ArrayList<>();
                     String content = br.readLine();
                     while(content != null){
                         split = content.split(",");
-                        timeList.add(split[0]);
-                        strain.add(Float.parseFloat(split[1]));
-                        sa4.add(Float.parseFloat(split[2]));
-                        sd1.add(Float.parseFloat(split[3]));
-                        sd2.add(Float.parseFloat(split[4]));
+                        Date javaDate = DateUtil.getJavaDate(Double.parseDouble(split[0]));
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        timeList.add(sdf.format(javaDate));
+                        sa4.add(Float.parseFloat(split[1]));
                         sd3.add(Float.parseFloat(split[5]));
-                        sd4.add(Float.parseFloat(split[6]));
-                        temperature.add(Float.parseFloat(split[7]));
-                        ta4.add(Float.parseFloat(split[8]));
-                        td1.add(Float.parseFloat(split[9]));
-                        td2.add(Float.parseFloat(split[10]));
-                        td3.add(Float.parseFloat(split[11]));
-                        td4.add(Float.parseFloat(split[12]));
+                        sd4.add(Float.parseFloat(split[3]));
+
+                        ta4.add(Float.parseFloat(split[2]));
+                        td3.add(Float.parseFloat(split[6]));
+                        td4.add(Float.parseFloat(split[4]));
                         content = br.readLine();
                     }
-                    data.put("layer", 4);
+                    data.put("layer", 3);
 
                     data.put("timeList", timeList);
-                    data.put("strain", strain);
-                    data.put("sa7", sa4);
-                    data.put("sd1", sd1);
-                    data.put("sd2", sd2);
+                    data.put("sa4", sa4);
                     data.put("sd3", sd3);
                     data.put("sd4", sd4);
 
                     data.put("temperature", temperature);
-                    data.put("ta7", ta4);
-                    data.put("td1", td1);
-                    data.put("td2", td2);
+                    data.put("ta4", ta4);
                     data.put("td3", td3);
                     data.put("td4", td4);
-
                 }
                 br.close();
                 fr.close();

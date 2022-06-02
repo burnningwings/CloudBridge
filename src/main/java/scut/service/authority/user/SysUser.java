@@ -3,6 +3,7 @@ package scut.service.authority.user;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import scut.domain.Bridge;
 import scut.domain.Organization;
 
 import javax.persistence.*;
@@ -47,6 +48,21 @@ public class SysUser implements UserDetails {
                     referencedColumnName = "id",
                     foreignKey = @ForeignKey(name = "fk_sys_user_roles_roles_id")))
     private List<SysRole> roles;
+
+//    @ManyToMany(cascade = {CascadeType.REFRESH},fetch = FetchType.EAGER)
+//    @JoinTable(
+//            name = "sys_user_bridge",
+//            joinColumns = @JoinColumn(
+//                    name = "uid",
+//                    referencedColumnName = "id"
+//            ),
+//            inverseJoinColumns = @JoinColumn(
+//                    name = "bid",
+//                    referencedColumnName = "bridge_id"
+//            )
+//    )
+//    private List<Bridge> bridges;
+
 
     public Long getId() {
         return id;
@@ -96,6 +112,23 @@ public class SysUser implements UserDetails {
     public void setRoles(List<SysRole> roles) {
         this.roles = roles;
     }
+
+//    public List<Bridge> getBridges() {
+//        return bridges;
+//    }
+//
+//    public void setBridges(List<Bridge> bridges) {
+//        this.bridges = bridges;
+//    }
+//
+//    public List<Long> getControlBridge() {
+//        List<Long> bridge = new ArrayList<>();
+//        List<Bridge> bridges = this.getBridges();
+//        for (Bridge b : bridges){
+//            bridge.add(b.getId());
+//        }
+//        return bridge;
+//    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

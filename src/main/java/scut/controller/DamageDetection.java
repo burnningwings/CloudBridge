@@ -95,7 +95,7 @@ public class DamageDetection {
     public JSONObject getUDFPredictResult(String testfile, String testmodel, String bridge, String begintime, String endtime){
         HttpResponse response = new HttpResponse();
         JSONObject data = new JSONObject();
-        String targetFileName = testfile + "_" + bridge + "_" + begintime + "_" + endtime + "_" + testmodel.split("\\.")[0] + ".csv";
+        String targetFileName = testfile.split("\\.")[0] + "_" + testmodel.split("\\.")[0] + ".csv";
         System.out.println(targetFileName);
         String targetPath =  Constants.DAMAGE_PREDICT_FILE_DIR + "/" + targetFileName;
         File file = new File(targetPath);
@@ -113,14 +113,14 @@ public class DamageDetection {
                 String content = br.readLine();
                 while(content != null){
                     String[] split = content.split(",");
-                    timelist.add(split[1]);
-                    locationlist.add(Integer.valueOf(split[2]));
-                    levellist.add(Integer.valueOf(split[3]));
+//                    timelist.add(split[1]);
+                    locationlist.add(Integer.valueOf(split[0]));
+                    levellist.add(Integer.valueOf(split[1]));
                     content = br.readLine();
                 }
                 br.close();
                 fr.close();
-                data.put("timelist", timelist);
+//                data.put("timelist", timelist);
                 data.put("locationlist", locationlist);
                 data.put("levellist", levellist);
 
@@ -1064,7 +1064,27 @@ public class DamageDetection {
             Executor executor = new CommandLineExecutor(md5, execStr);
             //Scheduler.getInstance().runExecutor(executor);
             LogEntity logentity = ((CommandLineExecutor) executor).execute_analysis();
-            if (logentity.getExitVal() == 0 || logentity.getExitVal() == 0){
+
+            String[] locAndDegree = logentity.getDamageResult();
+            try {
+                FileOutputStream fos = new FileOutputStream(OUTPUT_FILE);
+                OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");
+                BufferedWriter bw = new BufferedWriter(osw);
+                bw.write("location,degree" + "\n");
+                bw.write(locAndDegree[0].substring(5)+","+locAndDegree[1].substring(8) + "\n");
+                bw.close();
+                osw.close();
+                fos.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+            if (logentity.getExitVal() == 0 || logentity.getExitVal() == 120){
                 data.put("result", "success");
                 AnalysisMessage.getInstance().update(md5,null,null,Constants.FINISHED,null,logentity.toString());
             }else{

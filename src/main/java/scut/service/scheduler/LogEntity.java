@@ -1,5 +1,8 @@
 package scut.service.scheduler;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Created by Carrod on 2017/11/19.
  */
@@ -20,6 +23,7 @@ public class LogEntity {
         return exitVal;
     }
 
+    @Override
     public String toString(){
         return logSb.toString();
     }
@@ -28,9 +32,17 @@ public class LogEntity {
      * Author: liujun
      * @return res
      */
-    public String getDamageResult() {
-        String res = "";
-        res = this.logSb.substring(this.logSb.indexOf("result:")+7,this.logSb.indexOf("end"));
+    public String[] getDamageResult() {
+        String[] res = {"",""};
+        Matcher loc = Pattern.compile("loc: \\d+").matcher(this.logSb);
+        Matcher degree = Pattern.compile("degree: \\d+").matcher(this.logSb);
+
+        if (loc.find()){
+            res[0] = loc.group(0);
+        }
+        if (degree.find()){
+            res[1] = degree.group(0);
+        }
         return res;
     }
 }

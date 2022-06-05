@@ -58,10 +58,10 @@
             showTransientDialog(message["msg"]);
             return;
         }else{
-            var timelist = message["data"]["timelist"];
+            // var timelist = message["data"]["timelist"];
             var locationlist = message["data"]["locationlist"];
             var levellist = message["data"]["levellist"];
-            showPredictUDFResultChart(figure_id, timelist, locationlist, levellist);
+            showPredictDDResultChart(figure_id, locationlist, levellist);
         }
     }
     var url = "/damage-detection/getUDFPredictResult";
@@ -1331,9 +1331,9 @@ $(function () {
     $("#dd_result_damagedetection").click(function () {
         var test_file = $("#dd_test_file_selected").val();
         var test_model = $("#dd_test_model_selected").val();
-        var bridge = $("#dd_test_bridge_selected").val();
-        var begin_time = $("#dd_test_begin_time").val();
-        var end_time = $("#dd_test_end_time").val();
+        // var bridge = $("#dd_test_bridge_selected").val();
+        // var begin_time = $("#dd_test_begin_time").val();
+        // var end_time = $("#dd_test_end_time").val();
 
         if(test_file == null){
             showTransientDialog("请选择训练文件");
@@ -1348,10 +1348,10 @@ $(function () {
         //     showTransientDialog("请选择分析桥梁");
         //     return;
         // }
-        if(begin_time >= end_time){
-            showTransientDialog("开始时间必须小于截止时间");
-            return;
-        }
+        // if(begin_time >= end_time){
+        //     showTransientDialog("开始时间必须小于截止时间");
+        //     return;
+        // }
 
         var token = $("meta[name='_csrf']").attr("content");
         var header = $("meta[name='_csrf_header']").attr("content");

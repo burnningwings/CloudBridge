@@ -397,7 +397,14 @@ function showPredictUDFResultChart(figure_id, timelist, locationlist, levellist)
             type : 'category',
             data : timelist,
             name : '时间',
-            show : true
+            show : true,
+            splitLine : {
+                show : true,
+                lineStyle : {
+                    width:1,
+                    type:'solid',
+                }
+            }
             // splitLine : {
             //     show : false
             // },
@@ -514,6 +521,78 @@ function showPredictUDFResultChart(figure_id, timelist, locationlist, levellist)
             }
         ]
     };
+    var chart = echarts.init(document.getElementById(figure_id));
+    chart.setOption(option);
+
+}
+
+function showPredictDDResultChart(figure_id, locationlist, levellist) {
+
+    const x = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50];
+    const y = [1,2,3,4,5];
+
+    var data = [];
+    for (var i=0;i<5;i++){
+        for (var j=0;j<50;j++){
+            data.push([i,j,0])
+        }
+    }
+    for(var i=0;i<locationlist.length;i++){
+        data[parseInt(locationlist[i])][2] = parseInt(levellist[i])/100
+    }
+    console.log(data)
+    data = data.map(function (item) {
+        return [item[1],item[0],item[2] || '-']
+    });
+
+    option = {
+        tooltip: {
+            position: 'top'
+        },
+        grid: {
+            height: '50%',
+            top: '10%'
+        },
+        xAxis: {
+            type: 'category',
+            data: x,
+            splitArea: {
+                show: true
+            }
+        },
+        yAxis: {
+            type: 'category',
+            data: y,
+            splitArea: {
+                show: true
+            }
+        },
+        visualMap: {
+            min: 0,
+            max: 1,
+            calculable: true,
+            orient: 'horizontal',
+            left: 'center',
+            bottom: '15%'
+        },
+        series: [
+            {
+                name: 'degree',
+                type: 'heatmap',
+                data: data,
+                label: {
+                    show: true
+                },
+                emphasis: {
+                    itemStyle: {
+                        shadowBlur: 1,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                }
+            }
+        ]
+    };
+
     var chart = echarts.init(document.getElementById(figure_id));
     chart.setOption(option);
 
@@ -2691,54 +2770,57 @@ function showReliabilityResultChart(figure_id, timeList, btcList, bttList, pfcLi
     var option = {
         title : [
             {
-                left : '22%',
+                left : 'center',
                 top : '1%',
-                text : '抗压可靠度'
+                text : '传感器位置对应的时变可靠指标监测值和预测值',
+
             },
             {
-                left : '72%',
-                top : '1%',
-                text : '抗拉可靠度'
-            },
-            {
-                left : '22%',
+                left : 'center',
                 top : '51%',
-                text : '抗压失效概率'
+                text : '传感器位置对应的时变失效概率监测值和预测值'
             },
-            {
-                left : '72%',
-                top : '51%',
-                text : '抗拉失效概率'
-            }
+            // {
+            //     left : '22%',
+            //     top : '51%',
+            //     text : '抗压失效概率'
+            // },
+            // {
+            //     left : '72%',
+            //     top : '51%',
+            //     text : '抗拉失效概率'
+            // }
         ],
         tooltip: {},
         grid : [
             {
                 id : 0,
                 height : '40%',
-                width : '40%',
+                // width : '40%',
                 left : '4%'
             },
             {
                 id : 1,
                 height : '40%',
-                width : '40%',
-                left : '53%'
-            },
-            {
-                id : 2,
-                height : '40%',
-                width : '40%',
+                // width : '40%',
+                // left : '53%'
                 top : '54%',
                 left : '4%'
             },
-            {
-                id : 3,
-                height : '40%',
-                width : '40%',
-                top : '54%',
-                left : '53%'
-            }
+            // {
+            //     id : 2,
+            //     height : '40%',
+            //     width : '40%',
+            //     top : '54%',
+            //     left : '4%'
+            // },
+            // {
+            //     id : 3,
+            //     height : '40%',
+            //     width : '40%',
+            //     top : '54%',
+            //     left : '53%'
+            // }
         ],
         dataZoom : [
             {
@@ -2747,117 +2829,117 @@ function showReliabilityResultChart(figure_id, timeList, btcList, bttList, pfcLi
                 //yAxisIndex : 0
                 filterMode : 'empty',
             },
-            {
-                type : 'slider',
-                show : false,
-                xAxisIndex : 0,
-              //  yAxisIndex : 0
-                filterMode : 'empty',
-            },
-            {
-                type : 'slider',
-                show : true,
-                //xAxisIndex : 0,
-                yAxisIndex : 0,
-                left : '47%',
-                width : 10,
-                filterMode : 'empty',
-            },
+            // {
+            //     type : 'slider',
+            //     show : false,
+            //     xAxisIndex : 0,
+            //   //  yAxisIndex : 0
+            //     filterMode : 'empty',
+            // },
+            // {
+            //     type : 'slider',
+            //     show : true,
+            //     //xAxisIndex : 0,
+            //     yAxisIndex : 0,
+            //     left : '47%',
+            //     width : 10,
+            //     filterMode : 'empty',
+            // },
             {
                 type : 'inside',
                 xAxisIndex : 1,
                // yAxisIndex : 1,
                 filterMode : 'empty',
             },
-            {
-                type : 'slider',
-                show : false,
-                xAxisIndex : 1,
-               // yAxisIndex : 1,
-                filterMode : 'empty',
-            },
-            {
-                type : 'slider',
-                show : true,
-                //xAxisIndex : 0,
-                yAxisIndex : 1,
-                left : '96%',
-                width : 10,
-                filterMode : 'empty',
-            },
-            {
-                type : 'inside',
-                xAxisIndex : 2,
-                //yAxisIndex : 2
-                filterMode : 'empty',
-            },
-            {
-                type : 'slider',
-                show : false,
-                xAxisIndex : 2,
-               // yAxisIndex : 2
-                filterMode : 'empty',
-            },
-            {
-                type : 'slider',
-                show : true,
-                //xAxisIndex : 0,
-                yAxisIndex : 2,
-                left : '47%',
-                width : 10,
-                filterMode : 'empty',
-            },
-            {
-                type : 'inside',
-                xAxisIndex : 3,
-                filterMode : 'empty',
-            },
-            {
-                type : 'slider',
-                show : false,
-                xAxisIndex : 3,
-                filterMode : 'empty',
-              //  yAxisIndex : 3
-            },
-            {
-                type : 'slider',
-                show : true,
-                //xAxisIndex : 0,
-                yAxisIndex : 3,
-                left : '96%',
-                width : 10,
-                filterMode : 'empty',
-            },
+            // {
+            //     type : 'slider',
+            //     show : false,
+            //     xAxisIndex : 1,
+            //    // yAxisIndex : 1,
+            //     filterMode : 'empty',
+            // },
+            // {
+            //     type : 'slider',
+            //     show : true,
+            //     //xAxisIndex : 0,
+            //     yAxisIndex : 1,
+            //     left : '96%',
+            //     width : 10,
+            //     filterMode : 'empty',
+            // },
+            // {
+            //     type : 'inside',
+            //     xAxisIndex : 2,
+            //     //yAxisIndex : 2
+            //     filterMode : 'empty',
+            // },
+            // {
+            //     type : 'slider',
+            //     show : false,
+            //     xAxisIndex : 2,
+            //    // yAxisIndex : 2
+            //     filterMode : 'empty',
+            // },
+            // {
+            //     type : 'slider',
+            //     show : true,
+            //     //xAxisIndex : 0,
+            //     yAxisIndex : 2,
+            //     left : '47%',
+            //     width : 10,
+            //     filterMode : 'empty',
+            // },
+            // {
+            //     type : 'inside',
+            //     xAxisIndex : 3,
+            //     filterMode : 'empty',
+            // },
+            // {
+            //     type : 'slider',
+            //     show : false,
+            //     xAxisIndex : 3,
+            //     filterMode : 'empty',
+            //   //  yAxisIndex : 3
+            // },
+            // {
+            //     type : 'slider',
+            //     show : true,
+            //     //xAxisIndex : 0,
+            //     yAxisIndex : 3,
+            //     left : '96%',
+            //     width : 10,
+            //     filterMode : 'empty',
+            // },
         ],
         toolbox : {
             show : true,
             right : '5%',
             feature : {
-                dataView : {
-                    readOnly : true,
-                    optionToContent: function (opt) {
-                        var series = opt.series[0].data;
-                        var index = opt.xAxis[0].data;
-                        var tdHeads = '<td  style="padding: 0 10px">时间段</td>'
-                            +'<td  style="padding: 0 10px">抗压可靠度</td>'
-                            +'<td  style="padding: 0 10px">抗拉可靠度</td>'
-                            +'<td  style="padding: 0 10px">抗压失效概率</td>'
-                            +'<td  style="padding: 0 10px">抗拉失效概率</td>'; //表头
-                        var table = '<table border="1" style="margin-left:20px;border-collapse:collapse;font-size:14px;text-align:center"><tbody><tr>'+tdHeads+'</tr>';
-                        var tdBody = '';
-                        for(var i = 0; i < timeList.length;i++)
-                        {
-                            table += '<tr><td style="padding: 0 10px">'+timeList[i]+
-                                '</td><td style="padding: 0 10px">'+btcList[i]+
-                                '</td><td style="padding: 0 10px">'+bttList[i]+
-                                '</td><td style="padding: 0 10px">'+pfcList[i]+
-                                '</td><td style="padding: 0 10px">'+pftList[i]+'</td></tr>';
-                        }
-                        table += '</tbody></table>';
-                        return table;
-
-                    }
-                },
+                // dataView : {
+                //     readOnly : true,
+                //     optionToContent: function (opt) {
+                //         var series = opt.series[0].data;
+                //         var index = opt.xAxis[0].data;
+                //         var tdHeads = '<td  style="padding: 0 10px">时间段</td>'
+                //             +'<td  style="padding: 0 10px">抗压可靠度</td>'
+                //             +'<td  style="padding: 0 10px">抗拉可靠度</td>'
+                //             +'<td  style="padding: 0 10px">抗压失效概率</td>'
+                //             +'<td  style="padding: 0 10px">抗拉失效概率</td>'; //表头
+                //         var table = '<table border="1" style="margin-left:20px;border-collapse:collapse;font-size:14px;text-align:center"><tbody><tr>'+tdHeads+'</tr>';
+                //         var tdBody = '';
+                //         for(var i = 0; i < timeList.length;i++)
+                //         {
+                //             table += '<tr><td style="padding: 0 10px">'+timeList[i]+
+                //                 '</td><td style="padding: 0 10px">'+btcList[i]+
+                //                 '</td><td style="padding: 0 10px">'+bttList[i]+
+                //                 '</td><td style="padding: 0 10px">'+pfcList[i]+
+                //                 '</td><td style="padding: 0 10px">'+pftList[i]+'</td></tr>';
+                //         }
+                //         table += '</tbody></table>';
+                //         return table;
+                //
+                //     }
+                // },
                 saveAsImage: {
                     pixelRatio:2,
                     show: true
@@ -2877,80 +2959,81 @@ function showReliabilityResultChart(figure_id, timeList, btcList, bttList, pfcLi
                 id : 1,
                 gridIndex : 1
             },
-            {
-                name : '时间段',
-                data : timeList,
-                id : 2,
-                gridIndex : 2
-            },
-            {
-                name : '时间段',
-                data : timeList,
-                id : 3,
-                gridIndex : 3
-            }
+            // {
+            //     name : '时间段',
+            //     data : timeList,
+            //     id : 2,
+            //     gridIndex : 2
+            // },
+            // {
+            //     name : '时间段',
+            //     data : timeList,
+            //     id : 3,
+            //     gridIndex : 3
+            // }
         ],
         yAxis:[
             {
-                name : '抗压可靠度',
+                name : '监测可靠度',
                 id : 0,
                 gridIndex : 0,
                // min : 0,
                // max : 1
             },
             {
-                name : "抗拉可靠度",
+                name : "时变可靠度指标",
                 id : 1,
-                gridIndex : 1,
+                gridIndex : 0,
                // min : 0,
                // max : 1
             },
             {
-                name : '抗压失效概率',
+                name : '监测失效概率',
                 id : 2,
-                gridIndex : 2,
+                gridIndex : 1,
                 //min : 0,
                 //max : 1
             },
             {
-                name : '抗拉失效概率',
+                name : '时变失效概率',
                 id : 3,
-                gridIndex : 3,
+                gridIndex : 1,
               //  min : 0,
               //  max : 1
             }
         ],
         series : [
             {
-                name : '抗压可靠度',
+                name : '监测可靠度',
                 type : 'line',
                 data : btcList,
                 xAxisIndex : 0,
                 yAxisIndex : 0
             },
             {
-                name : '抗拉可靠度',
+                name : '时变可靠度指标',
                 type : 'line',
                 data : bttList,
-                xAxisIndex : 1,
+                xAxisIndex : 0,
                 yAxisIndex : 1
             },
             {
-                name : '抗压失效概率',
+                name : '监测失效概率',
                 type : 'line',
                 data : pfcList,
-                xAxisIndex : 2,
+                xAxisIndex : 1,
                 yAxisIndex : 2
             },
             {
-                name : '抗拉失效概率',
+                name : '时变失效概率',
                 type : 'line',
                 data : pftList,
-                xAxisIndex : 3,
+                xAxisIndex : 1,
                 yAxisIndex : 3
             }
         ]
     }
+    console.log(figure_id)
     var chart = echarts.init(document.getElementById(figure_id));
     chart.setOption(option);
 }

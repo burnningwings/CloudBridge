@@ -169,83 +169,83 @@ public class ReliabilityAnalysis {
         HttpResponse response = new HttpResponse();
         JSONObject data = new JSONObject();
         String reliabilityFile = reqMsg.getString("reliabilityfile");
-        String bridge = reqMsg.getString("bridge");
-        long bridge_id = Long.parseLong(reqMsg.getString("bridge_id"));
-        String section = reqMsg.getString("section");
-        String watchpoint = reqMsg.getString("watchpoint");
-        long watchpoint_id = Long.parseLong(reqMsg.getString("watchpoint_id"));
+//        String bridge = reqMsg.getString("bridge");
+//        long bridge_id = Long.parseLong(reqMsg.getString("bridge_id"));
+//        String section = reqMsg.getString("section");
+//        String watchpoint = reqMsg.getString("watchpoint");
+//        long watchpoint_id = Long.parseLong(reqMsg.getString("watchpoint_id"));
         String beginTime = reqMsg.getString("begintime");
         String endTime = reqMsg.getString("endtime");
-        System.out.println(bridge);
-        System.out.println(section);
-        System.out.println(watchpoint);
+//        System.out.println(bridge);
+//        System.out.println(section);
+//        System.out.println(watchpoint);
         long begintime = Long.parseLong(beginTime);
         long endtime = Long.parseLong(endTime);
 
 
         //传递给python程序的时间参数YYMMDD
-        String ParamTimeBegin = beginTime.substring(0, 8);
-        String ParamTimeEnd = endTime.substring(0, 8);
-        System.out.println(ParamTimeBegin);
-        System.out.println(ParamTimeEnd);
+//        String ParamTimeBegin = beginTime.substring(0, 8);
+//        String ParamTimeEnd = endTime.substring(0, 8);
+//        System.out.println(ParamTimeBegin);
+//        System.out.println(ParamTimeEnd);
 
 
         //查询数据库预存参数
 
-        JSONObject paramlist =  new JSONObject();
-        String sql = String.format("select b.mRc0, b.sRc0, b.mRt0, b.sRt0, E from bridge_para b where b.bridge_id = %d", bridge_id);
-        try {
-            baseDao.querySingleObject(sql, new ResultSetHandler<String>() {
-                @Override
-                public String handle(ResultSet rs) throws SQLException {
-                    while(rs.next()){
-                        paramlist.put("mRc0", rs.getString("mRc0"));
-                        paramlist.put("sRc0", rs.getString("sRc0"));
-                        paramlist.put("mRt0", rs.getString("mRt0"));
-                        paramlist.put("sRt0", rs.getString("sRt0"));
-                        paramlist.put("E", rs.getString("E"));
-                    }
-                    return  null;
-                }
-            });
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        String sql1 = String.format("select p.sc from watch_point_para p where p.watch_point_id = %d", watchpoint_id);
-        try {
-            baseDao.querySingleObject(sql1, new ResultSetHandler<String>() {
-                @Override
-                public String handle(ResultSet rs) throws SQLException {
-                    while(rs.next()){
-                        paramlist.put("sc", rs.getString("sc"));
-                    }
-                    return  null;
-                }
-            });
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        String mRc0 = paramlist.getString("mRc0");
-        String sRc0 = paramlist.getString("sRc0");
-        String mRt0 = paramlist.getString("mRt0");
-        String sRt0 = paramlist.getString("sRt0");
-        String E = paramlist.getString("E");
-        String sc = paramlist.getString("sc");
-
-        if(mRc0 == null || sRc0 == null || mRt0 == null || sRt0 == null || E ==null || sc == null){
-            System.out.println("no param");
-            data.put("result", "no param");
-            response.setData(data);
-            return response.getHttpResponse();
-        }
-
-        System.out.println(paramlist.getString("mRc0"));
-        System.out.println(paramlist.getString("sRc0"));
-        System.out.println(paramlist.getString("mRt0"));
-        System.out.println(paramlist.getString("sRt0"));
-        System.out.println(paramlist.getString("E"));
-        System.out.println(paramlist.getString("sc"));
+//        JSONObject paramlist =  new JSONObject();
+//        String sql = String.format("select b.mRc0, b.sRc0, b.mRt0, b.sRt0, E from bridge_para b where b.bridge_id = %d", bridge_id);
+//        try {
+//            baseDao.querySingleObject(sql, new ResultSetHandler<String>() {
+//                @Override
+//                public String handle(ResultSet rs) throws SQLException {
+//                    while(rs.next()){
+//                        paramlist.put("mRc0", rs.getString("mRc0"));
+//                        paramlist.put("sRc0", rs.getString("sRc0"));
+//                        paramlist.put("mRt0", rs.getString("mRt0"));
+//                        paramlist.put("sRt0", rs.getString("sRt0"));
+//                        paramlist.put("E", rs.getString("E"));
+//                    }
+//                    return  null;
+//                }
+//            });
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//        String sql1 = String.format("select p.sc from watch_point_para p where p.watch_point_id = %d", watchpoint_id);
+//        try {
+//            baseDao.querySingleObject(sql1, new ResultSetHandler<String>() {
+//                @Override
+//                public String handle(ResultSet rs) throws SQLException {
+//                    while(rs.next()){
+//                        paramlist.put("sc", rs.getString("sc"));
+//                    }
+//                    return  null;
+//                }
+//            });
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//
+//        String mRc0 = paramlist.getString("mRc0");
+//        String sRc0 = paramlist.getString("sRc0");
+//        String mRt0 = paramlist.getString("mRt0");
+//        String sRt0 = paramlist.getString("sRt0");
+//        String E = paramlist.getString("E");
+//        String sc = paramlist.getString("sc");
+//
+//        if(mRc0 == null || sRc0 == null || mRt0 == null || sRt0 == null || E ==null || sc == null){
+//            System.out.println("no param");
+//            data.put("result", "no param");
+//            response.setData(data);
+//            return response.getHttpResponse();
+//        }
+//
+//        System.out.println(paramlist.getString("mRc0"));
+//        System.out.println(paramlist.getString("sRc0"));
+//        System.out.println(paramlist.getString("mRt0"));
+//        System.out.println(paramlist.getString("sRt0"));
+//        System.out.println(paramlist.getString("E"));
+//        System.out.println(paramlist.getString("sc"));
 
 
         //根据条件过滤数据
@@ -288,7 +288,12 @@ public class ReliabilityAnalysis {
                         //检查已有数据是否能覆盖所选时间
                         if(current_time >= endtime){  endflag = true;  }
                         if(current_time <= begintime){   startflag = true; }
-                        if(current_bridge.equals(bridge) && current_section.equals(section) && current_watechpoint.equals(watchpoint) && current_time >= begintime && current_time <= endtime){
+//                        if(current_bridge.equals(bridge) && current_section.equals(section) && current_watechpoint.equals(watchpoint) && current_time >= begintime && current_time <= endtime){
+//                            System.out.println("ok");
+//                            bw.write(line + "\n");
+//                            count ++;
+//                        }
+                        if(current_time >= begintime && current_time <= endtime){
                             System.out.println("ok");
                             bw.write(line + "\n");
                             count ++;
@@ -306,20 +311,27 @@ public class ReliabilityAnalysis {
                 if(count != 0 && startflag && endflag){
                     String INPUT_FILE = Constants.RELIABILITY_TARGET_DIR;
                     String RELIABILITY_PROGRAM = Constants.RELIABILITY_ANALYSIS_PROGRAM;
-                    String outputfileName = bridge + "_" + section + "_" + watchpoint + "_" + beginTime + "_" + endTime + "_result" + ".csv";
+//                    String outputfileName = bridge + "_" + section + "_" + watchpoint + "_" + beginTime + "_" + endTime + "_result" + ".csv";
+                    String outputfileName = reliabilityFile.split("\\.")[0] + "_" + beginTime + "_" + endTime + "_result" + ".csv";
                     String OUTPUT_FILE = Constants.RELIABILITY_ANALYSIS_RESULT_DIR + "/" + outputfileName;
                     String md5 = DigestUtils.md5Hex(reliabilityFile + beginTime + endTime);
 
-                    AnalysisMessage.getInstance().update(md5, bridge + "_" + section + "_" + watchpoint + "_" + beginTime + "_" + endTime,outputfileName, Constants.READY, "RELIABILITY",null);
-                    String execStr = Constants.SCRIPT_EXEC_PREFIX + " " + RELIABILITY_PROGRAM + " " + INPUT_FILE + " "
-                            + mRc0 + " " + sRc0 + " " + mRt0 + " " + sRt0 + " " + E + " " + sc + " " + ParamTimeBegin + " " + ParamTimeEnd + " " + OUTPUT_FILE;
+//                    AnalysisMessage.getInstance().update(md5, bridge + "_" + section + "_" + watchpoint + "_" + beginTime + "_" + endTime,outputfileName, Constants.READY, "RELIABILITY",null);
+//                    String execStr = Constants.SCRIPT_EXEC_PREFIX + " " + RELIABILITY_PROGRAM + " " + INPUT_FILE + " "
+//                            + mRc0 + " " + sRc0 + " " + mRt0 + " " + sRt0 + " " + E + " " + sc + " " + ParamTimeBegin + " " + ParamTimeEnd + " " + OUTPUT_FILE;
+
+                    AnalysisMessage.getInstance().update(md5, reliabilityFile + "_" + beginTime + "_" + endTime,outputfileName, Constants.READY, "RELIABILITY",null);
+                    String execStr = Constants.RELIABILITY_ANALYSIS_PROGRAM + " " + INPUT_FILE + " " + OUTPUT_FILE;
+
                     //String execStr = "D:/os_environment/anaconda/python " + RELIABILITY_PROGRAM + " " + INPUT_FILE + " "
                     //        + mRc0 + " " + sRc0 + " " + mRt0 + " " + sRt0 + " " + E + " " + sc + " " + ParamTimeBegin + " " + ParamTimeEnd + " " + OUTPUT_FILE;
                     //String execStr = "python D:/tmp/a.py";
                     logger.debug(execStr);
                     Executor executor = new CommandLineExecutor(md5, execStr);
                     //Scheduler.getInstance().runExecutor(executor);
-                    LogEntity logentity = ((CommandLineExecutor) executor).execute_analysis();
+//                    LogEntity logentity = ((CommandLineExecutor) executor).execute_analysis();
+                    LogEntity logentity = ((CommandLineExecutor) executor).execute_for_association_relability();
+
                     if (logentity.getExitVal() == 0){
                         data.put("result", "success");
                         AnalysisMessage.getInstance().update(md5,null,null,Constants.FINISHED,null,logentity.toString());
@@ -340,10 +352,11 @@ public class ReliabilityAnalysis {
     }
 
     @RequestMapping(value = "/reliability-analysis/getAnalysisResult", method = RequestMethod.GET, produces = "application/json")
-    public JSONObject getAnalysisResult1(String bridge, String section, String watchpoint, String begintime, String endtime){
+    public JSONObject getAnalysisResult1(String filename, String begintime, String endtime){
         HttpResponse response = new HttpResponse();
         JSONObject data = new JSONObject();
-        String resultfileName = bridge + "_" + section + "_" + watchpoint + "_" + begintime + "_" + endtime + "_result" + ".csv";
+//        String resultfileName = bridge + "_" + section + "_" + watchpoint + "_" + begintime + "_" + endtime + "_result" + ".csv";
+        String resultfileName = filename.split("\\.")[0] + "_" + begintime + "_" + endtime + "_result" + ".csv";
         String analysisResultPath = Constants.RELIABILITY_ANALYSIS_RESULT_DIR + "/" + resultfileName;
         System.out.println(analysisResultPath);
         File file = new File(analysisResultPath);
@@ -355,27 +368,34 @@ public class ReliabilityAnalysis {
                 FileReader fr = new FileReader(analysisResultPath);
                 BufferedReader br = new BufferedReader(fr);
                 String header = br.readLine();
+
+                FileReader fileReader = new FileReader(Constants.RELIABILITY_ANALYSIS_FILE + "/" + filename);
+                BufferedReader bufferedReader = new BufferedReader(fileReader);
+                String headerTime = bufferedReader.readLine();
+
                 ArrayList<String> timeList = new ArrayList<>();
-                ArrayList<Float> btcList = new ArrayList<>();
-                ArrayList<Float> bttList = new ArrayList<>();
-                ArrayList<Float> pfcList = new ArrayList<>();
-                ArrayList<Float> pftList = new ArrayList<>();
+                ArrayList<Float> mvbList = new ArrayList<>();
+                ArrayList<Float> pvbList = new ArrayList<>();
+                ArrayList<Float> mvpList = new ArrayList<>();
+                ArrayList<Float> pvpList = new ArrayList<>();
                 String content = "";
-                while((content = br.readLine()) != null){
+                String time = "";
+                while((content = br.readLine()) != null && (time = bufferedReader.readLine()) != null){
                     String[] split = content.split(",");
-                    timeList.add(split[0]);
-                    btcList.add(Float.parseFloat(split[1]));
-                    bttList.add(Float.parseFloat(split[2]));
-                    pfcList.add(Float.parseFloat(split[3]));
-                    pftList.add(Float.parseFloat(split[4]));
+                    String[] split1 = time.split(",");
+                    timeList.add(split1[0]);
+                    mvbList.add(Float.parseFloat(split[0]));
+                    pvbList.add(Float.parseFloat(split[1]));
+                    mvpList.add(Float.parseFloat(split[2]));
+                    pvpList.add(Float.parseFloat(split[3]));
                 }
                 br.close();
                 fr.close();
                 data.put("timeList",timeList);
-                data.put("btc", btcList);
-                data.put("btt", bttList);
-                data.put("pfc", pfcList);
-                data.put("pft", pftList);
+                data.put("mvb", mvbList);
+                data.put("pvb", pvbList);
+                data.put("mvp", mvpList);
+                data.put("pvp", pvpList);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e){

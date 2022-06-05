@@ -66,7 +66,24 @@ public class CommandLineExecutor implements Executor {
             Process process = Runtime.getRuntime().exec(execStr);
 
             process.getOutputStream().close();
-            process.getErrorStream().close();
+//            process.getErrorStream().close();
+
+            new Thread(){
+                public void run(){
+                    super.run();
+                    String line;
+                    try{
+                        BufferedReader stderr = new BufferedReader(new InputStreamReader(process.getErrorStream(),StandardCharsets.UTF_8));
+                        while ((line = stderr.readLine()) != null){
+                            System.out.println(line);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }.start();
+
+
             InputStream stdin = process.getInputStream();
             InputStreamReader isr = new InputStreamReader(stdin);
             BufferedReader br = new BufferedReader(isr);

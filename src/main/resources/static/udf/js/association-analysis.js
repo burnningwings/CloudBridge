@@ -67,47 +67,57 @@ function getAndshowAnalysisResult(figure_id, current_dialog, params){
             // console.log(sensor2);
             // showAnalysisResultChart(figure_id, sensor1, sensor2);
             var layer = message["data"]["layer"];
-            if(layer == 7){
+            // if(layer == 7){
+            //     var timeList = message["data"]["timeList"];
+            //     var strain = message["data"]["strain"];
+            //     var sa7 = message["data"]["sa7"];
+            //     var sd1 = message["data"]["sd1"];
+            //     var sd2 = message["data"]["sd2"];
+            //     var sd3 = message["data"]["sd3"];
+            //     var sd4 = message["data"]["sd4"];
+            //     var sd5 = message["data"]["sd5"];
+            //     var sd6 = message["data"]["sd6"];
+            //     var sd7 = message["data"]["sd7"];
+            //     var temperature = message["data"]["temperature"];
+            //     var ta7 = message["data"]["ta7"];
+            //     var td1 = message["data"]["td1"];
+            //     var td2 = message["data"]["td2"];
+            //     var td3 = message["data"]["td3"];
+            //     var td4 = message["data"]["td4"];
+            //     var td5 = message["data"]["td5"];
+            //     var td6 = message["data"]["td6"];
+            //     var td7 = message["data"]["td7"];
+            //     // console.log("timeList", timeList);
+            //     // console.log("strand", strain);
+            //     // console.log("sa7", sa7);
+            //     // console.log("sd1", sd1);
+            //     // console.log("td7", td7);
+            //     showAnalysisResultChart_sevenlayer(figure_id, timeList, strain, sa7, sd1, sd2, sd3, sd4, sd5, sd6, sd7, temperature, ta7, td1, td2, td3, td4, td5, td6, td7);
+            // }else{
+            //     var timeList = message["data"]["timeList"];
+            //     var strain = message["data"]["strain"];
+            //     var sa7 = message["data"]["sa7"];
+            //     var sd1 = message["data"]["sd1"];
+            //     var sd2 = message["data"]["sd2"];
+            //     var sd3 = message["data"]["sd3"];
+            //     var sd4 = message["data"]["sd4"];
+            //     var temperature = message["data"]["temperature"];
+            //     var ta7 = message["data"]["ta7"];
+            //     var td1 = message["data"]["td1"];
+            //     var td2 = message["data"]["td2"];
+            //     var td3 = message["data"]["td3"];
+            //     var td4 = message["data"]["td4"];
+            //     showAnalysisResultChart_fourlayer(figure_id, timeList, strain, sa7, sd1, sd2, sd3, sd4, temperature, ta7, td1, td2, td3, td4);
+            // }
+            if(layer == 3){
                 var timeList = message["data"]["timeList"];
-                var strain = message["data"]["strain"];
-                var sa7 = message["data"]["sa7"];
-                var sd1 = message["data"]["sd1"];
-                var sd2 = message["data"]["sd2"];
+                var sa7 = message["data"]["sa4"];
                 var sd3 = message["data"]["sd3"];
                 var sd4 = message["data"]["sd4"];
-                var sd5 = message["data"]["sd5"];
-                var sd6 = message["data"]["sd6"];
-                var sd7 = message["data"]["sd7"];
-                var temperature = message["data"]["temperature"];
-                var ta7 = message["data"]["ta7"];
-                var td1 = message["data"]["td1"];
-                var td2 = message["data"]["td2"];
+                var ta7 = message["data"]["ta4"];
                 var td3 = message["data"]["td3"];
                 var td4 = message["data"]["td4"];
-                var td5 = message["data"]["td5"];
-                var td6 = message["data"]["td6"];
-                var td7 = message["data"]["td7"];
-                // console.log("timeList", timeList);
-                // console.log("strand", strain);
-                // console.log("sa7", sa7);
-                // console.log("sd1", sd1);
-                // console.log("td7", td7);
-                showAnalysisResultChart_sevenlayer(figure_id, timeList, strain, sa7, sd1, sd2, sd3, sd4, sd5, sd6, sd7, temperature, ta7, td1, td2, td3, td4, td5, td6, td7);
-            }else{
-                var timeList = message["data"]["timeList"];
-                var strain = message["data"]["strain"];
-                var sa7 = message["data"]["sa7"];
-                var sd1 = message["data"]["sd1"];
-                var sd2 = message["data"]["sd2"];
-                var sd3 = message["data"]["sd3"];
-                var sd4 = message["data"]["sd4"];
-                var temperature = message["data"]["temperature"];
-                var ta7 = message["data"]["ta7"];
-                var td1 = message["data"]["td1"];
-                var td2 = message["data"]["td2"];
-                var td3 = message["data"]["td3"];
-                var td4 = message["data"]["td4"];
-                showAnalysisResultChart_fourlayer(figure_id, timeList, strain, sa7, sd1, sd2, sd3, sd4, temperature, ta7, td1, td2, td3, td4);
+                showAnalysisResultChart_threelayer(figure_id, timeList, sa7, sd3, sd4, ta7, td3, td4);
             }
 
         }
@@ -313,27 +323,27 @@ $(function () {
 
     $("#result_association_analysis").click(function () {
         var association_file = $("#association_file_selected").val();
-        var associatin_bridge = $("#association_bridge option:selected").text();
-        var association_section = $("#association_section option:selected").text();
-        var association_watchpoint = $("#association_watchpoint option:selected").text();
+        // var associatin_bridge = $("#association_bridge option:selected").text();
+        // var association_section = $("#association_section option:selected").text();
+        // var association_watchpoint = $("#association_watchpoint option:selected").text();
 
         if (association_file == null){
             showTransientDialog("请选择分析文件");
             //showDialog("请选择训练文件");
             return;
         }
-        if(associatin_bridge == null){
-            showTransientDialog("请选择分析桥梁");
-            return;
-        }
-        if(association_section == null){
-            showTransientDialog("请选择桥梁截面");
-            return;
-        }
-        if(association_watchpoint == null){
-            showTransientDialog("请选择观测点");
-            return;
-        }
+        // if(associatin_bridge == null){
+        //     showTransientDialog("请选择分析桥梁");
+        //     return;
+        // }
+        // if(association_section == null){
+        //     showTransientDialog("请选择桥梁截面");
+        //     return;
+        // }
+        // if(association_watchpoint == null){
+        //     showTransientDialog("请选择观测点");
+        //     return;
+        // }
 
         var begin_time = $("#association_begin_time").val();
         var end_time = $("#association_end_time").val();
@@ -351,9 +361,10 @@ $(function () {
         $("#" + figure_id).html("<img style='margin-top:120px;' src='assets/img/loading.gif'/>");
         $(this).button("loading").delay(1000).queue(function () {
             var param ={
-                "bridge" : associatin_bridge,
-                "section" : association_section,
-                "watchpoint" : association_watchpoint,
+                // "bridge" : associatin_bridge,
+                // "section" : association_section,
+                // "watchpoint" : association_watchpoint,
+                "filename" : association_file,
                 "begintime" : new Date(begin_time).format('yyyyMMddHHmmss'),
                 "endtime" :  new Date(end_time).format('yyyyMMddHHmmss')
             }

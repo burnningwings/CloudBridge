@@ -221,6 +221,7 @@ public class Home {
         return "module_download";
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping("/module_delete")
     public String module_delete(Model model){
         setUser(model);

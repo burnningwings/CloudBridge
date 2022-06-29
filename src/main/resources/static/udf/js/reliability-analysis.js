@@ -62,12 +62,12 @@ function getAndshowReliabilityAnalysisResult(figure_id, current_dialog, params){
             return;
         }else{
             var timeList = message["data"]["timeList"];
-            var btcList = message["data"]["btc"];
-            var bttList = message["data"]["btt"];
-            var pfcList = message["data"]["pfc"];
-            var pftList = message["data"]["pft"];
+            var mvbList = message["data"]["mvb"];
+            var pvbList = message["data"]["pvb"];
+            var mvpList = message["data"]["mvp"];
+            var pvpList = message["data"]["pvp"];
 
-            showReliabilityResultChart(figure_id, timeList, btcList, bttList, pfcList, pftList);
+            showReliabilityResultChart(figure_id, timeList, mvbList, pvbList, mvpList, pvpList);
         }
     }
     var url = "/reliability-analysis/getAnalysisResult";
@@ -161,38 +161,57 @@ $(function () {
         // var content = "{<br/>"+
         //     "time, bridge, section, point, measure_data....<br/>"+
         //     "}";
-        var content = "time : string<br/>" + "bridge : string<br/>" + "section : string" + "watch_point : string" +
-                        "sensor_num : string<br/>" + "s : float";
-        popoverEl.attr("data-content", content);
-        popoverEl.popover("show");
+        // var content = "time : string<br/>" + "bridge : string<br/>" + "section : string" + "watch_point : string" +
+        //                 "sensor_num : string<br/>" + "s : float";
+        // popoverEl.attr("data-content", content);
+        // popoverEl.popover("show");
+
+        //
+        // var str = "date,air_temp,strain\n";
+        // var url = "data:text/csv;charset=utf-8,\ufeff" + encodeURIComponent(str);
+        // var link = document.createElement("a");
+        // link.href = url;
+        // link.download = 'example_test.csv';
+        // document.body.appendChild(link);
+        // link.click();
+        // document.body.removeChild(link);
+
+        var str = "time,bridge,section,test_point,sensor_num,s\n";
+        var url = "data:text/csv;charset=utf-8,\ufeff" + encodeURIComponent(str);
+        var link = document.createElement("a");
+        link.href = url;
+        link.download = 'example_test.csv';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
 
     });
 
     $("#reliability_analysis_start").click(function () {
         var reliability_file = $("#reliability_file_selected").val();
-        var reliability_bridge_id = $("#reliability_bridge").val();
-        var reliability_watchpoint_id = $("#reliability_watchpoint").val();
-        var reliability_bridge = $("#reliability_bridge option:selected").text();
-        var reliability_section = $("#reliability_section option:selected").text();
-        var reliability_watchpoint = $("#reliability_watchpoint option:selected").text();
+        // var reliability_bridge_id = $("#reliability_bridge").val();
+        // var reliability_watchpoint_id = $("#reliability_watchpoint").val();
+        // var reliability_bridge = $("#reliability_bridge option:selected").text();
+        // var reliability_section = $("#reliability_section option:selected").text();
+        // var reliability_watchpoint = $("#reliability_watchpoint option:selected").text();
 
         if (reliability_file == null){
             showTransientDialog("请选择分析文件");
             //showDialog("请选择训练文件");
             return;
         }
-        if(reliability_bridge == null){
-            showTransientDialog("请选择分析桥梁");
-            return;
-        }
-        if(reliability_section == null){
-            showTransientDialog("请选择桥梁截面");
-            return;
-        }
-        if(reliability_watchpoint == null){
-            showTransientDialog("请选择观测点");
-            return;
-        }
+        // if(reliability_bridge == null){
+        //     showTransientDialog("请选择分析桥梁");
+        //     return;
+        // }
+        // if(reliability_section == null){
+        //     showTransientDialog("请选择桥梁截面");
+        //     return;
+        // }
+        // if(reliability_watchpoint == null){
+        //     showTransientDialog("请选择观测点");
+        //     return;
+        // }
 
         var begin_time = $("#reliability_begin_time").val();
         var end_time = $("#reliability_end_time").val();
@@ -225,11 +244,11 @@ $(function () {
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({
                 "reliabilityfile" : reliability_file,
-                "bridge" : reliability_bridge,
-                "section" : reliability_section,
-                "watchpoint" : reliability_watchpoint,
-                "bridge_id" : reliability_bridge_id,
-                "watchpoint_id" : reliability_watchpoint_id,
+                // "bridge" : reliability_bridge,
+                // "section" : reliability_section,
+                // "watchpoint" : reliability_watchpoint,
+                // "bridge_id" : reliability_bridge_id,
+                // "watchpoint_id" : reliability_watchpoint_id,
                 "begintime" : new Date(begin_time).format('yyyyMMddHHmmss'),
                 "endtime" :  new Date(end_time).format('yyyyMMddHHmmss')
             }),
@@ -281,27 +300,27 @@ $(function () {
 
     $("#result_reliability_analysis").click(function () {
         var reliability_file = $("#reliability_file_selected").val();
-        var associatin_bridge = $("#reliability_bridge option:selected").text();
-        var reliability_section = $("#reliability_section option:selected").text();
-        var reliability_watchpoint = $("#reliability_watchpoint option:selected").text();
+        // var associatin_bridge = $("#reliability_bridge option:selected").text();
+        // var reliability_section = $("#reliability_section option:selected").text();
+        // var reliability_watchpoint = $("#reliability_watchpoint option:selected").text();
 
         if (reliability_file == null){
             showTransientDialog("请选择分析文件");
             //showDialog("请选择训练文件");
             return;
         }
-        if(associatin_bridge == null){
-            showTransientDialog("请选择分析桥梁");
-            return;
-        }
-        if(reliability_section == null){
-            showTransientDialog("请选择桥梁截面");
-            return;
-        }
-        if(reliability_watchpoint == null){
-            showTransientDialog("请选择观测点");
-            return;
-        }
+        // if(associatin_bridge == null){
+        //     showTransientDialog("请选择分析桥梁");
+        //     return;
+        // }
+        // if(reliability_section == null){
+        //     showTransientDialog("请选择桥梁截面");
+        //     return;
+        // }
+        // if(reliability_watchpoint == null){
+        //     showTransientDialog("请选择观测点");
+        //     return;
+        // }
 
         var begin_time = $("#reliability_begin_time").val();
         var end_time = $("#reliability_end_time").val();
@@ -328,9 +347,10 @@ $(function () {
         $("#" + figure_id).html("<img style='margin-top:120px;' src='assets/img/loading.gif'/>");
         $(this).button("loading").delay(1000).queue(function () {
             var param ={
-                "bridge" : associatin_bridge,
-                "section" : reliability_section,
-                "watchpoint" : reliability_watchpoint,
+                "filename" : reliability_file,
+                // "bridge" : associatin_bridge,
+                // "section" : reliability_section,
+                // "watchpoint" : reliability_watchpoint,
                 "begintime" : new Date(begin_time).format('yyyyMMddHHmmss'),
                 "endtime" :  new Date(end_time).format('yyyyMMddHHmmss')
             }

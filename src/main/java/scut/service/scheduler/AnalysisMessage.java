@@ -45,7 +45,7 @@ public class AnalysisMessage {
                 "ON DUPLICATE KEY UPDATE status='%s',error_log=\"%s\"";
         int ret = 0;
         try {
-            ret = baseDao.Execute(String.format(sqlFormat,id,source,target,status,type,errorLog,status,errorLog));
+            ret = baseDao.Execute(String.format(sqlFormat,id,source,target,status,type,errorLog,status,errorLog.replace("\"","'")));
         } catch (SQLException e) {
             e.printStackTrace();
         }

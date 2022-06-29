@@ -108,6 +108,7 @@ public class Constants {
 
     //python程序执行脚本前缀
     public static String SCRIPT_EXEC_PREFIX = null;
+    public static String DAMAGE_SCRIPT_EXEC_PREFIX = null;
 
     //模型标签保存路径
     public static String OVERWEIGHT_TRAIN_LABEL = null;

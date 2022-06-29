@@ -94,6 +94,7 @@ public class CloudBridge implements EnvironmentAware {
             Constants.DAMAGE_TRAIN_LABEL_DIR = env.getProperty("damage.upload.trainlabel.dir").toString();
             Constants.DAMAGE_TRAIN_LOSSIMAGE = env.getProperty("damage.upload.trainimage.dir").toString();
             Constants.DAMAGE_EVALUATE_LABEL_DIR = env.getProperty("damage.upload.evaluatelabel.dir").toString();
+            Constants.DAMAGE_SCRIPT_EXEC_PREFIX = env.getProperty("damage.program.exec.prefix").toString();
         }catch (Exception e){
             logger.debug("当前MYSQL未配置.");
         }

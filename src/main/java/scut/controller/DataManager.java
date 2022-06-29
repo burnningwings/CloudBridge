@@ -244,6 +244,41 @@ public class DataManager {
         return response.getHttpResponse();
     }
 
+    @RequestMapping(value = "/upload-data/delete", method = RequestMethod.GET, produces = "application/json")
+    public JSONObject delete(String id,String originFileName,String sensor_number) {
+        HttpResponse response = new HttpResponse();
+        JSONObject data = new JSONObject();
+        if (id!=null && !id.equalsIgnoreCase("null")
+                && !id.equalsIgnoreCase("")) {
+
+            // 待删除文件完整路径
+            String md5 = DigestUtils.md5Hex(id);
+            String fileName = Constants.SENSOR_DATA_ROOT_DIR + "/" + id + "-" + originFileName;
+            // 1. 删除本地
+            File file = new File(fileName);
+            file.delete();
+            // 2. 删除mysql
+            Message.getInstance().delete(id);
+
+            LogBase logbase = new LogBase();
+            boolean logoption = logbase.sys_logoption(23);
+            if (logoption)
+            {
+                //section相关操作写进数据库
+                UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                String log_sql = LogBase.log_delete_sensor_data(userDetails.getUsername(), sensor_number, "FINISHED");
+                logger.info(log_sql);
+                baseDao.updateData(log_sql);
+
+            }
+        } else {
+            response.setStatus(HttpResponse.FAIL_STATUS);
+            response.setMsg("相关上传参数错误！");
+        }
+        response.setData(data);
+        return response.getHttpResponse();
+    }
+
     @RequestMapping(value = "/query-data/dropdown", method = RequestMethod.GET, produces = "application/json")
     public JSONObject dropdownList(String bridge_id) {
         long userOrganizationId = sysUserService.getUserOrganizationId();
@@ -260,8 +295,9 @@ public class DataManager {
                     JSONObject item = new JSONObject();
                     String firstId = bridge_id;
                     while(rs.next()){
-                        if(firstId.equalsIgnoreCase("all"))
+                        if(firstId.equalsIgnoreCase("all")) {
                             firstId = rs.getString("bridge_id");
+                        }
                         item.put(rs.getString("bridge_id"),rs.getString("bridge_name"));
                     }
                     data.put("bridge_id",firstId);

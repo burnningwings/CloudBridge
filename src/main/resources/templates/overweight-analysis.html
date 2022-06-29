@@ -25,7 +25,7 @@
     <link rel="stylesheet" href="ext/jQuery-Timepicker-Addon-1.6.3/css/jquery-ui-timepicker-addon.min.css">
     <!-- 文件上传插件 -->
     <link rel="stylesheet" type="text/css" href="ext/bootstrap-fileinput-4.4.8/css/fileinput.min.css">
-    <title>桥梁信息管理系统</title>
+    <title>桥梁长期健康监测及智能分析系统</title>
     <link rel="icon" type="image/x-icon" th:href="@{images/favicon.ico}"/>
     <!-- 避免日期选择框被覆盖，建议直接在css文件里改-->
     <style>
@@ -71,10 +71,12 @@
                 </div>
                 <div class="panel-body" style="padding:0 20px 20px 20px">
                     <div class="form-inline">
-                        <select class="selectpicker" id="train_file_selected" data-width="20%"></select>&nbsp;&nbsp;
-                        <select class="selectpicker" id="train_model_selected" data-width="20%"></select>&nbsp;&nbsp;
-                        <span hidden="hidden"><select class="selectpicker" id="train_bridge_selected" data-width="20%" ></select></span>
-                        <select class="selectpicker" id="train_label_selected" data-width="20%"></select>
+                        <select class="selectpicker" id="train_file_selected" data-width="15%"></select>&nbsp;&nbsp;
+                        <select class="selectpicker" id="train_model_selected" data-width="15%"></select>&nbsp;&nbsp;
+                        <span hidden="hidden"><select class="selectpicker" id="train_bridge_selected" data-width="15%" ></select></span>
+                        <select class="selectpicker" id="train_label_selected" data-width="15%"></select>
+                        <select class="selectpicker" id="train_single_model_type_selected" data-width="15%"></select>
+                        <select class="selectpicker" id="train_multi_model_type_selected" data-width="15%"></select>
                     </div>
 <!--                    <ul class="nav nav-tabs" id="train-tab">-->
 <!--                        <li class="active"><a href="#simulation_train" data-toggle="tab">模拟数据训练</a></li>-->
@@ -103,6 +105,14 @@
 <!--                    <select class="selectpicker" id="train_model_selected" data-width="20%"></select>&nbsp;&nbsp;-->
 <!--                    <span hidden="hidden"><select class="selectpicker" id="train_bridge_selected" data-width="20%" ></select></span>-->
 <!--                </div>-->
+                <div class="panel-body" style="padding:0 20px 20px 20px">
+                    <label style="font-weight:normal;font-size:16px;margin-left: 7px">epochs&nbsp;&nbsp;</label>
+                    <input type="text" id="epochs" value="50" style="height:33px">
+                    <label style="font-weight:normal;font-size:16px;margin-left: 7px">lr&nbsp;&nbsp;</label>
+                    <input type="text" id="lr" value="0.0005" style="height:33px">
+                    <label style="font-weight:normal;font-size:16px;margin-left: 7px">batch_size&nbsp;&nbsp;</label>
+                    <input type="text" id="batch_size" value="64" style="height:33px">
+                </div>
                 <div class="panel-body" style="padding:0 20px 20px 20px">
                     <label style="font-weight:normal;font-size:16px;margin-left: 7px">时段选择&nbsp;&nbsp;</label>
                     <input size="17" type="text" id="train_begin_time"  class="btn btn-default" value=""  >
@@ -135,9 +145,11 @@
                     <input id="evaluatefile_upload" name="evaluatefile_upload" type="file" class="file file-loading" data-preview-file-type="text"/>
                 </div>
                 <div class="panel-body" style="padding:0 20px 20px 20px">
-                    <select class="selectpicker" id="evaluate_file_selected" data-width="20%"></select>&nbsp;&nbsp;
-                    <select class="selectpicker" id="evaluate_model_selected" data-width="20%"></select>&nbsp;&nbsp;
-                    <span hidden="hidden"><select class="selectpicker" id="evaluate_bridge_selected" data-width="20%" hidden></select></span>&nbsp;&nbsp;
+                    <select class="selectpicker" id="evaluate_file_selected" data-width="15%"></select>&nbsp;&nbsp;
+                    <select class="selectpicker" id="evaluate_model_selected" data-width="15%"></select>&nbsp;&nbsp;
+                    <span hidden="hidden"><select class="selectpicker" id="evaluate_bridge_selected" data-width="15%" hidden></select></span>&nbsp;&nbsp;
+                    <select class="selectpicker" id="evaluate_single_model_type_selected" data-width="15%"></select>
+                    <select class="selectpicker" id="evaluate_multi_model_type_selected" data-width="15%"></select>
                 </div>
                 <div class="panel-body" style="padding:0 20px 20px 20px">
                     <label style="font-weight:normal;font-size:16px;margin-left: 7px">时段选择&nbsp;&nbsp;</label>
@@ -174,17 +186,21 @@
                     <div class="tab-content">
                         <div class="tab-pane fade in active" id="simulation_test" style="margin-top:20px">
                             <div class="form-inline">
-                                <select class="selectpicker" id="test_file_selected" data-width="20%"></select>&nbsp;&nbsp;
-                                <select class="selectpicker" id="test_model_selected" data-width="20%"></select>&nbsp;&nbsp;
-                                <span hidden="hidden"><select class="selectpicker" id="test_bridge_selected" data-width="20%" ></select></span>
+                                <select class="selectpicker" id="test_file_selected" data-width="15%"></select>&nbsp;&nbsp;
+                                <select class="selectpicker" id="test_model_selected" data-width="15%"></select>&nbsp;&nbsp;
+                                <span hidden="hidden"><select class="selectpicker" id="test_bridge_selected" data-width="15%" ></select></span>
+                                <select class="selectpicker" id="test_single_model_type_selected" data-width="15%"></select>
+                                <select class="selectpicker" id="test_multi_model_type_selected" data-width="15%"></select>
 <!--                                <select class="selectpicker" id="test_label_selected" data-width="20%"></select>-->
                             </div>
                         </div>
                         <div class="tab-pane fade" id="spy_test" style="margin-top:20px">
                             <div class="form-inline">
-                                <select class="selectpicker" id="spy_test_bridge_selected" data-width="20%"></select>&nbsp;&nbsp;
-                                <select class="selectpicker" id="spy_test_model_selected" data-width="20%"></select>
+                                <select class="selectpicker" id="spy_test_bridge_selected" data-width="15%"></select>&nbsp;&nbsp;
+                                <select class="selectpicker" id="spy_test_model_selected" data-width="15%"></select>
 <!--                                <select class="selectpicker" id="spy_test_label_selected" data-width="20%"></select>&nbsp;-->
+                                <select class="selectpicker" id="spy_test_single_model_type_selected" data-width="15%"></select>
+                                <select class="selectpicker" id="spy_test_multi_model_type_selected" data-width="15%"></select>
                             </div>
                         </div>
                     </div>

@@ -81,4 +81,16 @@ public class Message {
         }
         return ret;
     }
+
+    public int delete(String id){
+        String sqlFormat = "delete from message where id = '%s'";
+        int ret = 0;
+
+        try {
+            ret = baseDao.Execute(String.format(sqlFormat,id));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return ret;
+    }
 }

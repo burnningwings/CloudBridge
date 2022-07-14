@@ -7,6 +7,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import scut.util.Constants;
 import scut.util.sql.SQLBaseDao;
 import scut.util.sql.SQLDaoFactory;
@@ -20,8 +21,9 @@ import java.util.function.Consumer;
 /**
  * Created by Carrod on 2018/4/19.
  */
-
+@EnableScheduling
 @SpringBootApplication
+
 public class CloudBridge implements EnvironmentAware {
 
     public static Logger logger = Logger.getLogger(CloudBridge.class);

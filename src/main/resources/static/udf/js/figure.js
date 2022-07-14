@@ -544,6 +544,7 @@ function showPredictDDResultChart(figure_id, locationlist, levellist) {
     data = data.map(function (item) {
         return [item[1],item[0],item[2] || '-']
     });
+    console.log(data)
 
     option = {
         tooltip: {
@@ -577,15 +578,17 @@ function showPredictDDResultChart(figure_id, locationlist, levellist) {
         },
         series: [
             {
-                name: 'degree',
+                name: '损伤位置',
                 type: 'heatmap',
                 data: data,
                 label: {
-                    show: true
+                    normal: {
+                        show: true,
+                    }
                 },
                 emphasis: {
                     itemStyle: {
-                        shadowBlur: 1,
+                        shadowBlur: 10,
                         shadowColor: 'rgba(0, 0, 0, 0.5)'
                     }
                 }
@@ -635,7 +638,7 @@ function showPredictResultChart(figure_id, predict_list, index_list) {
                         var tdBody = '';
                         for(var i = 0; i < series.length;i++)
                         {
-                            table += '<tr><td style="padding: 0 10px">'+index[i]+'</td><td style="padding: 0 10px">'+series[i]+'</td></tr>';
+                            table += '<tr><td style="padding: 0 10px">'+series[i]+'</td></tr>';
                         }
                         table += '</tbody></table>';
                         return table;
@@ -2766,7 +2769,12 @@ function  showWaveletResultChart(figure_id, timeList, temperatureList, strainLis
 }
 
 function showReliabilityResultChart(figure_id, timeList, btcList, bttList, pfcList, pftList){
-    console.log(timeList);
+
+    var bmax = Math.max(Math.max.apply(Math,btcList),Math.max.apply(Math,bttList))
+    var bmin = Math.min(Math.min.apply(Math,btcList),Math.min.apply(Math,bttList))
+    var pmax = Math.max(Math.max.apply(Math,pfcList),Math.max.apply(Math,pftList))
+    var pmin = Math.min(Math.min.apply(Math,pfcList),Math.min.apply(Math,pftList))
+
     var option = {
         title : [
             {
@@ -2792,6 +2800,42 @@ function showReliabilityResultChart(figure_id, timeList, btcList, bttList, pfcLi
             // }
         ],
         tooltip: {},
+        legend: [
+            {
+                left: '10%',
+                data: [
+                    {
+                        name: '监测可靠度',
+                    }
+                ]
+            },
+            {
+                left: '20%',
+                data: [
+                    {
+                        name: '时变可靠度指标',
+                    }
+                ]
+            },
+            {
+                left: '10%',
+                top: '54%',
+                data: [
+                    {
+                        name: '监测失效概率',
+                    }
+                ]
+            },
+            {
+                left: '20%',
+                top: '54%',
+                data: [
+                    {
+                        name: '时变失效概率',
+                    }
+                ]
+            }
+        ],
         grid : [
             {
                 id : 0,
@@ -2949,13 +2993,17 @@ function showReliabilityResultChart(figure_id, timeList, btcList, bttList, pfcLi
         xAxis: [
             {
                 name : '时间段',
-                data : timeList,
+                data : timeList.map((str) => {
+                    return str.substring(0,4) + "-" + str.substring(4,6) + "-" + str.substring(6,8) + " " + str.substring(8,10) + ":" + str.substring(10,12) + ":" + str.substring(12)
+                }),
                 id : 0,
                 gridIndex : 0
             },
             {
                 name : '时间段',
-                data : timeList,
+                data : timeList.map((str) => {
+                    return str.substring(0,4) + "-" + str.substring(4,6) + "-" + str.substring(6,8) + " " + str.substring(8,10) + ":" + str.substring(10,12) + ":" + str.substring(12)
+                }),
                 id : 1,
                 gridIndex : 1
             },
@@ -2977,29 +3025,75 @@ function showReliabilityResultChart(figure_id, timeList, btcList, bttList, pfcLi
                 name : '监测可靠度',
                 id : 0,
                 gridIndex : 0,
+                min : bmin - (bmax - bmin),
+                max : bmax + (bmax - bmin),
                // min : 0,
                // max : 1
+                axisLabel: {
+                    formatter: function (value) {
+                        var res = value.toString();
+                        return res.substring(0,4)
+                    }
+                }
             },
             {
                 name : "时变可靠度指标",
                 id : 1,
                 gridIndex : 0,
+                min : bmin - (bmax - bmin),
+                max : bmax + (bmax - bmin),
                // min : 0,
                // max : 1
+                axisLabel: {
+                    formatter: function (value) {
+                        var res = value.toString();
+                        return res.substring(0,4)
+                    }
+                }
             },
             {
                 name : '监测失效概率',
                 id : 2,
                 gridIndex : 1,
+                min : 0,
+                max : pmax * 1.1,
                 //min : 0,
                 //max : 1
+                axisLabel: {
+                    formatter: function (value) {
+                        var res = value.toString();
+                        var num = ""
+                        for(var i = 0;i<res.length;i++){
+                            if(res[i] == 'e'){
+                                return num + res.substring(i)
+                            }else if(num.length < 5){
+                                num += res[i]
+                            }
+                        }
+                    }
+                }
             },
             {
                 name : '时变失效概率',
                 id : 3,
                 gridIndex : 1,
+                min : 0,
+                max : pmax * 1.1,
               //  min : 0,
               //  max : 1
+                axisLabel: {
+                    formatter: function (value) {
+                        var res = value.toString();
+                        var num = ""
+                        for(var i = 0;i<res.length;i++){
+                            if(res[i] == 'e'){
+                                return num + res.substring(i)
+                            }else if(num.length < 5){
+                                num += res[i]
+                            }
+                        }
+                    }
+                }
             }
         ],
         series : [

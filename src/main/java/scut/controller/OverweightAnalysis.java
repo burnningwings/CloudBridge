@@ -498,8 +498,10 @@ public class OverweightAnalysis {
             br = new BufferedReader(new FileReader(targetPath));
             String line = "";
             int index = 1;
+            int example_count = 0;
             while ((line = br.readLine()) != null){
                 String[] item = line.split(",");
+                example_count += 1;
                 if ("testfile".equals(type)){
                     if(!item[16].matches("\\d+")){
                         continue;
@@ -520,6 +522,7 @@ public class OverweightAnalysis {
                     index ++;
                 }
             }
+            data.put("example_count",example_count);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {

@@ -100,11 +100,13 @@ public class ReliabilityAnalysis {
     }
 
     @RequestMapping(value = "/reliability-analysis/updtate_bridgedroplist")
-    public JSONObject updateBridgeDownList(String bridge_id){
+    public JSONObject
+
+     updateBridgeDownList(String bridge_id){
         long userOrganizationId = sysUserService.getUserOrganizationId();
         HttpResponse response = new HttpResponse();
         JSONObject data = new JSONObject();
-        String sql = String.format("select b.bridge_id,b.bridge_name from bridge_info b " +
+        String sql = String.format("select b.bridge_id,b.bridge_name,b.organization from bridge_info b " +
                 "where b.bridge_id in (" +
                 "select bo.bridge_id from bridge_organization bo " +
                 "where bo.organization_id = %d)", userOrganizationId);
@@ -113,13 +115,16 @@ public class ReliabilityAnalysis {
                 @Override
                 public String handle(ResultSet rs) throws SQLException {
                     JSONObject item = new JSONObject();
+                    JSONObject organ = new JSONObject();
                     String firstId = bridge_id;
                     while(rs.next()){
                         if(firstId.equalsIgnoreCase("all")) firstId = rs.getString("bridge_id");
                         item.put(rs.getString("bridge_id"), rs.getString("bridge_name"));
+                        organ.put(rs.getString("bridge_id"),rs.getString("organization"));
                     }
                     data.put("bridge_id", firstId);
                     data.put("bridge", item);
+                    data.put("organization",organ);
                     return null;
                 }
             });
@@ -127,8 +132,15 @@ public class ReliabilityAnalysis {
             e.printStackTrace();
         }
         if(data.size() > 0 && !data.get("bridge_id").equals("")){
-            sql = "select a.section_id, a.name as section_name , b.point_id, b.name as point_name " +
+//            sql = "select a.section_id, a.name as section_name , b.point_id, b.name as point_name " +
+//                    "from section as a left join watch_point as b on a.section_id=b.section_id " +
+//                    "where a.bridge_id='%s'" +
+//                    "and a.bridge_id in (" +
+//                    "select bo.bridge_id from bridge_organization bo " +
+//                    "where bo.organization_id = " + userOrganizationId + ")";
+            sql = "select a.section_id, a.name as section_name , c.sensor_id, c.name as sensor_name " +
                     "from section as a left join watch_point as b on a.section_id=b.section_id " +
+                     "left join sensor_info as c on b.point_id=c.point_id " +
                     "where a.bridge_id='%s'" +
                     "and a.bridge_id in (" +
                     "select bo.bridge_id from bridge_organization bo " +
@@ -143,16 +155,50 @@ public class ReliabilityAnalysis {
                                 while(rs.next()){
                                     String sectionId = rs.getString("section_id");
                                     JSONObject sectionItem = (JSONObject) bridgeItem.getOrDefault(sectionId, new JSONObject());
-                                    JSONObject pointItem = (JSONObject) sectionItem.getOrDefault("watchpoint", new JSONObject());
+                                    JSONObject sensorItem = (JSONObject) sectionItem.getOrDefault("sensor", new JSONObject());
                                     sectionItem.put("name", rs.getString("section_name"));
-                                    String pointId = rs.getString("point_id");
-                                    if(pointId  != null){
-                                        pointItem.put(pointId, rs.getString("point_name"));
+                                    String sensorId = rs.getString("sensor_id");
+                                    if(sensorId  != null){
+                                        sensorItem.put(sensorId, rs.getString("sensor_name"));
                                     }
-                                    sectionItem.put("watchpoint", pointItem);
+                                    sectionItem.put("sensor", sensorItem);
                                     bridgeItem.put(sectionId, sectionItem);
                                 }
                                 data.put("bridge_detail", bridgeItem);
+                                return null;
+                            }
+                        });
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            // 添加从box到sensor的路径
+            sql = "select a.box_id, a.name as box_name , b.sensor_id, b.name as sensor_name " +
+                    "from watch_box as a left join sensor_info as b on a.box_id=b.box_id " +
+                    "where a.bridge_id='%s'" +
+                    "and a.bridge_id in (" +
+                    "select bo.bridge_id from bridge_organization bo " +
+                    "where bo.organization_id = " + userOrganizationId + ")";
+
+            try {
+                baseDao.querySingleObject(String.format(sql, data.get("bridge_id")),
+                        new ResultSetHandler<String>() {
+                            @Override
+                            public String handle(ResultSet rs) throws SQLException {
+                                JSONObject bridgeItem = new JSONObject();
+                                while(rs.next()){
+                                    String boxId = rs.getString("box_id");
+                                    JSONObject boxItem = (JSONObject) bridgeItem.getOrDefault(boxId, new JSONObject());
+                                    JSONObject sensorItem = (JSONObject) boxItem.getOrDefault("sensor", new JSONObject());
+                                    boxItem.put("name", rs.getString("box_name"));
+                                    String sensorId = rs.getString("sensor_id");
+                                    if(sensorId  != null){
+                                        sensorItem.put(sensorId, rs.getString("sensor_name"));
+                                    }
+                                    boxItem.put("sensor", sensorItem);
+                                    bridgeItem.put(boxId, boxItem);
+                                }
+                                data.put("box_sensor", bridgeItem);
                                 return null;
                             }
                         });

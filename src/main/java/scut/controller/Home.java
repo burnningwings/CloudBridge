@@ -256,4 +256,13 @@ public class Home {
 
         return "image";
     }
+
+    @GetMapping("/static/images/{objectId}")
+    public String getImages(Model model,
+                            @PathVariable("objectId") long objectId) {
+        model.addAttribute("objectId", objectId);
+        setUser(model);
+
+        return "../static/images/" + objectId + ".png";
+    }
 }

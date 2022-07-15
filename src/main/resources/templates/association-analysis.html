@@ -41,38 +41,150 @@
     <div class="container-fluid">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">
-                    关联分析
+                <h3 class="panel-title" style="float:left">
+                    关联性分析
                 </h3>
             </div>
-            <div class="panel-body" style="padding:0 20px 20px 20px">
-                <h4 class="control-label " style="display:inline-block">从本地上传分析数据（csv格式，小于50MB）：</h4>
-                    <button id="association_file_dataformat" title="数据格式" data-html="true" data-toggle="popover" data-container="body" type="button" class="btn btn-default"><i class="fa fa-fw fa-eye"></i></button>
-                <input id="association_file_upload" name="association_file_upload" type="file" class="file file-loading" data-preview-file-type="text"/>
-            </div>
-            <div class="panel-body" style="padding: 0 20px 20px 20px">
-                <select class="selectpicker" id="association_file_selected" data-width="20%"></select> &nbsp;&nbsp;
-<!--                <select class="selectpicker" id="association_bridge" data-width="20%"></select>&nbsp;&nbsp;-->
-<!--                <select class="selectpicker" id="association_section" data-width="20%"></select>&nbsp;&nbsp;-->
-<!--                <select class="selectpicker" id="association_watchpoint" data-width="20%"></select>&nbsp;&nbsp;-->
-            </div>
-            <div class="panel-body" style="padding:0 20px 20px 20px">
-                <label style="font-weight:normal;font-size:16px;margin-left: 7px">时段选择&nbsp;&nbsp;</label>
-                <input size="17" type="text" id="association_begin_time"  class="btn btn-default" value="" >
-                <span style="line-height: 30px;">&nbsp;&nbsp;<label class="form-label">至</label>&nbsp;&nbsp;</span>
-                <input size="17" type="text" id="association_end_time" class="btn btn-default" value="" >
-            </div>
-            <div class="panel-body" style="padding: 0 20px 20px 20px">
-                <!--<div class="row">-->
-                <button id="association_analysis_start" type="button" data-switch-color="success" class="btn btn-l btn-success" style="width:120px;height:40px;font-size:18px">小波分析</button>
-                <span id="association_analysis_computing" style="display: none">
-                    <label style="font-weight:normal;font-size:16px;margin-left: 50px;">计算中&nbsp;&nbsp;</label>
-                    <progress id="association_analysis_process" value="0" max="100"></progress>
-                </span>
-                <button id="result_association_analysis" type="button" data-switch-color="yellow" class="btn btn-l btn-yellow" style="width:150px;height:40px;font-size:18px; margin-left:350px">分析结果展示</button>
-                <div align="center" id="association_show_result_figure" height="3000" data-width="60%" style="position:relative;margin-top:20px; height:3000px;">
+            <div class="row" style="padding-left: 20px;padding-top: 10px;padding-right: 10px">
+                <div class="panel panel-default col-md-6" style="width: 35%;border: none" >
+                    <div class="panel-body" >
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h2 class="panel-title">
+                                    桥梁选择
+                                </h2>
+                            </div>
+                            <div class="panel-body">
+                                <div id="image">
+                                    <p style="text-align: center;height: 200px;width: 100%">
+                                        <img id="bridge_image" src="" style="height: auto;width: auto;max-height: 100%;max-width: 100%">
+                                    </p>
+                                </div>
+                                <div style="display: flex;justify-content: center;align-items: center">
+                                    <div style="text-align: center">
+                                        <select class="selectpicker" id="association_organization_selected" ></select>&nbsp;&nbsp;&nbsp;
+                                        <select class="selectpicker" id="association_bridge"></select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h2 class="panel-title">
+                                    数据在线分析
+                                </h2>
+                            </div>
+                            <div class="panel-body">
+                                <div>
+                                    <label style="font-weight:normal;font-size:16px;margin-left: 7px">桥梁截面&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                                    <select class="selectpicker" id="association_section" data-width="70%" style="float: right"></select>
+                                </div>
+                                <div style="padding-top: 10px">
+                                    <label style="font-weight:normal;font-size:16px;margin-left: 7px">模块编号&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                                    <select class="selectpicker" id="association_box_selected" data-width="70%" style="float: right"></select>
+                                </div>
+                                <div style="padding-top: 10px">
+                                    <label style="font-weight:normal;font-size:16px;margin-left: 7px">传感器编号&nbsp;&nbsp;</label>
+                                    <select class="selectpicker" id="association_sensor_selected" data-width="70%" style="float: right"></select>
+                                </div>
+                                <div style="padding-top: 10px">
+                                    <label style="font-weight:normal;font-size:16px;margin-left: 7px">开始时间&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                                    <input size="17" type="text" id="spy_association_begin_time"  class="btn btn-default" value=""  >
+                                </div>
+                                <div style="padding-top: 10px">
+                                    <label style="font-weight:normal;font-size:16px;margin-left: 7px">结束时间&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                                    <input size="17" type="text" id="spy_association_end_time" class="btn btn-default" value="" >
+                                </div>
+                                <div style="padding-top: 10px;">
+                                    <button id="spy_association_analysis_start" type="button" data-switch-color="success" class="btn btn-l btn-success" style="width:80%;height:40px;font-size:18px">关联性分析</button>
+                                    <span id="spy_association_analysis_computing" style="display: none">
+                                    <label style="font-weight:normal;font-size:16px;margin-left: 50px;">计算中&nbsp;&nbsp;</label>
+                                    <progress id="spy_association_analysis_process" value="0" max="100"></progress>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h2 class="panel-title">
+                                    上传本地数据分析
+                                </h2>
+                            </div>
+                            <div class="panel-body">
+                                <div>
+                                    <label style="font-weight:normal;font-size:16px;margin-left: 7px">上传数据&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                                    <div style="width: 70%;display: inline-block;vertical-align: middle">
+                                        <input id="association_file_upload" name="association_file_upload" type="file" class="file file-loading"data-preview-file-type="text"/>
+                                    </div>
+<!--                                    <input id="association_file_upload" name="association_file_upload" type="file" class="file file-loading" style="width: 50%" data-preview-file-type="text"/>-->
+                                </div>
+                                <div style="padding-top: 10px">
+                                    <label style="font-weight:normal;font-size:16px;margin-left: 7px">数据模板&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                                    <button id="association_file_dataformat" type="button" data-switch-color="success" class="btn btn-l btn-success" style="width:70%;height:20px;font-size:8px;line-height: 6px">下载数据模板</button>
+                                </div>
+                                <div style="padding-top: 10px">
+                                    <label style="font-weight:normal;font-size:16px;margin-left: 7px">选择文件&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                                    <select class="selectpicker" id="association_file_selected" data-width="70%" style="float: right"></select>
+                                </div>
+                                <div style="padding-top: 10px">
+                                    <label style="font-weight:normal;font-size:16px;margin-left: 7px">开始时间&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                                    <input size="17" type="text" id="association_begin_time"  class="btn btn-default" value=""  >
+                                </div>
+                                <div style="padding-top: 10px">
+                                    <label style="font-weight:normal;font-size:16px;margin-left: 7px">结束时间&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                                    <input size="17" type="text" id="association_end_time" class="btn btn-default" value="" >
+                                </div>
+                                <div style="padding-top: 10px;">
+                                    <button id="association_analysis_start" type="button" data-switch-color="success" class="btn btn-l btn-success" style="width:80%;height:40px;font-size:18px">关联性分析</button>
+                                    <span id="association_analysis_computing" style="display: none">
+                                    <label style="font-weight:normal;font-size:16px;margin-left: 50px;">计算中&nbsp;&nbsp;</label>
+                                    <progress id="association_analysis_process" value="0" max="100"></progress>
+                                    </span>
+                                    <button id="result_association_analysis" type="button" data-switch-color="yellow" class="btn btn-l btn-yellow" style="width:150px;height:40px;font-size:18px; margin-left:350px;display: none">分析结果展示</button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default col-md-6" style="width: 60%;padding-left: 20px; border: none">
+                    <div class="panel-body">
+                        <div class="panel-body">
+                            <div align="center" id="association_show_result_figure" height="1000" data-width="60%" style="position:relative;margin-top:20px; height:1000px;">
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
             </div>
+<!--            <div class="panel-body" style="padding:0 20px 20px 20px">-->
+<!--                <h4 class="control-label " style="display:inline-block">从本地上传分析数据（csv格式，小于50MB）：</h4>-->
+<!--                    <button id="association_file_dataformat" title="数据格式" data-html="true" data-toggle="popover" data-container="body" type="button" class="btn btn-default"><i class="fa fa-fw fa-eye"></i></button>-->
+<!--                <input id="association_file_upload" name="association_file_upload" type="file" class="file file-loading" data-preview-file-type="text"/>-->
+<!--            </div>-->
+<!--            <div class="panel-body" style="padding: 0 20px 20px 20px">-->
+<!--                <select class="selectpicker" id="association_file_selected" data-width="20%"></select> &nbsp;&nbsp;-->
+<!--&lt;!&ndash;                <select class="selectpicker" id="association_bridge" data-width="20%"></select>&nbsp;&nbsp;&ndash;&gt;-->
+<!--&lt;!&ndash;                <select class="selectpicker" id="association_section" data-width="20%"></select>&nbsp;&nbsp;&ndash;&gt;-->
+<!--&lt;!&ndash;                <select class="selectpicker" id="association_watchpoint" data-width="20%"></select>&nbsp;&nbsp;&ndash;&gt;-->
+<!--            </div>-->
+<!--            <div class="panel-body" style="padding:0 20px 20px 20px">-->
+<!--                <label style="font-weight:normal;font-size:16px;margin-left: 7px">时段选择&nbsp;&nbsp;</label>-->
+<!--                <input size="17" type="text" id="association_begin_time"  class="btn btn-default" value="" >-->
+<!--                <span style="line-height: 30px;">&nbsp;&nbsp;<label class="form-label">至</label>&nbsp;&nbsp;</span>-->
+<!--                <input size="17" type="text" id="association_end_time" class="btn btn-default" value="" >-->
+<!--            </div>-->
+<!--            <div class="panel-body" style="padding: 0 20px 20px 20px">-->
+<!--                &lt;!&ndash;<div class="row">&ndash;&gt;-->
+<!--                <button id="association_analysis_start" type="button" data-switch-color="success" class="btn btn-l btn-success" style="width:120px;height:40px;font-size:18px">小波分析</button>-->
+<!--                <span id="association_analysis_computing" style="display: none">-->
+<!--                    <label style="font-weight:normal;font-size:16px;margin-left: 50px;">计算中&nbsp;&nbsp;</label>-->
+<!--                    <progress id="association_analysis_process" value="0" max="100"></progress>-->
+<!--                </span>-->
+<!--                <button id="result_association_analysis" type="button" data-switch-color="yellow" class="btn btn-l btn-yellow" style="width:150px;height:40px;font-size:18px; margin-left:350px">分析结果展示</button>-->
+<!--                <div align="center" id="association_show_result_figure" height="3000" data-width="60%" style="position:relative;margin-top:20px; height:3000px;">-->
+<!--                </div>-->
+<!--            </div>-->
         </div>
         <div th:include="base/footer"></div>
     </div>

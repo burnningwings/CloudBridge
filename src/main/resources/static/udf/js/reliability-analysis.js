@@ -64,9 +64,58 @@ function updateDropdownMenu(response) {
     return data;
 }
 
+function updateDropdownMenu1(response) {
+    var data = null;
+    // var bridge_options = "";
+    // var organ_options = "<option value='-1'>请选择地区</option>"
+    // var bridge_options = "<option value='-1'>请选择桥梁</option>";
+    var section_options = "<option value='-1'>请选择截面</option>";
+    var point_options = "<option value='-1'>请选择测点</option>";
+    var box_options = "<option value='-1'>请选择控制箱</option>"
+    var sensor_options = "<option value='-1'>请选择传感器</option>"
+    if(response != null && response.status==0){
+        data = response.data;
+        console.log(data);
+        // bridge_options = bridge_options + "<option value='" + data["bridge_id"] + "'>" + data["bridge"][data["bridge_id"]] + "</option>>";
+        // for(var key in data["bridge"]){
+        //     if(key==data["bridge_id"]) continue;
+        //     bridge_options = bridge_options + "<option value='" + key + "'>" + data["bridge"][key] + "</option>>";
+        // }
+        for(var key in data["bridge_detail"]){
+            section_options = section_options + "<option value='" + key + "'>" + data["bridge_detail"][key]["name"] + "</option>";
+        }
+        for(var key in data["box_sensor"]){
+            box_options = box_options + "<option value='" + key + "'>" + data["box_sensor"][key]["name"] + "</option>"
+        }
+    }
+    // $("#reliability_bridge").empty();
+    $("#reliability_section").empty();
+    $("#reliability_watchpoint").empty();
+    $("#reliability_box_selected").empty();
+    // $("#reliability_organization_selected").empty();
+    $("#reliability_sensor_selected").empty();
+
+    // $("#reliability_bridge").append(bridge_options);
+    $("#reliability_section").append(section_options);
+    $("#reliability_box_selected").append(box_options);
+    // $("#reliability_organization_selected").append(organ_options);
+    $("#reliability_sensor_selected").append(sensor_options)
+    // var section_selected = $("#reliability_section").val();
+    // if(section_selected && !(section_selected.match(/^\s*$/))){
+    //     var sensor_info = data["bridge_detail"][section_selected]["sensor"];
+    //     for(var key in sensor_info){
+    //         sensor_options = sensor_options + "<option value='" + key + "'>" + sensor_info[key] + "</option>>";
+    //     }
+    // }
+    $("#reliability_watchpoint").append(point_options);
+    $('.selectpicker').selectpicker('refresh');
+    return data;
+}
+
 function getAndshowReliabilityAnalysisResult(figure_id, current_dialog, params){
     function successCallback(message) {
         console.log(message);
+        console.log("开始绘图")
         current_dialog.button('reset').dequeue();
         var status = message["status"];
         if(status != 0){
@@ -104,6 +153,8 @@ $(function () {
 
     updateDropdownListReliabilityFile();
 
+    $("#image").hide()
+
     var url ="/reliability-analysis/updtate_bridgedroplist";
     var response = webRequest(url, "GET", false, {"bridge_id" : "all"})
     var data1 = updateDropdownMenu(response);
@@ -112,7 +163,9 @@ $(function () {
         var id = $(this).children('option:selected').val();
         var url = "/reliability-analysis/updtate_bridgedroplist";
         var response = webRequest(url, "GET", false, {"bridge_id" : id})
-        data1 = updateDropdownMenu(response);
+        $("#bridge_image").attr("src","/bridge/image/" + id + "/1.png");
+        $("#image").show()
+        data1 = updateDropdownMenu1(response);
 
     })
 
@@ -342,6 +395,7 @@ $(function () {
                     //showTransientDialog('训练完成!')
                     //showModalDialog("提示", "训练完成")
                     //showAlertDialog('训练完成')
+                    $("#result_reliability_analysis").trigger("click")
                     showDialog("分析完成")
                 } else if(result == 'no param'){
                     showTransientDialog('找不到该桥和测点的预置参数！');
@@ -428,4 +482,4 @@ $(function () {
         })
 
     });
-})
+});

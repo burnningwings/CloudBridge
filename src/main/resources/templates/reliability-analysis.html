@@ -53,14 +53,18 @@
                                     桥梁选择
                                 </h2>
                             </div>
-                            <div class="panel-body">
-                                <div >
+                            <div class="panel-body" >
+                                <div id="image">
                                     <p style="text-align: center;height: 200px;width: 100%">
-                                        <img src="/bridge/image/25/1.png" style="height: auto;width: auto;max-height: 100%;max-width: 100%">
+                                        <img id="bridge_image" src="" style="height: auto;width: auto;max-height: 100%;max-width: 100%">
                                     </p>
                                 </div>
-                                <select class="selectpicker" id="reliability_organization_selected" ></select>&nbsp;&nbsp;&nbsp;
-                                <select class="selectpicker" id="reliability_bridge"></select>
+                                <div style="display: flex;justify-content: center;align-items: center">
+                                    <div style="text-align: center">
+                                        <select class="selectpicker" id="reliability_organization_selected" ></select>&nbsp;&nbsp;&nbsp;
+                                        <select class="selectpicker" id="reliability_bridge" ></select>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="panel panel-default">
@@ -72,7 +76,7 @@
                             <div class="panel-body">
                                 <div>
                                     <label style="font-weight:normal;font-size:16px;margin-left: 7px">桥梁截面&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
-                                    <select class="selectpicker" id="reliability_section" ></select>
+                                    <select class="selectpicker" id="reliability_section" data-width="70%" style="float: right"></select>
                                 </div>
                                 <div style="padding-top: 10px">
                                     <label style="font-weight:normal;font-size:16px;margin-left: 7px">模块编号&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
@@ -84,13 +88,19 @@
                                 </div>
                                 <div style="padding-top: 10px">
                                     <label style="font-weight:normal;font-size:16px;margin-left: 7px">开始时间&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
-                                    <input size="17" type="text" id="reliability_begin_time"  class="btn btn-default" value=""  >
+                                    <input size="17" type="text" id="spy_reliability_begin_time"  class="btn btn-default" value="" >
                                 </div>
                                 <div style="padding-top: 10px">
                                     <label style="font-weight:normal;font-size:16px;margin-left: 7px">结束时间&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
-                                    <input size="17" type="text" id="reliability_end_time" class="btn btn-default" value="" >
+                                    <input size="17" type="text" id="spy_reliability_end_time" class="btn btn-default" value="" >
                                 </div>
-
+                                <div style="padding-top: 10px;">
+                                    <button id="spy_reliability_analysis_start" type="button" data-switch-color="success" class="btn btn-l btn-success" style="width:80%;height:40px;font-size:18px">可靠度分析</button>
+                                    <span id="spy_reliability_analysis_computing" style="display: none">
+                                    <label style="font-weight:normal;font-size:16px;margin-left: 50px;">计算中&nbsp;&nbsp;</label>
+                                    <progress id="spy_reliability_analysis_process" value="0" max="100"></progress>
+                                    </span>
+                                </div>
                             </div>
                         </div>
                         <div class="panel panel-default">
@@ -100,21 +110,38 @@
                                 </h2>
                             </div>
                             <div class="panel-body">
-                                <div>
-<!--                                    <label style="font-weight:normal;font-size:16px;margin-left: 7px">上传数据&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>-->
-                                    <input id="reliability_file_upload" name="reliability_file_upload" type="file" class="file file-loading" style="width: 50%" data-preview-file-type="text"/>
+                                <div >
+                                    <label style="font-weight:normal;font-size:16px;margin-left: 7px">上传数据&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                                    <div style="width: 70%;display: inline-block;vertical-align: middle">
+                                        <input id="reliability_file_upload" name="reliability_file_upload" type="file" class="file file-loading" data-preview-file-type="text"/>
+                                    </div>
+
                                 </div>
-                                <div style="padding-top: 10px">
+                                <div style="padding-top: 20px">
                                     <label style="font-weight:normal;font-size:16px;margin-left: 7px">数据模板&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
                                     <button id="rreliability_analysis_start" type="button" data-switch-color="success" class="btn btn-l btn-success" style="width:70%;height:20px;font-size:8px;line-height: 6px">下载数据模板</button>
+                                </div>
+                                <div style="padding-top: 10px">
+                                    <label style="font-weight:normal;font-size:16px;margin-left: 7px">选择文件&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                                    <select class="selectpicker" id="reliability_file_selected" data-width="70%" style="float: right"></select>
+                                </div>
+                                <div style="padding-top: 10px">
+                                    <label style="font-weight:normal;font-size:16px;margin-left: 7px">开始时间&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                                    <input size="17" type="text" id="reliability_begin_time"  class="btn btn-default" value=""  >
+                                </div>
+                                <div style="padding-top: 10px">
+                                    <label style="font-weight:normal;font-size:16px;margin-left: 7px">结束时间&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                                    <input size="17" type="text" id="reliability_end_time" class="btn btn-default" value="" >
                                 </div>
                                 <div style="padding-top: 10px;">
                                     <button id="reliability_analysis_start" type="button" data-switch-color="success" class="btn btn-l btn-success" style="width:80%;height:40px;font-size:18px">可靠度分析</button>
                                     <span id="reliability_analysis_computing" style="display: none">
                                     <label style="font-weight:normal;font-size:16px;margin-left: 50px;">计算中&nbsp;&nbsp;</label>
                                     <progress id="reliability_analysis_process" value="0" max="100"></progress>
-                </span>
+                                    </span>
+                                    <button id="result_reliability_analysis" type="button" data-switch-color="yellow" class="btn btn-l btn-yellow" style="width:150px;height:40px;font-size:18px; margin-left:350px;display: none">分析结果展示</button>
                                 </div>
+
                             </div>
                         </div>
                     </div>

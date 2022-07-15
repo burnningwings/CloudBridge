@@ -2180,6 +2180,151 @@ function showAnalysisResultChart_fourlayer(figure_id, timeList, strain, sa4, sd1
 }
 
 function showAnalysisResultChart_threelayer(figure_id, timeList, sa4, sd3, sd4, ta4, td3, td4){
+    var d = new Array();
+    for(var i =0;i<sd4.length;i++){
+        d[i] = new Array();
+        d[i][0] = td4[i];
+        d[i][1] = sd4[i]
+    }
+    console.log(d);
+    var option1 = {
+        title : [
+            {
+                top: '1%',
+                left : 'center',
+                text : '日温-应变',
+                textStyle: {
+                    fontFamily: 'SimSun'
+                },
+            },
+        ],
+        color: ['red','blue','green'],
+        xAxis: [
+            {
+                name : '日期',
+                data : timeList,
+                id : 0,
+                gridIndex : 0,
+                nameLocation : 'middle',
+                nameTextStyle: 'SimSun',
+                nameGap : 23,
+                axisLabel: {
+                  fontFamily: 'Times New Roman'
+                },
+            },
+            {
+                name: '温度',
+                id: 1,
+                gridIndex: 1,
+                nameLocation: 'end',
+                nameTextStyle: 'SimSun',
+                nameGap: 23,
+                axisLabel: {
+                    fontFamily: 'Times New Roman',
+                },
+                max: 40,
+                min: -40,
+
+            },
+        ],
+        yAxis: [
+            {
+                name : '应变',
+                id : 0,
+                min : 'dataMin',
+                max : 'dataMax',
+                gridIndex : 0,
+                nameTextStyle: 'SimSun',
+                axisLabel: {
+                    fontFamily: 'Times New Roman'
+                },
+            },{
+                name : '温度/℃',
+                id : 1,
+                min : 'dataMin',
+                max : 'dataMax',
+                gridIndex : 0,
+                nameTextStyle: 'SimSun',
+                axisLabel: {
+                    fontFamily: 'Times New Roman'
+                },
+            },{
+                name: '应变',
+                id: 2,
+                gridIndex: 1,
+                nameTextStyle: 'SimSun',
+                axisLabel: {
+                    fontFamily: 'Times New Roman',
+                }
+            }
+        ],
+        grid : [
+            {
+                id : 0,
+                top : '5%',
+                height : '40%'
+            },{
+                id: 1,
+                top: '55%',
+                height: '40%'
+            }
+        ],
+        legend : [
+            {
+                data : ['应变','温度'],
+                x : 'left',
+                top : 'top'
+            },
+        ],
+        dataZoom : [
+            {
+                type : 'inside',
+                xAxisIndex : 0,
+                filterMode : 'empty'
+            },
+            {
+                type : 'slider',
+                show : false,
+                xAxisIndex : 0,
+                filterMode : 'empty'
+            },
+            {
+                type : 'slider',
+                yAxisIndex : [0,1],
+                width : 12,
+                left : '95%',
+                filterMode : 'empty',
+                show: false
+            },
+            {
+                type : 'inside',
+                xAxisIndex : 1,
+                filterMode : 'empty'
+            }
+        ],
+        series : [
+            {
+                name : '应变',
+                type : 'line',
+                data : sd4,
+                xAxisIndex : 0,
+                yAxisIndex : 0
+            },
+            {
+                name : '温度',
+                type : 'line',
+                data : td4,
+                xAxisIndex : 0,
+                yAxisIndex : 1
+            },{
+                symbolSize: 10,
+                data: d,
+                type: 'scatter',
+                xAxisIndex: 1,
+                yAxisIndex: 2,
+            }
+        ]
+    }
     var option = {
         title : [
             // {
@@ -2202,15 +2347,15 @@ function showAnalysisResultChart_threelayer(figure_id, timeList, sa4, sd3, sd4, 
             //     left : 'center',
             //     text : '小波d2层温度/小波d2层应变'
             // },
+            // {
+            //     top: '1%',
+            //     left : 'center',
+            //     text : '小波d3层温度/小波d3层应变(T=12h)'
+            // },
             {
                 top: '1%',
                 left : 'center',
-                text : '小波d3层温度/小波d3层应变(T=12h)'
-            },
-            {
-                top: '16%',
-                left : 'center',
-                text : '小波d4层温度/小波d4层应变(T=24h)'
+                text : '日温-应变'
             }
         ],
         tooltip: {},
@@ -2235,17 +2380,20 @@ function showAnalysisResultChart_threelayer(figure_id, timeList, sa4, sd3, sd4, 
             //     top : '47%',
             //     height : '12%'
             // },
-            {
-                id : 4,
-                top : '1%',
-                height : '12%'
-            },
+            // {
+            //     id : 4,
+            //     top : '1%',
+            //     height : '12%'
+            // },
             {
                 id : 5,
-                top : '17%',
-                height : '12%'
+                top : '1%',
+                height : '40%'
             }
         ],
+        textStyle: {
+            fontFamily: "SimSun",
+        },
         legend : [
             {
                 data : ['应变','温度'],
@@ -2258,26 +2406,26 @@ function showAnalysisResultChart_threelayer(figure_id, timeList, sa4, sd3, sd4, 
             // }
         ],
         dataZoom : [
-            {
-                type : 'inside',
-                xAxisIndex : 0,
-                filterMode : 'empty',
-                // yAxisIndex : null
-            },
-            {
-                type : 'slider',
-                show : false,
-                xAxisIndex : 0,
-                filterMode : 'empty',
-                // yAxisIndex : null
-            },
-            {
-                type : 'slider',
-                yAxisIndex : [0,1],
-                width : 12,
-                left : '95%',
-                filterMode : 'empty'
-            },
+            // {
+            //     type : 'inside',
+            //     xAxisIndex : 0,
+            //     filterMode : 'empty',
+            //     // yAxisIndex : null
+            // },
+            // {
+            //     type : 'slider',
+            //     show : false,
+            //     xAxisIndex : 0,
+            //     filterMode : 'empty',
+            //     // yAxisIndex : null
+            // },
+            // {
+            //     type : 'slider',
+            //     yAxisIndex : [0,1],
+            //     width : 12,
+            //     left : '95%',
+            //     filterMode : 'empty'
+            // },
             {
                 type : 'inside',
                 xAxisIndex : 1,
@@ -2378,14 +2526,14 @@ function showAnalysisResultChart_threelayer(figure_id, timeList, sa4, sd3, sd4, 
             // },
         ],
         xAxis: [
-            {
-                name : '时间',
-                data : timeList,
-                id : 0,
-                gridIndex : 0,
-                nameLocation : 'middle',
-                nameGap : 23
-            },
+            // {
+            //     name : '时间',
+            //     data : timeList,
+            //     id : 0,
+            //     gridIndex : 0,
+            //     nameLocation : 'middle',
+            //     nameGap : 23
+            // },
             {
                 name : '时间',
                 data : timeList,
@@ -2429,19 +2577,20 @@ function showAnalysisResultChart_threelayer(figure_id, timeList, sa4, sd3, sd4, 
 
         ],
         yAxis: [
+            // {
+            //     name : '应变',
+            //     id : 0,
+            //     min : 'dataMin',
+            //     max : 'dataMax',
+            //     gridIndex : 0
+            // },{
+            //     name : '温度/℃',
+            //     id : 1,
+            //     min : 'dataMin',
+            //     max : 'dataMax',
+            //     gridIndex : 0
+            // },
             {
-                name : '应变',
-                id : 0,
-                min : 'dataMin',
-                max : 'dataMax',
-                gridIndex : 0
-            },{
-                name : '温度/℃',
-                id : 1,
-                min : 'dataMin',
-                max : 'dataMax',
-                gridIndex : 0
-            },{
                 name : '应变',
                 id : 2,
                 min : 'dataMin',
@@ -2591,7 +2740,7 @@ function showAnalysisResultChart_threelayer(figure_id, timeList, sa4, sd3, sd4, 
         ]
     }
     var chart = echarts.init(document.getElementById(figure_id));
-    chart.setOption(option);
+    chart.setOption(option1);
 }
 function  showWaveletResultChart(figure_id, timeList, temperatureList, strainList) {
     console.log(timeList)

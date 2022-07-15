@@ -48,7 +48,7 @@ public class AssociationAnalysis {
         long userOrganizationId = sysUserService.getUserOrganizationId();
         HttpResponse response = new HttpResponse();
         JSONObject data = new JSONObject();
-        String sql = String.format("select b.bridge_id,b.bridge_name from bridge_info b " +
+        String sql = String.format("select b.bridge_id,b.bridge_name,b.organization from bridge_info b " +
                 "where b.bridge_id in (" +
                 "select bo.bridge_id from bridge_organization bo " +
                 "where bo.organization_id = %d)", userOrganizationId);
@@ -57,13 +57,16 @@ public class AssociationAnalysis {
                 @Override
                 public String handle(ResultSet rs) throws SQLException {
                     JSONObject item = new JSONObject();
+                    JSONObject organ = new JSONObject();
                     String firstId = bridge_id;
                     while(rs.next()){
                         if(firstId.equalsIgnoreCase("all")) firstId = rs.getString("bridge_id");
                         item.put(rs.getString("bridge_id"), rs.getString("bridge_name"));
+                        organ.put(rs.getString("bridge_id"),rs.getString("organization"));
                     }
                     data.put("bridge_id", firstId);
                     data.put("bridge", item);
+                    data.put("organization",organ);
                     return null;
                 }
             });
@@ -71,12 +74,19 @@ public class AssociationAnalysis {
             e.printStackTrace();
         }
         if(data.size() > 0 && !data.get("bridge_id").equals("")){
-            sql = "select a.section_id, a.name as section_name , b.point_id, b.name as point_name " +
-                    "from section as a left join watch_point as b on a.section_id=b.section_id " +
-                    "where a.bridge_id='%s'" +
-                    "and a.bridge_id in (" +
-                    "select bo.bridge_id from bridge_organization bo " +
-                    "where bo.organization_id = " + userOrganizationId + ")";
+//            sql = "select a.section_id, a.name as section_name , b.point_id, b.name as point_name " +
+//                    "from section as a left join watch_point as b on a.section_id=b.section_id " +
+//                    "where a.bridge_id='%s'" +
+//                    "and a.bridge_id in (" +
+//                    "select bo.bridge_id from bridge_organization bo " +
+//                    "where bo.organization_id = " + userOrganizationId + ")";
+                sql = "select a.section_id, a.name as section_name , c.sensor_id, c.name as sensor_name " +
+                        "from section as a left join watch_point as b on a.section_id=b.section_id " +
+                        "left join sensor_info as c on b.point_id=c.point_id " +
+                        "where a.bridge_id='%s'" +
+                        "and a.bridge_id in (" +
+                        "select bo.bridge_id from bridge_organization bo " +
+                        "where bo.organization_id = " + userOrganizationId + ")";
 
                 try {
                     baseDao.querySingleObject(String.format(sql, data.get("bridge_id")),
@@ -85,15 +95,25 @@ public class AssociationAnalysis {
                                 public String handle(ResultSet rs) throws SQLException {
                                     JSONObject bridgeItem = new JSONObject();
                                     while(rs.next()){
+//                                        String sectionId = rs.getString("section_id");
+//                                        JSONObject sectionItem = (JSONObject) bridgeItem.getOrDefault(sectionId, new JSONObject());
+//                                        JSONObject pointItem = (JSONObject) sectionItem.getOrDefault("watchpoint", new JSONObject());
+//                                        sectionItem.put("name", rs.getString("section_name"));
+//                                        String pointId = rs.getString("point_id");
+//                                        if(pointId  != null){
+//                                            pointItem.put(pointId, rs.getString("point_name"));
+//                                        }
+//                                        sectionItem.put("watchpoint", pointItem);
+//                                        bridgeItem.put(sectionId, sectionItem);
                                         String sectionId = rs.getString("section_id");
                                         JSONObject sectionItem = (JSONObject) bridgeItem.getOrDefault(sectionId, new JSONObject());
-                                        JSONObject pointItem = (JSONObject) sectionItem.getOrDefault("watchpoint", new JSONObject());
+                                        JSONObject sensorItem = (JSONObject) sectionItem.getOrDefault("sensor", new JSONObject());
                                         sectionItem.put("name", rs.getString("section_name"));
-                                        String pointId = rs.getString("point_id");
-                                        if(pointId  != null){
-                                            pointItem.put(pointId, rs.getString("point_name"));
+                                        String sensorId = rs.getString("sensor_id");
+                                        if(sensorId  != null){
+                                            sensorItem.put(sensorId, rs.getString("sensor_name"));
                                         }
-                                        sectionItem.put("watchpoint", pointItem);
+                                        sectionItem.put("sensor", sensorItem);
                                         bridgeItem.put(sectionId, sectionItem);
                                     }
                                     data.put("bridge_detail", bridgeItem);
@@ -103,6 +123,40 @@ public class AssociationAnalysis {
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
+
+            // 添加从box到sensor的路径
+            sql = "select a.box_id, a.name as box_name , b.sensor_id, b.name as sensor_name " +
+                    "from watch_box as a left join sensor_info as b on a.box_id=b.box_id " +
+                    "where a.bridge_id='%s'" +
+                    "and a.bridge_id in (" +
+                    "select bo.bridge_id from bridge_organization bo " +
+                    "where bo.organization_id = " + userOrganizationId + ")";
+
+            try {
+                baseDao.querySingleObject(String.format(sql, data.get("bridge_id")),
+                        new ResultSetHandler<String>() {
+                            @Override
+                            public String handle(ResultSet rs) throws SQLException {
+                                JSONObject bridgeItem = new JSONObject();
+                                while(rs.next()){
+                                    String boxId = rs.getString("box_id");
+                                    JSONObject boxItem = (JSONObject) bridgeItem.getOrDefault(boxId, new JSONObject());
+                                    JSONObject sensorItem = (JSONObject) boxItem.getOrDefault("sensor", new JSONObject());
+                                    boxItem.put("name", rs.getString("box_name"));
+                                    String sensorId = rs.getString("sensor_id");
+                                    if(sensorId  != null){
+                                        sensorItem.put(sensorId, rs.getString("sensor_name"));
+                                    }
+                                    boxItem.put("sensor", sensorItem);
+                                    bridgeItem.put(boxId, boxItem);
+                                }
+                                data.put("box_sensor", bridgeItem);
+                                return null;
+                            }
+                        });
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         response.setData(data);
         return response.getHttpResponse();
@@ -186,6 +240,111 @@ public class AssociationAnalysis {
 //        System.out.println(watchpoint);
         long begintime = Long.parseLong(beginTime);
         long endtime = Long.parseLong(endTime);
+
+        //根据条件过滤数据
+        File selectedFile = new File(Constants.ASSOCIATION_FILE_DIR + "/" + associationFile);
+        if(!selectedFile.exists()){
+            response.setStatus(HttpResponse.FAIL_STATUS);
+            response.setMsg("找不到文件！");
+        }else{
+            boolean startflag = false;
+            boolean endflag = false;
+            try {
+                File targetFile = new File(Constants.ASSOCIATION_TARGET_DIR);
+                if(!targetFile.exists()){
+                    targetFile.createNewFile();
+                }
+                FileOutputStream fos = new FileOutputStream(targetFile);
+                OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");
+                BufferedWriter bw = new BufferedWriter(osw);
+//                bw.write("time,bridge,section,test_point,unknow1,通道,传感器编号,measure_strain,unknow2,单位1,数据2,单位2,电阻值,T,unknow3,S" + "\n");
+                bw.write("time,air_temp,strain\n");
+
+                FileInputStream fis = new FileInputStream(selectedFile);
+                InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
+                BufferedReader br = new BufferedReader(isr);
+                String line = "";
+                int count = 0;
+                while((line = br.readLine()) != null){
+                    String[] split = line.split(",");
+//                    System.out.println(split.length);
+                    if(split.length == 3){
+                        if(!split[0].matches("\\d+\\.?\\d+")){
+                            continue;
+                        }
+//                        long current_time = Long.parseLong(split[0]);
+//                        String current_bridge = split[1];
+//                        String current_section = split[2];
+//                        String current_watechpoint = split[3];
+//                        System.out.println(current_bridge);
+//                        System.out.println(current_section);
+//                        System.out.println(current_watechpoint);
+                        Date javaDate = DateUtil.getJavaDate(Double.parseDouble(split[0]));
+                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+                        long current_time = Long.parseLong(simpleDateFormat.format(javaDate));
+                        //检查已有数据是否能覆盖所选时间
+                        if(current_time >= endtime){  endflag = true;  }
+                        if(current_time <= begintime){   startflag = true; }
+                        if(current_time >= begintime && current_time <= endtime){
+//                            System.out.println("ok");
+                            bw.write(line + "\n");
+                            count ++;
+                        }
+                    }
+                }
+                bw.close();
+                osw.close();
+                fos.close();
+                br.close();
+                isr.close();
+                fis.close();
+
+                //调用外部程序
+                if(count != 0 && startflag && endflag){
+                    String INPUT_FILE = Constants.ASSOCIATION_TARGET_DIR;
+                    String WAVELET_PROGRAM = Constants.ASSOCIATION_ANALYSIS_PROGRAM;
+                    String outputfileName = associationFile.split("\\.")[0] + "_" + beginTime + "_" + endTime + "_result" + ".csv";
+                    String OUTPUT_FILE = Constants.ASSOCIATION_ANALYSIS_RESULT_DIR + "/" + outputfileName;
+                    String md5 = DigestUtils.md5Hex(associationFile + beginTime + endTime);
+
+                    AnalysisMessage.getInstance().update(md5, associationFile.split("\\.")[0] + "_" + beginTime + "_" + endTime,outputfileName, Constants.READY, "WAVELET",null);
+                    String execStr =  WAVELET_PROGRAM + " " + INPUT_FILE + " " + OUTPUT_FILE;
+                    //String execStr = "D:/os_environment/anaconda/python " + WAVELET_PROGRAM + " " + INPUT_FILE + " " + OUTPUT_FILE;
+                    //String execStr = "python D:/tmp/a.py";
+                    logger.debug(execStr);
+                    Executor executor = new CommandLineExecutor(md5, execStr);
+                    //Scheduler.getInstance().runExecutor(executor);
+                    LogEntity logentity = ((CommandLineExecutor) executor).execute_for_association_relability();
+                    if (logentity.getExitVal() == 0 || logentity.getExitVal() == 120){
+                        data.put("result", "success");
+                        AnalysisMessage.getInstance().update(md5,null,null,Constants.FINISHED,null,logentity.toString());
+                    }else{
+                        data.put("result", "failed");
+                        AnalysisMessage.getInstance().update(md5,null,null,Constants.FAILED,null,logentity.toString());
+                    }
+                }else{
+                    data.put("result","nodata");
+                }
+
+            }catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        response.setData(data);
+        return response.getHttpResponse();
+    }
+
+    @RequestMapping(value = "/association-analysis/start-analysis-spy", method = RequestMethod.POST, produces = "application/json")
+    public JSONObject waveletAnalysis_spy(@RequestBody JSONObject reqMsg){
+        HttpResponse response = new HttpResponse();
+        JSONObject data = new JSONObject();
+        String sensor_id = reqMsg.getString("sensor_id");
+        String beginTime = reqMsg.getString("begintime");
+        String endTime = reqMsg.getString("endtime");
+        long begintime = Long.parseLong(beginTime);
+        long endtime = Long.parseLong(endTime);
+
+        String associationFile = reqMsg.getString("file");
 
         //根据条件过滤数据
         File selectedFile = new File(Constants.ASSOCIATION_FILE_DIR + "/" + associationFile);

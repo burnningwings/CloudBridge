@@ -793,7 +793,6 @@ public class OverweightAnalysis {
             e.printStackTrace();
         }
 
-//        TODO: accroding the sensorId, selecting the minitoring data from hbase, and make a csv file
         JSONArray columnArray = new JSONArray();
         columnArray.add("CLYB");
 //        JSONArray CGQData = new JSONArray();

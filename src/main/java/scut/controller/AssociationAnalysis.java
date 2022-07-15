@@ -1,6 +1,7 @@
 package scut.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.dbutils.ResultSetHandler;
@@ -16,6 +17,7 @@ import scut.service.scheduler.LogEntity;
 import scut.service.scheduler.executor.CommandLineExecutor;
 import scut.service.scheduler.executor.Executor;
 import scut.util.Constants;
+import scut.util.hbase.HBaseCli;
 import scut.util.sql.SQLBaseDao;
 import scut.util.sql.SQLDaoFactory;
 
@@ -24,6 +26,7 @@ import java.io.*;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -344,97 +347,82 @@ public class AssociationAnalysis {
         long begintime = Long.parseLong(beginTime);
         long endtime = Long.parseLong(endTime);
 
-        String associationFile = reqMsg.getString("file");
+        JSONArray columnArray = new JSONArray();
+        columnArray.add("CLWD");
+        columnArray.add("XZYB");
 
-        //根据条件过滤数据
-        File selectedFile = new File(Constants.ASSOCIATION_FILE_DIR + "/" + associationFile);
-        if(!selectedFile.exists()){
-            response.setStatus(HttpResponse.FAIL_STATUS);
-            response.setMsg("找不到文件！");
-        }else{
-            boolean startflag = false;
-            boolean endflag = false;
-            try {
-                File targetFile = new File(Constants.ASSOCIATION_TARGET_DIR);
-                if(!targetFile.exists()){
-                    targetFile.createNewFile();
-                }
-                FileOutputStream fos = new FileOutputStream(targetFile);
-                OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");
-                BufferedWriter bw = new BufferedWriter(osw);
-//                bw.write("time,bridge,section,test_point,unknow1,通道,传感器编号,measure_strain,unknow2,单位1,数据2,单位2,电阻值,T,unknow3,S" + "\n");
-                bw.write("time,air_temp,strain\n");
-
-                FileInputStream fis = new FileInputStream(selectedFile);
-                InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
-                BufferedReader br = new BufferedReader(isr);
-                String line = "";
-                int count = 0;
-                while((line = br.readLine()) != null){
-                    String[] split = line.split(",");
-//                    System.out.println(split.length);
-                    if(split.length == 3){
-                        if(!split[0].matches("\\d+\\.?\\d+")){
-                            continue;
-                        }
-//                        long current_time = Long.parseLong(split[0]);
-//                        String current_bridge = split[1];
-//                        String current_section = split[2];
-//                        String current_watechpoint = split[3];
-//                        System.out.println(current_bridge);
-//                        System.out.println(current_section);
-//                        System.out.println(current_watechpoint);
-                        Date javaDate = DateUtil.getJavaDate(Double.parseDouble(split[0]));
-                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-                        long current_time = Long.parseLong(simpleDateFormat.format(javaDate));
-                        //检查已有数据是否能覆盖所选时间
-                        if(current_time >= endtime){  endflag = true;  }
-                        if(current_time <= begintime){   startflag = true; }
-                        if(current_time >= begintime && current_time <= endtime){
-//                            System.out.println("ok");
-                            bw.write(line + "\n");
-                            count ++;
-                        }
-                    }
-                }
-                bw.close();
-                osw.close();
-                fos.close();
-                br.close();
-                isr.close();
-                fis.close();
-
-                //调用外部程序
-                if(count != 0 && startflag && endflag){
-                    String INPUT_FILE = Constants.ASSOCIATION_TARGET_DIR;
-                    String WAVELET_PROGRAM = Constants.ASSOCIATION_ANALYSIS_PROGRAM;
-                    String outputfileName = associationFile.split("\\.")[0] + "_" + beginTime + "_" + endTime + "_result" + ".csv";
-                    String OUTPUT_FILE = Constants.ASSOCIATION_ANALYSIS_RESULT_DIR + "/" + outputfileName;
-                    String md5 = DigestUtils.md5Hex(associationFile + beginTime + endTime);
-
-                    AnalysisMessage.getInstance().update(md5, associationFile.split("\\.")[0] + "_" + beginTime + "_" + endTime,outputfileName, Constants.READY, "WAVELET",null);
-                    String execStr =  WAVELET_PROGRAM + " " + INPUT_FILE + " " + OUTPUT_FILE;
-                    //String execStr = "D:/os_environment/anaconda/python " + WAVELET_PROGRAM + " " + INPUT_FILE + " " + OUTPUT_FILE;
-                    //String execStr = "python D:/tmp/a.py";
-                    logger.debug(execStr);
-                    Executor executor = new CommandLineExecutor(md5, execStr);
-                    //Scheduler.getInstance().runExecutor(executor);
-                    LogEntity logentity = ((CommandLineExecutor) executor).execute_for_association_relability();
-                    if (logentity.getExitVal() == 0 || logentity.getExitVal() == 120){
-                        data.put("result", "success");
-                        AnalysisMessage.getInstance().update(md5,null,null,Constants.FINISHED,null,logentity.toString());
-                    }else{
-                        data.put("result", "failed");
-                        AnalysisMessage.getInstance().update(md5,null,null,Constants.FAILED,null,logentity.toString());
-                    }
-                }else{
-                    data.put("result","nodata");
-                }
-
-            }catch (IOException e) {
-                e.printStackTrace();
+        JSONObject CGQData = new JSONObject(true);
+        int index = 0;
+        System.out.println(columnArray);
+        String hbaseTableName = "CloudBridge:" + sensor_id;
+        int sample = -1;
+        int limit = 0;
+        JSONArray rangeData = HBaseCli.getInstance().query(hbaseTableName,beginTime,endTime,columnArray,limit,sample);
+        for (int i = 0;i<rangeData.size();i++){
+            JSONObject o = rangeData.getJSONObject(i);
+            if (!CGQData.containsKey(o.getString("CLSJ"))){
+                //创建新的一个时间戳行
+                String newRow = "";
+                newRow += o.getString("CLWD") + "," + o.getString("XZYB");
+                CGQData.put(o.getString("CLSJ"),newRow);
             }
         }
+
+        try {
+            File file = new File(Constants.ASSOCIATION_TARGET_DIR);
+            if(!file.exists()){
+                file.createNewFile();
+            }
+            FileOutputStream fo = new FileOutputStream(file);
+            OutputStreamWriter out = new OutputStreamWriter(fo,"UTF-8");
+            BufferedWriter bufferedWriter = new BufferedWriter(out);
+            bufferedWriter.write("date,air_temp,strain\n");
+            int count = 0;
+            for (String key : CGQData.keySet()){
+
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+                Date date= simpleDateFormat.parse(key);
+                Double javaDate = DateUtil.getExcelDate(date);
+                bufferedWriter.write(javaDate + "," + CGQData.getString(key) + "\n");
+                count++;
+            }
+            bufferedWriter.close();
+            out.close();
+            fo.close();
+
+            if(count != 0){
+                String INPUT_FILE = Constants.ASSOCIATION_TARGET_DIR;
+                String WAVELET_PROGRAM = Constants.ASSOCIATION_ANALYSIS_PROGRAM;
+                String outputfileName = sensor_id + "_" + beginTime + "_" + endTime + "_result" + ".csv";
+                String OUTPUT_FILE = Constants.ASSOCIATION_ANALYSIS_RESULT_DIR + "/" + outputfileName;
+                String md5 = DigestUtils.md5Hex(sensor_id + beginTime + endTime);
+
+                AnalysisMessage.getInstance().update(md5, sensor_id + "_" + beginTime + "_" + endTime,outputfileName, Constants.READY, "WAVELET",null);
+                String execStr =  WAVELET_PROGRAM + " " + INPUT_FILE + " " + OUTPUT_FILE;
+                //String execStr = "D:/os_environment/anaconda/python " + WAVELET_PROGRAM + " " + INPUT_FILE + " " + OUTPUT_FILE;
+                //String execStr = "python D:/tmp/a.py";
+                logger.debug(execStr);
+                Executor executor = new CommandLineExecutor(md5, execStr);
+                //Scheduler.getInstance().runExecutor(executor);
+                LogEntity logentity = ((CommandLineExecutor) executor).execute_for_association_relability();
+                if (logentity.getExitVal() == 0 || logentity.getExitVal() == 120){
+                    data.put("result", "success");
+                    AnalysisMessage.getInstance().update(md5,null,null,Constants.FINISHED,null,logentity.toString());
+                }else{
+                    data.put("result", "failed");
+                    AnalysisMessage.getInstance().update(md5,null,null,Constants.FAILED,null,logentity.toString());
+                }
+            }else{
+                data.put("result","nodata");
+            }
+
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+        }
+
         response.setData(data);
         return response.getHttpResponse();
     }
@@ -748,4 +736,72 @@ public class AssociationAnalysis {
         return response.getHttpResponse();
     }
 
+    @RequestMapping(value = "/association-analysis/getAnalysisResult_spy", method = RequestMethod.GET, produces = "application/json")
+    public JSONObject getAnalysisResult1(String sensor_id, String begintime, String endtime){
+        HttpResponse response = new HttpResponse();
+        JSONObject data = new JSONObject();
+        String resultfileName = sensor_id + "_" + begintime + "_" + endtime + "_result" + ".csv";
+        String analysisResultPath =Constants.ASSOCIATION_ANALYSIS_RESULT_DIR + "/" + resultfileName;
+        System.out.println(analysisResultPath);
+        File file = new File(analysisResultPath);
+        if(!file.exists()){
+            response.setStatus(HttpResponse.FAIL_STATUS);
+            response.setMsg("结果不存在");
+        }else {
+            try {
+                FileReader fr = new FileReader(analysisResultPath);
+                BufferedReader br = new BufferedReader(fr);
+                String header = br.readLine();
+                String[] split = header.split(",");
+
+                if (split.length == 7){
+                    ArrayList<String> timeList = new ArrayList<>();
+                    ArrayList<Float> sa4 = new ArrayList<>();
+                    ArrayList<Float> sd3 = new ArrayList<>();
+                    ArrayList<Float> sd4 = new ArrayList<>();
+                    ArrayList<Float> temperature = new ArrayList<>();
+                    ArrayList<Float> ta4 = new ArrayList<>();
+                    ArrayList<Float> td3 = new ArrayList<>();
+                    ArrayList<Float> td4 = new ArrayList<>();
+                    String content = br.readLine();
+                    while(content != null){
+                        split = content.split(",");
+                        Date javaDate = DateUtil.getJavaDate(Double.parseDouble(split[0]));
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        timeList.add(sdf.format(javaDate));
+                        sa4.add(Float.parseFloat(split[1]));
+                        sd3.add(Float.parseFloat(split[5]));
+                        sd4.add(Float.parseFloat(split[3]));
+
+                        ta4.add(Float.parseFloat(split[2]));
+                        td3.add(Float.parseFloat(split[6]));
+                        td4.add(Float.parseFloat(split[4]));
+                        content = br.readLine();
+                    }
+                    data.put("layer", 3);
+
+                    data.put("timeList", timeList);
+                    data.put("sa4", sa4);
+                    data.put("sd3", sd3);
+                    data.put("sd4", sd4);
+
+                    data.put("temperature", temperature);
+                    data.put("ta4", ta4);
+                    data.put("td3", td3);
+                    data.put("td4", td4);
+                }
+                br.close();
+                fr.close();
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e){
+                e.printStackTrace();
+            }
+        }
+
+
+        response.setData(data);
+        return response.getHttpResponse();
+    }
 }

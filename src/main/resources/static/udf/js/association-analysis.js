@@ -186,6 +186,82 @@ function getAndshowAnalysisResult(figure_id, current_dialog, params){
     webRequest(url, "GET", true, params, successCallback)
 }
 
+function getAndshowSpyAnalysisResult(figure_id, current_dialog, params){
+    function successCallback(message) {
+        console.log(message);
+        current_dialog.button('reset').dequeue();
+        var status = message["status"];
+        if(status != 0){
+            $("#" + figure_id).html("<img style='margin-top:120px;' src='assets/img/warning.png'/>");
+            showTransientDialog(message["msg"]);
+            return;
+        }else{
+            // var sensor1 = message["data"]["sensor1"];
+            // var sensor2 = message["data"]["sensor2"];
+            // console.log(sensor1);
+            // console.log(sensor2);
+            // showAnalysisResultChart(figure_id, sensor1, sensor2);
+            var layer = message["data"]["layer"];
+            // if(layer == 7){
+            //     var timeList = message["data"]["timeList"];
+            //     var strain = message["data"]["strain"];
+            //     var sa7 = message["data"]["sa7"];
+            //     var sd1 = message["data"]["sd1"];
+            //     var sd2 = message["data"]["sd2"];
+            //     var sd3 = message["data"]["sd3"];
+            //     var sd4 = message["data"]["sd4"];
+            //     var sd5 = message["data"]["sd5"];
+            //     var sd6 = message["data"]["sd6"];
+            //     var sd7 = message["data"]["sd7"];
+            //     var temperature = message["data"]["temperature"];
+            //     var ta7 = message["data"]["ta7"];
+            //     var td1 = message["data"]["td1"];
+            //     var td2 = message["data"]["td2"];
+            //     var td3 = message["data"]["td3"];
+            //     var td4 = message["data"]["td4"];
+            //     var td5 = message["data"]["td5"];
+            //     var td6 = message["data"]["td6"];
+            //     var td7 = message["data"]["td7"];
+            //     // console.log("timeList", timeList);
+            //     // console.log("strand", strain);
+            //     // console.log("sa7", sa7);
+            //     // console.log("sd1", sd1);
+            //     // console.log("td7", td7);
+            //     showAnalysisResultChart_sevenlayer(figure_id, timeList, strain, sa7, sd1, sd2, sd3, sd4, sd5, sd6, sd7, temperature, ta7, td1, td2, td3, td4, td5, td6, td7);
+            // }else{
+            //     var timeList = message["data"]["timeList"];
+            //     var strain = message["data"]["strain"];
+            //     var sa7 = message["data"]["sa7"];
+            //     var sd1 = message["data"]["sd1"];
+            //     var sd2 = message["data"]["sd2"];
+            //     var sd3 = message["data"]["sd3"];
+            //     var sd4 = message["data"]["sd4"];
+            //     var temperature = message["data"]["temperature"];
+            //     var ta7 = message["data"]["ta7"];
+            //     var td1 = message["data"]["td1"];
+            //     var td2 = message["data"]["td2"];
+            //     var td3 = message["data"]["td3"];
+            //     var td4 = message["data"]["td4"];
+            //     showAnalysisResultChart_fourlayer(figure_id, timeList, strain, sa7, sd1, sd2, sd3, sd4, temperature, ta7, td1, td2, td3, td4);
+            // }
+            if(layer == 3){
+                var timeList = message["data"]["timeList"];
+                var sa7 = message["data"]["sa4"];
+                var sd3 = message["data"]["sd3"];
+                var sd4 = message["data"]["sd4"];
+                var ta7 = message["data"]["ta4"];
+                var td3 = message["data"]["td3"];
+                var td4 = message["data"]["td4"];
+                showAnalysisResultChart_threelayer(figure_id, timeList, sa7, sd3, sd4, ta7, td3, td4);
+            }
+
+        }
+    }
+
+    var url = "/association-analysis/getAnalysisResult_spy";
+    webRequest(url, "GET", true, params, successCallback)
+}
+
 function selectIsExitItem(objSelect,objItemValue){
     var isExit = false;
     console.log(objSelect["0"])
@@ -381,7 +457,7 @@ $(function () {
             async: true,
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({
-                "sensor_id" : sensor_id
+                "sensor_id" : sensor_id,
                 "begintime" : new Date(begin_time).format('yyyyMMddHHmmss'),
                 "endtime" :  new Date(end_time).format('yyyyMMddHHmmss')
             }),
@@ -562,6 +638,39 @@ $(function () {
             }
             var current_dialog = $(this);
             getAndshowAnalysisResult(figure_id, current_dialog, param);
+        })
+
+    });
+
+    $("#spy_result_association_analysis").click(function () {
+        var sensor_id = $("#association_sensor_selected").val();
+        if (sensor_id == null){
+            showTransientDialog("请选择传感器");
+            return;
+        }
+
+        var begin_time = $("#spy_association_begin_time").val();
+        var end_time = $("#spy_association_end_time").val();
+        if(begin_time >= end_time){
+            showTransientDialog("开始时间必须小于截止时间");
+            return;
+        }
+
+        var token = $("meta[name='_csrf']").attr("content");
+        var header = $("meta[name='_csrf_header']").attr("content");
+        $(document).ajaxSend(function(e, xhr, options) {
+            xhr.setRequestHeader(header, token);
+        });
+        var figure_id = "association_show_result_figure";
+        $("#" + figure_id).html("<img style='margin-top:120px;' src='assets/img/loading.gif'/>");
+        $(this).button("loading").delay(1000).queue(function () {
+            var param ={
+                "sensor_id" : sensor_id,
+                "begintime" : new Date(begin_time).format('yyyyMMddHHmmss'),
+                "endtime" :  new Date(end_time).format('yyyyMMddHHmmss')
+            }
+            var current_dialog = $(this);
+            getAndshowSpyAnalysisResult(figure_id, current_dialog, param);
         })
 
     });

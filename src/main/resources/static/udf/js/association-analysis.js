@@ -1,6 +1,6 @@
 function updateDropdownMenu(response) {
     var data = null;
-    var organ_options = "<option value='-1'>请选择地区</option>"
+    var region_options = "<option value='-1'>未指定桥梁</option>"
     var bridge_options = "<option value='-1'>请选择桥梁</option>";
     var section_options = "<option value='-1'>请选择截面</option>";
     var point_options = "<option value='-1'>请选择测点</option>";
@@ -13,6 +13,7 @@ function updateDropdownMenu(response) {
         for(var key in data["bridge"]){
             if(key==data["bridge_id"]) continue;
             bridge_options = bridge_options + "<option value='" + key + "'>" + data["bridge"][key] + "</option>>";
+            region_options = region_options + "<option value='"+ key + "'>" + data["region"][key] + "</option>";
         }
         for(var key in data["bridge_detail"]){
             section_options = section_options + "<option value='" + key + "'>" + data["bridge_detail"][key]["name"] + "</option>";
@@ -25,13 +26,13 @@ function updateDropdownMenu(response) {
     $("#association_section").empty();
     $("#association_watchpoint").empty();
     $("#association_box_selected").empty();
-    $("#association_organization_selected").empty();
+    $("#association_region_selected").empty();
     $("#association_sensor_selected").empty();
 
     $("#association_bridge").append(bridge_options);
     $("#association_section").append(section_options);
     $("#association_box_selected").append(box_options);
-    $("#association_organization_selected").append(organ_options);
+    $("#association_region_selected").append(region_options);
     $("#association_sensor_selected").append(sensor_options)
     // var section_selected = $("#association_section").val();
     // if(section_selected && !(section_selected.match(/^\s*$/))){
@@ -68,6 +69,8 @@ function updateDropdownMenu1(response) {
             box_options = box_options + "<option value='" + key + "'>" + data["box_sensor"][key]["name"] + "</option>"
         }
     }
+
+
     // $("#association_bridge").empty();
     $("#association_section").empty();
     $("#association_watchpoint").empty();
@@ -282,17 +285,30 @@ $(function () {
     $("#image").hide()
 
     $("#association_file_dataformat").click(function(){
+        // var popoverEl = $("#association_file_dataformat");
+        // popoverEl.popover("destroy");
+        // // var content = "{<br/>"+
+        // //     "feature1,feature2,feature3<br/>"+
+        // //     "}";
+        // var content = "time : string<br/>" + "bridge : string<br/>" + "section : string<br/>" + "watch_point : point<br/>" +
+        //             "unknow1 : float<br/>" + "通道 : string<br/>" + "传感器编号 : string<br/>" + "measure_strain : float<br/>" +
+        //             "unknow2 : float<br/>" + "单位1 : string<br/>" + "数据 : float<br/>" + "单位2 : string<br/>" +
+        //             "电阻值 : float<br/>" + "T : float<br/>" + "unknow3 : float<br/>" + "S : float"
+        // popoverEl.attr("data-content", content);
+        // popoverEl.popover("show");
+
+
         var popoverEl = $("#association_file_dataformat");
         popoverEl.popover("destroy");
-        // var content = "{<br/>"+
-        //     "feature1,feature2,feature3<br/>"+
-        //     "}";
-        var content = "time : string<br/>" + "bridge : string<br/>" + "section : string<br/>" + "watch_point : point<br/>" +
-                    "unknow1 : float<br/>" + "通道 : string<br/>" + "传感器编号 : string<br/>" + "measure_strain : float<br/>" +
-                    "unknow2 : float<br/>" + "单位1 : string<br/>" + "数据 : float<br/>" + "单位2 : string<br/>" +
-                    "电阻值 : float<br/>" + "T : float<br/>" + "unknow3 : float<br/>" + "S : float"
-        popoverEl.attr("data-content", content);
-        popoverEl.popover("show");
+
+        var str = "date,air_temp,strain\n";
+        var url = "data:text/csv;charset=utf-8,\ufeff" + encodeURIComponent(str);
+        var link = document.createElement("a");
+        link.href = url;
+        link.download = '关联性分析数据模板.csv';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
 
     });
 
@@ -306,6 +322,7 @@ $(function () {
         var response = webRequest(url, "GET", false, {"bridge_id" : id})
         $("#bridge_image").attr("src","/bridge/image/" + id + "/1.png");
         $("#image").show()
+        $("#association_region_selected").val(id)
         data1 = updateDropdownMenu1(response);
     })
 

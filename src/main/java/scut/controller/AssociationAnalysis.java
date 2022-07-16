@@ -51,7 +51,7 @@ public class AssociationAnalysis {
         long userOrganizationId = sysUserService.getUserOrganizationId();
         HttpResponse response = new HttpResponse();
         JSONObject data = new JSONObject();
-        String sql = String.format("select b.bridge_id,b.bridge_name,b.organization from bridge_info b " +
+        String sql = String.format("select b.bridge_id,b.bridge_name,b.region from bridge_info b " +
                 "where b.bridge_id in (" +
                 "select bo.bridge_id from bridge_organization bo " +
                 "where bo.organization_id = %d)", userOrganizationId);
@@ -60,16 +60,16 @@ public class AssociationAnalysis {
                 @Override
                 public String handle(ResultSet rs) throws SQLException {
                     JSONObject item = new JSONObject();
-                    JSONObject organ = new JSONObject();
+                    JSONObject region = new JSONObject();
                     String firstId = bridge_id;
                     while(rs.next()){
                         if(firstId.equalsIgnoreCase("all")) firstId = rs.getString("bridge_id");
                         item.put(rs.getString("bridge_id"), rs.getString("bridge_name"));
-                        organ.put(rs.getString("bridge_id"),rs.getString("organization"));
+                        region.put(rs.getString("bridge_id"),rs.getString("region"));
                     }
                     data.put("bridge_id", firstId);
                     data.put("bridge", item);
-                    data.put("organization",organ);
+                    data.put("region",region);
                     return null;
                 }
             });
@@ -540,7 +540,7 @@ public class AssociationAnalysis {
 ////                data.put("sensor10", sensor10list);
 //            } catch (FileNotFoundException e) {
 //                e.printStackTrace();
-//            } catch (IOException e){
+//            } catch (IOException e){-
 //                e.printStackTrace();
 //            }
 //        }

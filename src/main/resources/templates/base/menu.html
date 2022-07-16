@@ -34,9 +34,9 @@
                     <li class="cm-submenu" th:classappend="${four_1=='active' or four_2=='active' or four_3=='active' or four_4=='active'}? pre-open : ''">
                         <a class="sf-funnel">数据分析<span class="caret"></span></a>
                         <ul>
+                            <li th:class="${four_3}"><a href="association-analysis">关联性分析</a></li>
                             <li th:class="${four_1}"><a href="overweight-analysis">超重车识别</a></li>
                             <li th:class="${four_2}"><a href="damage-detection">损伤识别</a></li>
-                            <li th:class="${four_3}"><a href="association-analysis">关联性分析</a></li>
                             <li th:class="${four_4}"><a href="reliability-analysis">可靠度分析</a></li>
                         </ul>
                     </li>

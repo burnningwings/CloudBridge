@@ -2216,7 +2216,7 @@ function showAnalysisResultChart_threelayer(figure_id, timeList, sa4, sd3, sd4, 
                 name: '温度',
                 id: 1,
                 gridIndex: 1,
-                nameLocation: 'end',
+                nameLocation: 'middle',
                 nameTextStyle: 'SimSun',
                 nameGap: 23,
                 axisLabel: {
@@ -2255,7 +2255,8 @@ function showAnalysisResultChart_threelayer(figure_id, timeList, sa4, sd3, sd4, 
                 nameTextStyle: 'SimSun',
                 axisLabel: {
                     fontFamily: 'Times New Roman',
-                }
+                },
+                nameLocation: 'middle'
             }
         ],
         grid : [
@@ -2919,10 +2920,27 @@ function  showWaveletResultChart(figure_id, timeList, temperatureList, strainLis
 
 function showReliabilityResultChart(figure_id, timeList, btcList, bttList, pfcList, pftList){
 
-    var bmax = Math.max(Math.max.apply(Math,btcList),Math.max.apply(Math,bttList))
-    var bmin = Math.min(Math.min.apply(Math,btcList),Math.min.apply(Math,bttList))
-    var pmax = Math.max(Math.max.apply(Math,pfcList),Math.max.apply(Math,pftList))
-    var pmin = Math.min(Math.min.apply(Math,pfcList),Math.min.apply(Math,pftList))
+    console.log(btcList)
+    console.log(bttList)
+    //notice the Math.max.apply() is a recursion function, and if there are a lot data,the stack will exceeded
+    // var bmax = Math.max(Math.max.apply(Math,btcList),Math.max.apply(Math,bttList))
+    // var bmin = Math.min(Math.min.apply(Math,btcList),Math.min.apply(Math,bttList))
+    // var pmax = Math.max(Math.max.apply(Math,pfcList),Math.max.apply(Math,pftList))
+    // var pmin = Math.min(Math.min.apply(Math,pfcList),Math.min.apply(Math,pftList))
+    var bmax = -Infinity
+    var bmin = Infinity
+    var pmax = -Infinity
+    var pmin = Infinity
+    for (var i = 0; i<btcList.length;i++){
+        if (btcList[i] > bmax) bmax = btcList[i]
+        if (btcList[i] < bmin) bmin = btcList[i]
+        if (bttList[i] > bmax) bmax = bttList[i]
+        if (bttList[i] < bmin) bmin = bttList[i]
+        if (pfcList[i] > pmax) pmax = pfcList[i]
+        if (pfcList[i] < pmin) pmin = pfcList[i]
+        if (pftList[i] > pmax) pmax = pftList[i]
+        if (pftList[i] < pmin) pmin = pftList[i]
+    }
 
     var option = {
         title : [
@@ -2968,7 +2986,7 @@ function showReliabilityResultChart(figure_id, timeList, btcList, bttList, pfcLi
             },
             {
                 left: '10%',
-                top: '54%',
+                top: '52%',
                 data: [
                     {
                         name: '监测失效概率',
@@ -2977,7 +2995,7 @@ function showReliabilityResultChart(figure_id, timeList, btcList, bttList, pfcLi
             },
             {
                 left: '20%',
-                top: '54%',
+                top: '52%',
                 data: [
                     {
                         name: '时变失效概率',
@@ -2997,7 +3015,7 @@ function showReliabilityResultChart(figure_id, timeList, btcList, bttList, pfcLi
                 height : '40%',
                 // width : '40%',
                 // left : '53%'
-                top : '54%',
+                top : '56%',
                 left : '4%'
             },
             // {

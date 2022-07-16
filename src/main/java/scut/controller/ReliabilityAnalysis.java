@@ -1,9 +1,11 @@
 package scut.controller;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.log4j.Logger;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import scut.base.HttpResponse;
@@ -13,6 +15,7 @@ import scut.service.scheduler.LogEntity;
 import scut.service.scheduler.executor.CommandLineExecutor;
 import scut.service.scheduler.executor.Executor;
 import scut.util.Constants;
+import scut.util.hbase.HBaseCli;
 import scut.util.sql.SQLBaseDao;
 import scut.util.sql.SQLDaoFactory;
 
@@ -20,7 +23,10 @@ import javax.annotation.Resource;
 import java.io.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * created by xiaoah
@@ -106,7 +112,7 @@ public class ReliabilityAnalysis {
         long userOrganizationId = sysUserService.getUserOrganizationId();
         HttpResponse response = new HttpResponse();
         JSONObject data = new JSONObject();
-        String sql = String.format("select b.bridge_id,b.bridge_name,b.organization from bridge_info b " +
+        String sql = String.format("select b.bridge_id,b.bridge_name,b.region from bridge_info b " +
                 "where b.bridge_id in (" +
                 "select bo.bridge_id from bridge_organization bo " +
                 "where bo.organization_id = %d)", userOrganizationId);
@@ -115,16 +121,16 @@ public class ReliabilityAnalysis {
                 @Override
                 public String handle(ResultSet rs) throws SQLException {
                     JSONObject item = new JSONObject();
-                    JSONObject organ = new JSONObject();
+                    JSONObject region = new JSONObject();
                     String firstId = bridge_id;
                     while(rs.next()){
                         if(firstId.equalsIgnoreCase("all")) firstId = rs.getString("bridge_id");
                         item.put(rs.getString("bridge_id"), rs.getString("bridge_name"));
-                        organ.put(rs.getString("bridge_id"),rs.getString("organization"));
+                        region.put(rs.getString("bridge_id"),rs.getString("region"));
                     }
                     data.put("bridge_id", firstId);
                     data.put("bridge", item);
-                    data.put("organization",organ);
+                    data.put("region",region);
                     return null;
                 }
             });
@@ -397,6 +403,90 @@ public class ReliabilityAnalysis {
         return response.getHttpResponse();
     }
 
+    @RequestMapping(value = "/reliability-analysis/start-analysis-spy", method = RequestMethod.POST, produces = "application/json")
+    public JSONObject spyReliabilityAnalysis(@RequestBody JSONObject reqMsg){
+        HttpResponse response = new HttpResponse();
+        JSONObject data = new JSONObject();
+        String sensor_id = reqMsg.getString("sensor_id");
+        String beginTime = reqMsg.getString("begintime");
+        String endTime = reqMsg.getString("endtime");
+        long begintime = Long.parseLong(beginTime);
+        long endtime = Long.parseLong(endTime);
+
+        JSONArray columnArray = new JSONArray();
+        columnArray.add("XZYB");
+
+        JSONObject CGQData = new JSONObject(true);
+        int index = 0;
+        System.out.println(columnArray);
+        String hbaseTableName = "CloudBridge:" + sensor_id;
+        int sample = -1;
+        int limit = 0;
+        JSONArray rangeData = HBaseCli.getInstance().query(hbaseTableName,beginTime,endTime,columnArray,limit,sample);
+        for (int i = 0;i<rangeData.size();i++){
+            JSONObject o = rangeData.getJSONObject(i);
+            if (!CGQData.containsKey(o.getString("CLSJ"))){
+                //创建新的一个时间戳行
+                String newRow = "";
+                newRow += o.getString("XZYB");
+                CGQData.put(o.getString("CLSJ"),newRow);
+            }
+        }
+
+        try {
+            File file = new File(Constants.RELIABILITY_TARGET_DIR);
+            if(!file.exists()){
+                file.createNewFile();
+            }
+            FileOutputStream fo = new FileOutputStream(file);
+            OutputStreamWriter out = new OutputStreamWriter(fo,"UTF-8");
+            BufferedWriter bufferedWriter = new BufferedWriter(out);
+            bufferedWriter.write("time,bridge,section,test_point,sensor_num,s\n");
+            int count = 0;
+            for (String key : CGQData.keySet()){
+                bufferedWriter.write(key + ",,,,," + CGQData.getString(key) + "\n");
+                count++;
+            }
+            bufferedWriter.close();
+            out.close();
+            fo.close();
+
+            if(count != 0){
+                String INPUT_FILE = Constants.RELIABILITY_TARGET_DIR;
+                String RELIABILITY_PROGRAM = Constants.ASSOCIATION_ANALYSIS_PROGRAM;
+                String outputfileName = sensor_id + "_" + beginTime + "_" + endTime + "_result" + ".csv";
+                String OUTPUT_FILE = Constants.RELIABILITY_ANALYSIS_RESULT_DIR + "/" + outputfileName;
+                String md5 = DigestUtils.md5Hex(sensor_id + beginTime + endTime);
+
+                AnalysisMessage.getInstance().update(md5, sensor_id + "_" + beginTime + "_" + endTime,outputfileName, Constants.READY, "RELIABILITY",null);
+                String execStr = Constants.RELIABILITY_ANALYSIS_PROGRAM + " " + INPUT_FILE + " " + OUTPUT_FILE;
+
+                logger.debug(execStr);
+                Executor executor = new CommandLineExecutor(md5, execStr);
+
+                LogEntity logentity = ((CommandLineExecutor) executor).execute_for_association_relability();
+
+                if (logentity.getExitVal() == 0){
+                    data.put("result", "success");
+                    AnalysisMessage.getInstance().update(md5,null,null,Constants.FINISHED,null,logentity.toString());
+                }else{
+                    data.put("result", "failed");
+                    AnalysisMessage.getInstance().update(md5,null,null,Constants.FAILED,null,logentity.toString());
+                }
+            }else{
+                data.put("result","no data");
+            }
+
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        response.setData(data);
+        return response.getHttpResponse();
+    }
+
     @RequestMapping(value = "/reliability-analysis/getAnalysisResult", method = RequestMethod.GET, produces = "application/json")
     public JSONObject getAnalysisResult1(String filename, String begintime, String endtime){
         HttpResponse response = new HttpResponse();
@@ -445,6 +535,59 @@ public class ReliabilityAnalysis {
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e){
+                e.printStackTrace();
+            }
+        }
+
+        response.setData(data);
+        return response.getHttpResponse();
+    }
+
+    @RequestMapping(value = "/reliability-analysis/getAnalysisResult-spy", method = RequestMethod.GET, produces = "application/json")
+    public JSONObject getSpyAnalysisResult1(String sensor_id, String begintime, String endtime){
+        HttpResponse response = new HttpResponse();
+        JSONObject data = new JSONObject();
+        String resultfileName = sensor_id + "_" + begintime + "_" + endtime + "_result" + ".csv";
+        String analysisResultPath = Constants.RELIABILITY_ANALYSIS_RESULT_DIR + "/" + resultfileName;
+        System.out.println(analysisResultPath);
+        File file = new File(analysisResultPath);
+        if(!file.exists()){
+            response.setStatus(HttpResponse.FAIL_STATUS);
+            response.setMsg("结果不存在");
+        }else{
+            try {
+                FileReader fr = new FileReader(analysisResultPath);
+                BufferedReader br = new BufferedReader(fr);
+                String header = br.readLine();
+
+                FileReader fileReader = new FileReader(Constants.RELIABILITY_TARGET_DIR);
+                BufferedReader bufferedReader = new BufferedReader(fileReader);
+                String headerTime = bufferedReader.readLine();
+
+                ArrayList<String> timeList = new ArrayList<>();
+                ArrayList<Float> mvbList = new ArrayList<>();
+                ArrayList<Float> pvbList = new ArrayList<>();
+                ArrayList<Float> mvpList = new ArrayList<>();
+                ArrayList<Float> pvpList = new ArrayList<>();
+                String content = "";
+                String time = "";
+                while((content = br.readLine()) != null && (time = bufferedReader.readLine()) != null){
+                    String[] split = content.split(",");
+                    String[] split1 = time.split(",");
+                    timeList.add(split1[0]);
+                    mvbList.add(Float.parseFloat(split[0]));
+                    pvbList.add(Float.parseFloat(split[1]));
+                    mvpList.add(Float.parseFloat(split[2]));
+                    pvpList.add(Float.parseFloat(split[3]));
+                }
+                br.close();
+                fr.close();
+                data.put("timeList",timeList);
+                data.put("mvb", mvbList);
+                data.put("pvb", pvbList);
+                data.put("mvp", mvpList);
+                data.put("pvp", pvpList);
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }

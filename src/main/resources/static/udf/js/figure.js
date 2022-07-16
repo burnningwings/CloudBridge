@@ -526,10 +526,27 @@ function showPredictUDFResultChart(figure_id, timelist, locationlist, levellist)
 
 }
 
-function showPredictDDResultChart(figure_id, locationlist, levellist) {
+function showPredictDDResultChart(figure_id, locationlist, levellist,loc,lv) {
 
     const x = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50];
     const y = [1,2,3,4,5];
+
+    var test_data = [];
+    if (loc.length > 0 && lv.length>0){
+        for (var i=0;i<5;i++){
+            for (var j=0;j<50;j++){
+                test_data.push([i,j,0])
+            }
+        }
+        for(var i=0;i<loc.length;i++){
+            test_data[parseInt(loc[i])][2] = parseInt(lv[i])/100
+        }
+        console.log(test_data)
+        test_data = test_data.map(function (item) {
+            return [item[1],item[0],item[2] || '-']
+        });
+        console.log(test_data)
+    }
 
     var data = [];
     for (var i=0;i<5;i++){
@@ -550,37 +567,116 @@ function showPredictDDResultChart(figure_id, locationlist, levellist) {
         tooltip: {
             position: 'top'
         },
-        grid: {
-            height: '50%',
-            top: '10%'
-        },
-        xAxis: {
-            type: 'category',
-            data: x,
-            splitArea: {
-                show: true
+        title: [
+            {
+                text: "实际结果",
+                top: '6%',
+                left: 'center',
+                textStyle: {
+                    fontFamily: 'SimSun',
+                }
+            },
+            {
+                text: "模型预测结果",
+                top: '41%',
+                left: 'center',
+                textStyle: {
+                    fontFamily: 'SimSun',
+                },
             }
-        },
-        yAxis: {
-            type: 'category',
-            data: y,
-            splitArea: {
-                show: true
+        ],
+        grid: [
+            {
+                id: 0,
+                height: "25%",
+                top: "10%"
+            },
+            {
+                id: 1,
+                height: '25%',
+                top: '45%'
+            },
+        ],
+        xAxis: [
+            {
+                type: 'category',
+                data: x,
+                gridIndex: 0,
+                splitArea: {
+                    show: true
+                }
+            },
+            {
+
+                type: 'category',
+                data: x,
+                gridIndex: 1,
+                splitArea: {
+                    show: true
+                }
+            },
+        ],
+        yAxis: [
+            {
+                type: 'category',
+                data: y,
+                gridIndex: 0,
+                splitArea: {
+                    show: true
+                }
+            },
+            {
+                type: 'category',
+                data: y,
+                gridIndex: 1,
+                splitArea: {
+                    show: true
+                }
             }
-        },
-        visualMap: {
-            min: 0,
-            max: 1,
-            calculable: true,
-            orient: 'horizontal',
-            left: 'center',
-            bottom: '15%'
-        },
+        ],
+        visualMap: [
+            {
+                min: 0,
+                max: 1,
+                calculable: true,
+                orient: 'horizontal',
+                left: 'center',
+                bottom: '15%'
+            },
+            {
+                min: 0,
+                max: 1,
+                calculable: true,
+                orient: 'horizontal',
+                left: 'center',
+                bottom: '15%'
+            }
+        ],
         series: [
+            {
+                name: '实际损伤位置',
+                type: 'heatmap',
+                data: test_data,
+                xAxisIndex: 0,
+                yAxisIndex: 0,
+                label: {
+                    normal: {
+                        show: true,
+                    }
+                },
+                emphasis: {
+                    itemStyle: {
+                        shadowBlur: 10,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                }
+            },
             {
                 name: '损伤位置',
                 type: 'heatmap',
                 data: data,
+                xAxisIndex: 1,
+                yAxisIndex: 1,
                 label: {
                     normal: {
                         show: true,

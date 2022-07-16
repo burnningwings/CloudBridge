@@ -97,7 +97,11 @@ public class DamageDetection {
         JSONObject data = new JSONObject();
         String targetFileName = testfile.split("\\.")[0] + "_" + testmodel.split("\\.")[0] + ".csv";
         System.out.println(targetFileName);
+
         String targetPath =  Constants.DAMAGE_PREDICT_FILE_DIR + "/" + targetFileName;
+        //找对比文件
+        String fPath = Constants.DAMAGE_UPLOAD_TEST_FILE_DIR + "/" + testfile;
+
         File file = new File(targetPath);
         if(!file.exists()){
             response.setStatus(HttpResponse.FAIL_STATUS);
@@ -106,7 +110,6 @@ public class DamageDetection {
             try{
                 FileReader fr = new FileReader(file);
                 BufferedReader br = new BufferedReader(fr);
-                ArrayList<String> timelist = new ArrayList<String>();
                 ArrayList<Integer> locationlist = new ArrayList<Integer>();
                 ArrayList<Integer> levellist = new ArrayList<Integer>();
                 String header = br.readLine();
@@ -123,6 +126,24 @@ public class DamageDetection {
 //                data.put("timelist", timelist);
                 data.put("locationlist", locationlist);
                 data.put("levellist", levellist);
+
+                FileReader fileReader = new FileReader(fPath);
+                BufferedReader bufferedReader = new BufferedReader(fileReader);
+                ArrayList<Integer> loc = new ArrayList<>();
+                ArrayList<Integer> lv = new ArrayList<>();
+                String header1 = bufferedReader.readLine();
+                String content1 = bufferedReader.readLine();
+                while (content1 != null){
+                    String[] split = content1.split(",");
+                    loc.add(Integer.valueOf(split[31]));
+                    lv.add(Integer.valueOf(split[32]));
+                    content1 = bufferedReader.readLine();
+                }
+                bufferedReader.close();
+                fileReader.close();
+
+                data.put("loc_test",loc);
+                data.put("level_test",lv);
 
             }catch (FileNotFoundException e){
                 e.printStackTrace();

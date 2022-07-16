@@ -61,7 +61,9 @@
             // var timelist = message["data"]["timelist"];
             var locationlist = message["data"]["locationlist"];
             var levellist = message["data"]["levellist"];
-            showPredictDDResultChart(figure_id, locationlist, levellist);
+            var loca_test = message["data"]["loc_test"];
+            var lv_test = message["data"]["level_test"];
+            showPredictDDResultChart(figure_id, locationlist, levellist,loca_test,lv_test);
         }
     }
     var url = "/damage-detection/getUDFPredictResult";
@@ -1328,6 +1330,7 @@ $(function () {
 
     })
 
+    $("#dd_show_result_figure").hide();
     $("#dd_result_damagedetection").click(function () {
         var test_file = $("#dd_test_file_selected").val();
         var test_model = $("#dd_test_model_selected").val();
@@ -1370,6 +1373,7 @@ $(function () {
                 // "endtime" : new Date(end_time).format('yyyyMMddHHmmss')
             }
             var current_dialog = $(this);
+            $("#dd_show_result_figure").show();
             getAndshowPredictResult(figure_id, current_dialog, param);
         })
     })

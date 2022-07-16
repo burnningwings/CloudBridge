@@ -21,6 +21,7 @@ import com.alibaba.fastjson.JSONArray;
 import javax.annotation.Resource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Map;
@@ -74,15 +75,12 @@ public class Warning {
         float threshold = Float.parseFloat(data.getJSONObject(0).getString("YBYZ"));
         //if (threshold == 0)
         //    return;
-        if(threshold < abs(computeThreshold(sensorId))
-        {
-            sql = String("INSERT INTO sensor_warning VALUES ("+ sensor_number + ",")
-        }
+        computeThreshold(sensorId, sensor_number, threshold);
 
 
 
     }
-    private float computeThreshold(String sensorId)
+    private void computeThreshold(String sensorId, String sensor_number, float preset)
     {
         Calendar nowTime = Calendar.getInstance();
         //String hbaseTableName = "CloudBridge:" + sensorId;
@@ -98,7 +96,7 @@ public class Warning {
         JSONArray rangeData = HBaseCli.getInstance().query(hbaseTableName,startRow,endRow,columnArray,limit,sample);
         int size = rangeData.size()-4;
         if(size <=2)
-            return 0;
+            return ;
         boolean isIncreasing = false;
         float latestStrain = Float.parseFloat(rangeData.getJSONObject(size - 1).getString("XZYB"));
         if(Float.parseFloat(rangeData.getJSONObject(size-2).getString("XZYB")) < latestStrain)
@@ -116,6 +114,39 @@ public class Warning {
                 break;
             i--;
         }
-        return Float.parseFloat(rangeData.getJSONObject(i).getString("XZYB")) - latestStrain;
+        float amplitude = Float.parseFloat(rangeData.getJSONObject(i).getString("XZYB")) - latestStrain;
+        if(amplitude < 0)
+            amplitude = 0 - amplitude;
+        if(preset < amplitude)
+        {
+
+            String startTime = rangeData.getJSONObject(i).getString("CLSJ");
+            String endTime = rangeData.getJSONObject(size - 1).getString("CLSJ");
+            SimpleDateFormat hbkeyformat =new SimpleDateFormat("yyyyMMddHHmmss");
+            SimpleDateFormat naturalformat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String naturalStartTime = "";
+            String naturalEndTime = "";
+            String amp = Float.toString(amplitude);
+            try {
+                naturalStartTime = naturalformat.format(hbkeyformat.parse(startTime));
+                naturalEndTime = naturalformat.format(hbkeyformat.parse(endTime));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+                String warning = "自 " + naturalStartTime + " 至 " + naturalEndTime + " 幅值为 " + amp + " 超出阈值！";;
+            String sql = String.format("INSERT INTO sensor_warning(sensor_number, begin_time, end_time, warning_info) VALUES ('"
+                                        + sensor_number + "','" + naturalStartTime + "','" + naturalEndTime + "','" + warning + "')");
+            baseDao.updateData(sql);
+        }
+        return;
+    }
+
+    private String generateWarning(String sensor_number, String startTime, String endTine, float amplitude) throws ParseException {
+        SimpleDateFormat hbkeyfotmat =new SimpleDateFormat("yyyyMMddHHmmss");
+        SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String naturalStartTime = sdf.format(hbkeyfotmat.parse(startTime));
+        String naturalEndTime = sdf.format(hbkeyfotmat.parse(endTine));
+        String amp = Float.toString(amplitude);
+        return "自 " + naturalStartTime + " 至 " + naturalEndTime + " 幅值为 " + amp + " 超出阈值！";
     }
 }

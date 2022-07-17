@@ -54,28 +54,28 @@ var sensor_map = {
         },
         {
             title: "sensor_number",
-            field: "sensor_number",
+            field: "传感器编号",
             template: '<a href="javascript: void(0);" onclick="sensorFigure(\'#: sensor_id #\',\'#: sensor_number #\')"/>#: sensor_number #</button>',
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         }, {
             field: "DY",
-            title: "DY",
+            title: "电压",
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         }, {
             field: "JSD",
-            title: "JSD",
+            title: "加速度",
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         }, {
             field: "SL",
-            title: "SL",
+            title: "索力",
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         }, {
             field: "CLSJ",
-            title: "CLSJ",
+            title: "测量时间",
             template: '#=kendo.toString(CLSJ)#.0',
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
@@ -224,35 +224,35 @@ var sensor_map = {
         },
         {
             field: "sensor_number",
-            title: "sensor_number",
+            title: "传感器编号",
             template: '<a href="javascript: void(0);" onclick="sensorFigure(\'#: sensor_id #\',\'#: sensor_number #\')"/>#: sensor_number #</button>',
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         }, {
             field: "CLYB",
-            title: "CLYB",
+            title: "测量应变",
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         }, {
             field: "XZYB",
-            title: "XZYB",
+            title: "修正应变",
             type: "number",
             format: "{0:0.0}",
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         }, {
             field: "CLWD",
-            title: "CLWD",
+            title: "测量温度",
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         }, {
             field: "DZ",
-            title: "DZ",
+            title: "电阻",
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }
         }, {
             field: "CLSJ",
-            title: "CLSJ",
+            title: "测量时间",
             template: '#=kendo.toString(CLSJ)#.0',
             headerAttributes:{ style:"text-align:center"},
             attributes:{ class:"text-center" }

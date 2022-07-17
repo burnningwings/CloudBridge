@@ -828,6 +828,7 @@ $(function () {
                 }
                 $('#train_begin_time').val(t_begin_train);
                 $('#train_end_time').val(t_end_train);
+                $("#train_example_count").text("样本数：" + data["example_count"])
                 $('.datetimepicker').datetimepicker('refresh');
             }
         }

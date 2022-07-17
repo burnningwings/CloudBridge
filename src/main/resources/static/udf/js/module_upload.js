@@ -4,7 +4,9 @@ function updateDropdownListTrainModel(){
     $("#mu_model").empty();
     var options ="<option value=\'\' disabled selected>请选择模型功能</option>" +
         "<option value='1'>超重车识别</optionva>" +
-        "<option value='2'>损伤识别</option>"
+        "<option value='2'>损伤识别</option>" +
+        "<option value='3'>关联性分析</option>" +
+        "<option value='4'>可靠度分析</option>"
     $("#mu_model").append(options);
     $("#mu_model").selectpicker('refresh');
 }

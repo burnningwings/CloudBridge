@@ -18,9 +18,13 @@ function updateDropdownListReliabilityFile(){
 
 function updateDropdownMenu(response) {
     var data = null;
-    var bridge_options = "";
-    var section_options = "";
-    var point_options = "";
+    // var bridge_options = "";
+    var organ_options = "<option value='-1'>请选择地区</option>"
+    var bridge_options = "<option value='-1'>请选择桥梁</option>";
+    var section_options = "<option value='-1'>请选择截面</option>";
+    var point_options = "<option value='-1'>请选择测点</option>";
+    var box_options = "<option value='-1'>请选择控制箱</option>"
+    var sensor_options = "<option value='-1'>请选择传感器</option>"
     if(response != null && response.status==0){
         data = response.data;
         console.log(data);
@@ -32,20 +36,29 @@ function updateDropdownMenu(response) {
         for(var key in data["bridge_detail"]){
             section_options = section_options + "<option value='" + key + "'>" + data["bridge_detail"][key]["name"] + "</option>";
         }
+        for(var key in data["box_sensor"]){
+            box_options = box_options + "<option value='" + key + "'>" + data["box_sensor"][key]["name"] + "</option>"
+        }
     }
     $("#reliability_bridge").empty();
     $("#reliability_section").empty();
     $("#reliability_watchpoint").empty();
+    $("#reliability_box_selected").empty();
+    $("#reliability_organization_selected").empty();
+    $("#reliability_sensor_selected").empty();
 
     $("#reliability_bridge").append(bridge_options);
     $("#reliability_section").append(section_options);
-    var section_selected = $("#reliability_section").val();
-    if(section_selected && !(section_selected.match(/^\s*$/))){
-        var point_info = data["bridge_detail"][section_selected]["watchpoint"];
-        for(var key in point_info){
-            point_options = point_options + "<option value='" + key + "'>" + point_info[key] + "</option>>";
-        }
-    }
+    $("#reliability_box_selected").append(box_options);
+    $("#reliability_organization_selected").append(organ_options);
+    $("#reliability_sensor_selected").append(sensor_options)
+    // var section_selected = $("#reliability_section").val();
+    // if(section_selected && !(section_selected.match(/^\s*$/))){
+    //     var sensor_info = data["bridge_detail"][section_selected]["sensor"];
+    //     for(var key in sensor_info){
+    //         sensor_options = sensor_options + "<option value='" + key + "'>" + sensor_info[key] + "</option>>";
+    //     }
+    // }
     $("#reliability_watchpoint").append(point_options);
     $('.selectpicker').selectpicker('refresh');
     return data;
@@ -74,6 +87,18 @@ function getAndshowReliabilityAnalysisResult(figure_id, current_dialog, params){
     webRequest(url, "GET", true, params, successCallback)
 }
 
+function selectIsExitItem(objSelect,objItemValue){
+    var isExit = false;
+    console.log(objSelect["0"])
+    for(var i = 0;i < objSelect["0"].options.length;i++){
+        if (objSelect[0].options[i].value == objItemValue){
+            isExit = true;
+            break
+        }
+    }
+    return isExit;
+}
+
 //初始化
 $(function () {
 
@@ -88,19 +113,63 @@ $(function () {
         var url = "/reliability-analysis/updtate_bridgedroplist";
         var response = webRequest(url, "GET", false, {"bridge_id" : id})
         data1 = updateDropdownMenu(response);
+
     })
 
     $('#reliability_section').change(function () {
         var id = $(this).children('option:selected').val();
-        var point_info = data1["bridge_detail"][id]["watchpoint"];
-        var point_options = "";
-        for(var key in point_info){
-            point_options = point_options + "<option value='" + key + "'>" + point_info[key] + "</option>";
+        var sensor_info = data1["bridge_detail"][id]["sensor"];
+        var sensor_options = "";
+        var $dropdownMenu2 = $("#reliability_section");
+        for(var key in sensor_info){
+            sensor_options = sensor_options + "<option value='" + key + "'>" + sensor_info[key] + "</option>";
         }
-        $("#reliability_watchpoint").empty();
-        $("#reliability_watchpoint").append(point_options);
+        if (selectIsExitItem($dropdownMenu2,"-2")){
+            for (var i =0;i<$dropdownMenu2["0"].options.length;i++){
+                if ($dropdownMenu2["0"].options[i].value == "-2"){
+                    $dropdownMenu2["0"].remove(i);
+                    break;
+                }
+            }
+        }
+        $("#reliability_sensor_selected").empty();
+        $("#reliability_sensor_selected").append(sensor_options);
+        // $("#reliability_box_selected").empty();
+        if (!selectIsExitItem($("#reliability_box_selected"),"-2")) {
+            var box_options = "<option value='-2'>未选中</option>";
+            $("#reliability_box_selected").append(box_options);
+            $("#reliability_box_selected").val("-2")
+        }
         $(".selectpicker").selectpicker('refresh');
     })
+
+    $('#reliability_box_selected').change(function () {
+        var id = $(this).children('option:selected').val();
+        var sensor_info = data1["box_sensor"][id]["sensor"];
+        var sensor_options = "";
+        var $dropdownMenu2 = $("#reliability_box_selected");
+        for(var key in sensor_info){
+            sensor_options = sensor_options + "<option value='" + key + "'>" + sensor_info[key] + "</option>";
+        }
+        if (selectIsExitItem($dropdownMenu2,"-2")){
+            for (var i =0;i<$dropdownMenu2["0"].options.length;i++){
+                if ($dropdownMenu2["0"].options[i].value == "-2"){
+                    $dropdownMenu2["0"].remove(i);
+                    break;
+                }
+            }
+        }
+        $("#reliability_sensor_selected").empty();
+        $("#reliability_sensor_selected").append(sensor_options);
+        // $("#reliability_box_selected").empty();
+        if(!selectIsExitItem($("#reliability_section"),"-2")){
+            var section_options = "<option value='-2'>未选中</option>";
+            $("#reliability_section").append(section_options);
+            $("#reliability_section").val("-2")
+        }
+        $(".selectpicker").selectpicker('refresh');
+    })
+
 
     var data_format_str = 'yyyy-MM-dd HH:mm:ss';
     var current_time = new Date().format(data_format_str);

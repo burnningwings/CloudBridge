@@ -78,17 +78,19 @@ function updateBridgeInfoGrid() {
                 title: "类型",
                 headerAttributes: {style: "text-align:center"},
                 attributes: {class: "text-center"}
-            }, {
-                field: "organization",
-                title: "单位",
-                headerAttributes: {style: "text-align:center"},
-                attributes: {class: "text-center"}
-            }, {
-                field: "description",
-                title: "说明",
-                headerAttributes: {style: "text-align:center"},
-                attributes: {class: "text-center"}
-            }, {
+            },
+            // {
+            //     field: "organization",
+            //     title: "单位",
+            //     headerAttributes: {style: "text-align:center"},
+            //     attributes: {class: "text-center"}
+            // }, {
+            //     field: "description",
+            //     title: "说明",
+            //     headerAttributes: {style: "text-align:center"},
+            //     attributes: {class: "text-center"}
+            // },
+            {
                 template: "<a class='btn btn-success' id='section-#:bridge_id#' href='section?bridgeId=#:bridge_id#'/>查看</a>",
                 title: "截面",
                 headerAttributes: {style: "text-align:center"},

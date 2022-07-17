@@ -9,6 +9,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RestController;
 import scut.service.SysUserService;
 import scut.service.authority.CurrentUser;
 import scut.util.Constants;
@@ -28,18 +29,20 @@ import java.util.Map;
 import java.util.Date;
 
 @Component
+@RestController
 public class Warning {
     @Resource
     SysUserService sysUserService;
 
     public static Logger logger = Logger.getLogger(LogManager.class);
 
+
     SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd HH:mm:ss");
     int maxActive = 100;
     String druid_mysql_url = String.format(Constants.MYSQL_FORMAT,Constants.MYSQL_URL,Constants.MYSQL_USERNAME,Constants.MYSQL_PASSWORD) + "|" + maxActive;
     SQLBaseDao baseDao = SQLDaoFactory.getSQLDaoInstance(druid_mysql_url);
 
-    @Scheduled(fixedRate = /*5*60*1000*/ 10*1000)
+    @Scheduled(fixedRate = /*5*60*1000*/ 10*60*1000)
     private void checkSensor() {
         //UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         //CurrentUser currentUser = new CurrentUser(userDetails.getUsername());
@@ -55,17 +58,12 @@ public class Warning {
                 "WHERE type_id = 1 AND sensor_id >=1022");
         String[] fields = new String[]{"sensor_id","sensor_number"};
         JSONArray data = baseDao.queryData(sql, fields);
-        String int11 = "11";
-        String sensorId = data.getJSONObject(1).getString("sensor_id");
-        String sensor_number = data.getJSONObject(1).getString("sensor_number");
-        checkForWarning(sensorId, sensor_number);
-        JSONObject data1 = new JSONObject();
-        String hbaseTableName = "CloudBridge:" + sensorId;
-        int sample = -1;
-
-
-
-
+        for(int i = 0; i < data.size(); i++)
+        {
+            String sensorId = data.getJSONObject(i).getString("sensor_id");
+            String sensor_number = data.getJSONObject(i).getString("sensor_number");
+            checkForWarning(sensorId, sensor_number);
+        }
     }
     private void checkForWarning(String sensorId, String sensor_number)
     {
@@ -75,17 +73,13 @@ public class Warning {
         float threshold = Float.parseFloat(data.getJSONObject(0).getString("YBYZ"));
         //if (threshold == 0)
         //    return;
-        computeThreshold(sensorId, sensor_number, threshold);
-
-
-
+        computeThreshold(sensorId, sensor_number, (float)46.3);
     }
     private void computeThreshold(String sensorId, String sensor_number, float preset)
     {
         Calendar nowTime = Calendar.getInstance();
-        //String hbaseTableName = "CloudBridge:" + sensorId;
-        String hbaseTableName = "CloudBridge:1026";
-        //String columnList = new String("CLYB");
+        String hbaseTableName = "CloudBridge:" + sensorId;
+        //String hbaseTableName = "CloudBridge:1026";
         int limit = 0;
         int sample = -1;
         JSONArray columnArray = JSON.parseArray("[\"XZYB\"]");
@@ -94,11 +88,14 @@ public class Warning {
         nowTime.add(Calendar.HOUR, -12);
         String startRow = sdf.format(nowTime.getTime());
         JSONArray rangeData = HBaseCli.getInstance().query(hbaseTableName,startRow,endRow,columnArray,limit,sample);
-        int size = rangeData.size()-4;
+        int size = rangeData.size()-1;
         if(size <=2)
             return ;
         boolean isIncreasing = false;
-        float latestStrain = Float.parseFloat(rangeData.getJSONObject(size - 1).getString("XZYB"));
+        String XZYB = rangeData.getJSONObject(size - 1).getString("XZYB");
+        if(XZYB.equals("*"))
+            return;
+        float latestStrain = Float.parseFloat(XZYB);
         if(Float.parseFloat(rangeData.getJSONObject(size-2).getString("XZYB")) < latestStrain)
         {
             isIncreasing = true;
@@ -141,12 +138,12 @@ public class Warning {
         return;
     }
 
-    private String generateWarning(String sensor_number, String startTime, String endTine, float amplitude) throws ParseException {
-        SimpleDateFormat hbkeyfotmat =new SimpleDateFormat("yyyyMMddHHmmss");
-        SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String naturalStartTime = sdf.format(hbkeyfotmat.parse(startTime));
-        String naturalEndTime = sdf.format(hbkeyfotmat.parse(endTine));
-        String amp = Float.toString(amplitude);
-        return "自 " + naturalStartTime + " 至 " + naturalEndTime + " 幅值为 " + amp + " 超出阈值！";
-    }
+//    private String generateWarning(String sensor_number, String startTime, String endTine, float amplitude) throws ParseException {
+//        SimpleDateFormat hbkeyfotmat =new SimpleDateFormat("yyyyMMddHHmmss");
+//        SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//        String naturalStartTime = sdf.format(hbkeyfotmat.parse(startTime));
+//        String naturalEndTime = sdf.format(hbkeyfotmat.parse(endTine));
+//        String amp = Float.toString(amplitude);
+//        return "自 " + naturalStartTime + " 至 " + naturalEndTime + " 幅值为 " + amp + " 超出阈值！";
+//    }
 }

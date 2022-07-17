@@ -279,7 +279,7 @@ public class LogManager {
 
         if (sensorName == null || sensorName.equals("全部"))
             sql = String.format("select sensor_number, DATE_FORMAT(end_time,\"%%Y-%%m-%%d %%H:%%i:%%s\") as end_time, warning_info from sensor_warning " +
-                            "limit %s,%s ",
+                            "order by warning_id desc limit %s,%s ",
                     (page - 1) * pageSize, pageSize);
 
         String[] fields = new String[]{"sensor_number","end_time","warning_info"};

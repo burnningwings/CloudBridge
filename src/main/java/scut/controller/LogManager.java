@@ -68,14 +68,15 @@ public class LogManager {
                     "   from sys_user su" +
                     "   where su.organization_id in %s " +
                     ") " +
-                    "limit %s,%s ",
+                    "order by log_id desc " +
+                    "limit %s,%s",
                 userManageableOrgIdsStr,
                 (page - 1) * pageSize, pageSize);
 
             //因为用到stringformat的缘故，需要使用%%对%进行转义，然后datttime也要转成string的形式才能显示
         else
             sql = String.format(
-                    "select log_id, bridge_name, username, DATE_FORMAT(log_time,\"%%Y-%%m-%%d %%H:%%i:%%s\") as log_time, log_info from log_bridge where bridge_name = '%s' limit %s,%s " ,
+                    "select log_id, bridge_name, username, DATE_FORMAT(log_time,\"%%Y-%%m-%%d %%H:%%i:%%s\") as log_time, log_info from log_bridge where bridge_name = '%s' order by log_id desc limit %s,%s " ,
                     bridgeName,(page-1)*pageSize, pageSize);
 
         String[] fields = new String[]{"log_id","bridge_name","username","log_time","log_info"};

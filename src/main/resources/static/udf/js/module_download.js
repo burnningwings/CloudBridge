@@ -121,17 +121,42 @@ $(function () {
         var params = {
             "moduleInfo": info
         };
-        var response = webRequest(url, "POST", false, params);
+        // var response = webRequest(url, "POST", false, params);
+        var token = $("meta[name='_csrf']").attr("content");
+        var header = $("meta[name='_csrf_header']").attr("content");
+        $(document).ajaxSend(function(e, xhr, options) {
+            xhr.setRequestHeader(header, token);
+        });
+        $.ajax({
+            url: "/module_manger/download",
+            type: "POST",
+            async: true,
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(params),
+            dataType: "text",
+            beforeSend: function () {
 
-        if (response != null && response.status == 0) {
-            // showTransientDialog("操作成功！");
-            for ( m in response['data']){
-                download_module(response['data'][m],m)
+            },
+            success: function(response) {
+                var str = response;
+                console.log(str)
+                var url = "data:text/csv;charset=utf-8,\ufeff" + encodeURIComponent(str);
+                var link = document.createElement("a");
+                link.href = url;
+                link.download = module.name;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                return true;
+            },
+            complete:function () {
+            },
+            error: function(response) {
+                alert("提交任务失败");
             }
-            return true;
-        } else {
-            showTransientDialog(response.msg);
-            return false;
-        }
+
+        });
+
+
     });
 });

@@ -3,39 +3,28 @@ package scut.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import jdk.nashorn.internal.ir.RuntimeNode;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.log4j.Logger;
-import org.springframework.http.HttpRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 import scut.base.HttpResponse;
 import scut.service.SysUserService;
-import scut.service.authority.CurrentUser;
 import scut.service.log.LogBase;
-import scut.service.scheduler.AnalysisMessage;
-import scut.service.scheduler.LogEntity;
-import scut.service.scheduler.Message;
-import scut.service.scheduler.Scheduler;
-import scut.service.scheduler.executor.CommandLineExecutor;
-import scut.service.scheduler.executor.Executor;
 import scut.util.Constants;
 import scut.util.sql.SQLBaseDao;
 import scut.util.sql.SQLDaoFactory;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 
 @RestController
@@ -156,7 +145,7 @@ public class ModuleManager {
      * @Author: liujun
      */
     @RequestMapping(value = "/module_manger/download", method = RequestMethod.POST, produces = "application/json")
-    public JSONObject moduleDownload(@RequestBody JSONObject reqMsg) {
+    public Object moduleDownload(@RequestBody JSONObject reqMsg) {
         HttpResponse response = new HttpResponse();
         String moduleInfo = reqMsg.getString("moduleInfo");
         JSONArray module_info = JSON.parseArray(moduleInfo);
@@ -165,10 +154,11 @@ public class ModuleManager {
         Integer[] typeId = new Integer[module_info.size()];
         //检查必须参数
         if (module_info == null) {
-            response.setStatus(HttpResponse.FAIL_STATUS);
-            response.setCode(HttpResponse.FAIL_CODE);
-            response.setMsg("参数错误！");
-            return response.getHttpResponse();
+            HttpResponse response1 = new HttpResponse();
+            response1.setStatus(HttpResponse.FAIL_STATUS);
+            response1.setCode(HttpResponse.FAIL_CODE);
+            response1.setMsg("参数错误！");
+            return response1.getHttpResponse();
         }
 
         String curTime = sdf.format(new Date());
@@ -179,27 +169,53 @@ public class ModuleManager {
             JSONObject o = module_info.getJSONObject(n);
             //查询文件所在位置
             String sql = String.format("select location FROM module WHERE id=%d;",Integer.parseInt((String)o.get("id")));
-            //执行操作
-//            try {
-//                String[] location = new String[module_info.size()];
-//                final int[] count = {0};
-//                baseDao.querySingleObject(sql, new ResultSetHandler<String>() {
-//
-//                    @Override
-//                    public String handle(ResultSet resultSet) throws SQLException {
-//                        while (resultSet.next()){
-//                            location[count[0]] = resultSet.getString("location");
-//                            count[0]++;
-//                        }
-//                        return null;
-//                    }
-//                });
-//
-//            } catch (SQLException e) {
-//                e.printStackTrace();
-//            }
+
             String[] fields = new String[]{"location"};
-            data.put(o.getString("name"),baseDao.queryData(sql, fields).getJSONObject(0).getString("location"));
+            String location = baseDao.queryData(sql,fields).getJSONObject(0).getString("location");
+//            data.put(o.getString("name"),baseDao.queryData(sql, fields).getJSONObject(0).getString("location"));
+
+            ServletRequestAttributes sra = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            HttpServletResponse response2 = sra.getResponse();
+            URL urlFile = null;
+            HttpURLConnection httpURLConnection = null;
+            FileInputStream in = null;
+            ServletOutputStream out = null;
+            try {
+                File file = new File(location);
+                if (!file.exists()){
+                    return null;
+                }
+                response2.setContentType("application/octet-stream");
+                response2.setHeader("Content-Disposition","attachment;filename=" + o.getString("name"));
+
+                in = new FileInputStream(location);
+                out = response2.getOutputStream();
+                int len = 0;
+                byte[] bytes = new byte[1024 * 10];
+                while ((len = in.read(bytes)) != -1){
+                    out.write(bytes,0,len);
+                }
+                out.flush();
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }finally {
+                try {
+                    if (out != null && in != null){
+                        in.close();
+                        out.close();
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+            response2.setStatus(0);
+            return response2;
+
         }
         response.setData(data);
         return response.getHttpResponse();

@@ -45,49 +45,37 @@ public class ModuleManager {
         JSONObject data = new JSONObject();
         if (!file.isEmpty()){
             try{
-                File targetFile = null;
+                String targetFile = null;
                 switch (feature){
                     case "超重车识别" :
-                        targetFile = new File(Constants.OVERWEIGHT_UPLOAD_TRAIN_MODEL_DIR);
+                        targetFile = Constants.OVERWEIGHT_UPLOAD_TRAIN_MODEL_DIR;
                         break;
                     case "损伤识别" :
-                        targetFile = new File(Constants.DAMAGE_UPLOAD_TRAIN_MODEL_DIR);
+                        targetFile = Constants.DAMAGE_UPLOAD_TRAIN_MODEL_DIR;
                         break;
                     case "关联性分析" :
-                        targetFile = new File(Constants.ASSOCIATION_UPLOAD_TRAIN_MODEL_DIR);
+                        targetFile = Constants.ASSOCIATION_UPLOAD_TRAIN_MODEL_DIR;
                         break;
                     case "可靠度分析" :
-                        targetFile = new File(Constants.RELIABILITY_UPLOAD_TRAIN_MODEL_DIR);
+                        targetFile = Constants.RELIABILITY_UPLOAD_TRAIN_MODEL_DIR;
                         break;
                     default :
                         break;
                 }
-                if(!targetFile.exists()) {
-                    targetFile.mkdirs();
-                }
+//                if(!targetFile.exists()) {
+//                    targetFile.mkdirs();
+//                }
                 String originFileName = file.getOriginalFilename();
-                String fileName = Constants.OVERWEIGHT_UPLOAD_TRAIN_MODEL_DIR + "/" + originFileName;
+                String fileName = targetFile + "/" + originFileName;
                 BufferedOutputStream out = new BufferedOutputStream(
                         new FileOutputStream(new File( fileName)));
                 out.write(file.getBytes());
                 out.flush();
                 out.close();
-//                // 2. 上传到HBase
-//                String execStr = Constants.UPLOAD_DATA_BIN_SH + " " + sensor_id + " " + fileName;
-//                logger.debug(execStr);
-//                Executor executor = new CommandLineExecutor(md5,execStr);
-//                JSONObject param = new JSONObject();
-//                param.put("exec_str",execStr);
-//                Message.getInstance().update(md5,originFileName,sensor_number,Constants.READY,param.toJSONString(),null);
-//                Scheduler.getInstance().runExecutor(executor);
-//                data.put("url","http://192.168.0.100:8088/cluster/scheduler");
-//                // 前端获取该key，可监听上传情况
-//                data.put("id",md5);
-                //将模型信息更新到mysql
-//                String[] split = moduleInfo.split(" - ");
+
                 //文件位置暂时设为本地
                 String sql = String.format("insert into module (name,uploader_id,uploader_name,upload_time,location,feature)" +
-                        " values (\"%s\",(select userId from user where account = \"%s\"),\"%s\",NOW(),\"%s\",\"%s\")",originFileName,uploader_name,uploader_name,fileName,feature);
+                        " values (\"%s\",(select userId from User where account = \"%s\"),\"%s\",NOW(),\"%s\",\"%s\")",originFileName,uploader_name,uploader_name,fileName,feature);
                 int res = baseDao.updateData(sql);
                 //TODO:需要将模型操作上传日志?
             }catch (FileNotFoundException e){

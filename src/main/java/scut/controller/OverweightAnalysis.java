@@ -576,7 +576,7 @@ public class OverweightAnalysis {
                     if(!item[17].matches("\\d+")){
                         continue;
                     }
-                    long current_time = Long.parseLong(item[16]);
+                    long current_time = Long.parseLong(item[17]);
                     if (current_time <= et && current_time >= bt){
                         example_count += 1;
                     }

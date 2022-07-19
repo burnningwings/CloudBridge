@@ -197,7 +197,7 @@ function updateDropdownListTrainFile(){
     if(response!=null && response.status==0){
         var data = response.data;
         for(var key in data){
-            options = options + "<option>" + key + "</option>";
+            options = options + "<option>" + key.substring(0, key.lastIndexOf(".")) + "</option>";
         }
     }
     $("#train_file_selected").append(options);
@@ -217,7 +217,7 @@ function updateDropdownListTrainLabel(){
     if(response!=null && response.status==0){
         var data = response.data;
         for(var key in data){
-            options = options + "<option>" + key + "</option>";
+            options = options + "<option>" + key.substring(0, key.lastIndexOf(".")) + "</option>";
         }
     }
     $("#train_label_selected").append(options);
@@ -246,8 +246,20 @@ function updateDropdownListTrainModelType(){
     $('#train_multi_model_type_selected').empty();
     var single_options ="<option value=\'\' disabled selected>请选择单任务算法模型</option>"
     var multi_options ="<option value=\'\' disabled selected>请选择多任务算法模型</option>"
-    var single = ["tcn","dnn","rnn","lstm","gru","dnnlstm"]
-    var multi = ["tcnmt","rnnmt","lstmmt","dnnlstmmt"]
+    var single = {
+        "tcn": "基于时间卷积网络的超重车动态识别算法",
+        "dnn": "基于深度神经网络的超重车动态识别算法",
+        "rnn": "基于循环神经网络的超重车动态识别算法",
+        "lstm": "基于长短时记忆网络的超重车动态识别算法",
+        "gru": "基于门控循环单元的超重车动态识别算法",
+        "dnnlstm": "基于深度神经网络和长短时记忆网络的超重车动态识别算法"
+    }
+    var multi = {
+        "tcnmt": "基于时间卷积网络的多任务学习超重车动态识别算法",
+        "rnnmt": "基于循环神经网络的多任务学习超重车动态识别算法",
+        "lstmmt": "基于长短时记忆网络的多任务学习超重车动态识别算法",
+        "dnnlstmmt": "基于深度神经网络和长短时记忆网络的多任务学习超重车动态识别算法"
+    }
 
     for(var key in single){
         single_options = single_options + "<option value='" + key + "'>" + single[key] + "</option>";
@@ -306,8 +318,20 @@ function updateDropdownListEvaluateModelType(){
     $('#evaluate_multi_model_type_selected').empty();
     var single_options ="<option value=\'\' disabled selected>请选择单任务算法模型</option>"
     var multi_options ="<option value=\'\' disabled selected>请选择多任务算法模型</option>"
-    var single = ["tcn","dnn","rnn","lstm","gru","dnnlstm"]
-    var multi = ["tcnmt","rnnmt","lstmmt","dnnlstmmt"]
+    var single = {
+        "tcn": "基于时间卷积网络的超重车动态识别算法",
+        "dnn": "基于深度神经网络的超重车动态识别算法",
+        "rnn": "基于循环神经网络的超重车动态识别算法",
+        "lstm": "基于长短时记忆网络的超重车动态识别算法",
+        "gru": "基于门控循环单元的超重车动态识别算法",
+        "dnnlstm": "基于深度神经网络和长短时记忆网络的超重车动态识别算法"
+    }
+    var multi = {
+        "tcnmt": "基于时间卷积网络的多任务学习超重车动态识别算法",
+        "rnnmt": "基于循环神经网络的多任务学习超重车动态识别算法",
+        "lstmmt": "基于长短时记忆网络的多任务学习超重车动态识别算法",
+        "dnnlstmmt": "基于深度神经网络和长短时记忆网络的多任务学习超重车动态识别算法"
+    }
 
     for(var key in single){
         single_options = single_options + "<option value='" + key + "'>" + single[key] + "</option>";
@@ -364,8 +388,20 @@ function updateDropdownListTestModelType(){
     $('#test_multi_model_type_selected').empty();
     var single_options ="<option value=\'\' disabled selected>请选择单任务算法模型</option>"
     var multi_options ="<option value=\'\' disabled selected>请选择多任务算法模型</option>"
-    var single = ["tcn","dnn","rnn","lstm","gru","dnnlstm"]
-    var multi = ["tcnmt","rnnmt","lstmmt","dnnlstmmt"]
+    var single = {
+        "tcn": "基于时间卷积网络的超重车动态识别算法",
+        "dnn": "基于深度神经网络的超重车动态识别算法",
+        "rnn": "基于循环神经网络的超重车动态识别算法",
+        "lstm": "基于长短时记忆网络的超重车动态识别算法",
+        "gru": "基于门控循环单元的超重车动态识别算法",
+        "dnnlstm": "基于深度神经网络和长短时记忆网络的超重车动态识别算法"
+    }
+    var multi = {
+        "tcnmt": "基于时间卷积网络的多任务学习超重车动态识别算法",
+        "rnnmt": "基于循环神经网络的多任务学习超重车动态识别算法",
+        "lstmmt": "基于长短时记忆网络的多任务学习超重车动态识别算法",
+        "dnnlstmmt": "基于深度神经网络和长短时记忆网络的多任务学习超重车动态识别算法"
+    }
 
     for(var key in single){
         single_options = single_options + "<option value='" + key + "'>" + single[key] + "</option>";
@@ -422,8 +458,20 @@ function updateDropdownListSpyTestModelType(){
     $('#spy_test_multi_model_type_selected').empty();
     var single_options ="<option value=\'\' disabled selected>请选择单任务算法模型</option>"
     var multi_options ="<option value=\'\' disabled selected>请选择多任务算法模型</option>"
-    var single = ["tcn","dnn","rnn","lstm","gru","dnnlstm"]
-    var multi = ["tcnmt","rnnmt","lstmmt","dnnlstmmt"]
+    var single = {
+        "tcn": "基于时间卷积网络的超重车动态识别算法",
+        "dnn": "基于深度神经网络的超重车动态识别算法",
+        "rnn": "基于循环神经网络的超重车动态识别算法",
+        "lstm": "基于长短时记忆网络的超重车动态识别算法",
+        "gru": "基于门控循环单元的超重车动态识别算法",
+        "dnnlstm": "基于深度神经网络和长短时记忆网络的超重车动态识别算法"
+    }
+    var multi = {
+        "tcnmt": "基于时间卷积网络的多任务学习超重车动态识别算法",
+        "rnnmt": "基于循环神经网络的多任务学习超重车动态识别算法",
+        "lstmmt": "基于长短时记忆网络的多任务学习超重车动态识别算法",
+        "dnnlstmmt": "基于深度神经网络和长短时记忆网络的多任务学习超重车动态识别算法"
+    }
 
     for(var key in single){
         single_options = single_options + "<option value='" + key + "'>" + single[key] + "</option>";
@@ -479,11 +527,11 @@ function updateDropdownListTestFile(){
     $("#test_file_selected").empty();
     var url = "/overweight-analysis/dropdown";
     var response = webRequest(url, "GET", false, {"type" : "testfile"});
-    var options ="<option value=\'\' disabled selected>请选择预测文件</option>"
+    var options ="<option value=\'\' disabled selected>请选择识别文件</option>"
     if(response!=null && response.status==0){
         var data = response.data;
         for(var key in data){
-            options = options + "<option>" + key + "</option>";
+            options = options + "<option>" + key.substring(0, key.lastIndexOf(".")) + "</option>";
         }
     }
     $("#test_file_selected").append(options);
@@ -512,11 +560,11 @@ function updateDropdownListSavedModel(){
     $("#spy_test_model_selected").empty();
     var url = "/overweight-analysis/dropdown";
     var response = webRequest(url, "GET", false, {"type" : "savedmodel"});
-    var options ="<option value=\'\' disabled selected>请选择预测模型</option>"
+    var options ="<option value=\'\' disabled selected>请选择识别模型</option>"
     if(response!=null && response.status==0){
         var data = response.data;
         for(var key in data){
-            options = options + "<option>" + key + "</option>";
+            options = options + "<option>" + key.substring(0, key.lastIndexOf(".")) + "</option>";
         }
     }
     $("#test_model_selected").append(options);
@@ -533,7 +581,7 @@ function updateDropdownListEvaluateFile(){
     if(response!=null && response.status==0){
         var data = response.data;
         for(var key in data){
-            options = options + "<option>" + key + "</option>";
+            options = options + "<option>" + key.substring(0, key.lastIndexOf(".")) + "</option>";
         }
     }
     $("#evaluate_file_selected").append(options);
@@ -548,7 +596,7 @@ function updateDropdownListEvaluateModel(){
     if(response!=null && response.status==0){
         var data = response.data;
         for(var key in data){
-            options = options + "<option>" + key + "</option>";
+            options = options + "<option>" + key.substring(0, key.lastIndexOf(".")) + "</option>";
         }
     }
     $("#evaluate_model_selected").append(options);
@@ -668,7 +716,7 @@ function updateDropdownListTestBridge(){
 //     $("#udf_test_model_selected").empty();
 //     var url = "/overweight-analysis/dropdown";
 //     var response = webRequest(url, "GET", false, {"type" : "savedmodel"});
-//     var options ="<option value=\'\' disabled selected>请选择预测模型</option>"
+//     var options ="<option value=\'\' disabled selected>请选择识别模型</option>"
 //     if(response!=null && response.status==0){
 //         var data = response.data;
 //         for(var key in data){
@@ -813,11 +861,43 @@ $(function () {
     $('#train_begin_time').val(t_begin_train);
     $('#train_end_time').val(t_end_train);
 
+    $('#train_begin_time').change(function () {
+        var file = $("#train_file_selected").children('option:selected').val();
+        var url = "/overweight-analysis/getExampleCount";
+        var begin_time = $("#train_begin_time").val();
+        var end_time = $("#train_end_time").val();
+
+        var response = webRequest(url, "GET", false, {"type" : "trainfile","filename":file+".csv","beginTime": new Date(begin_time).format('yyyyMMddHHmmss'),"endTime": new Date(end_time).format('yyyyMMddHHmmss')});
+        if(response!=null && response.status==0){
+            var data = response.data;
+            for(var key in data){
+                $("#train_example_count").text("样本数：" + data["example_count"])
+                $("#train_example_count").refresh()
+            }
+        }
+    });
+
+    $('#train_end_time').change(function () {
+        var file = $("#train_file_selected").children('option:selected').val();
+        var url = "/overweight-analysis/getExampleCount";
+        var begin_time = $("#train_begin_time").val();
+        var end_time = $("#train_end_time").val();
+
+        var response = webRequest(url, "GET", false, {"type" : "trainfile","filename":file+".csv","beginTime": new Date(begin_time).format('yyyyMMddHHmmss'),"endTime": new Date(end_time).format('yyyyMMddHHmmss')});
+        if(response!=null && response.status==0){
+            var data = response.data;
+            for(var key in data){
+                $("#train_example_count").text("样本数：" + data["example_count"])
+                $("#train_example_count").refresh()
+            }
+        }
+    });
+
 
     $('#train_file_selected').change(function(){
         var file = $(this).children('option:selected').val();
         var url = "/overweight-analysis/getTime";
-        var response = webRequest(url, "GET", false, {"type" : "trainfile","filename":file});
+        var response = webRequest(url, "GET", false, {"type" : "trainfile","filename":file+".csv"});
         if(response!=null && response.status==0){
             var data = response.data;
             for(var key in data){
@@ -852,7 +932,7 @@ $(function () {
     $('#evaluate_file_selected').change(function () {
         var file = $(this).children('option:selected').val();
         var url = "/overweight-analysis/getTime";
-        var response = webRequest(url, "GET", false, {"type" : "evaluatefile","filename":file});
+        var response = webRequest(url, "GET", false, {"type" : "evaluatefile","filename":file+".csv"});
         if(response!=null && response.status==0){
             var data = response.data;
             for(var key in data){
@@ -885,7 +965,7 @@ $(function () {
     $('#test_file_selected').change(function () {
         var file = $(this).children('option:selected').val();
         var url = "/overweight-analysis/getTime";
-        var response = webRequest(url, "GET", false, {"type" : "testfile","filename":file});
+        var response = webRequest(url, "GET", false, {"type" : "testfile","filename":file+".csv"});
         if(response!=null && response.status==0){
             var data = response.data;
             for(var key in data){
@@ -1197,7 +1277,7 @@ $(function () {
             // var train_bridge = $("#train_bridge_selected").val();
             var saved_model = $("#saved_model").val();
             var train_label = $("#train_label_selected").val()
-            var model_type = $("#train_single_model_type_selected").val() >= 0?$("#train_single_model_type_selected option:selected").text():$("#train_multi_model_type_selected option:selected").text()
+            var model_type = $("#train_single_model_type_selected").val() != -1?$("#train_single_model_type_selected option:selected").val():$("#train_multi_model_type_selected option:selected").val()
             var epochs = $("#epochs").val()
             var lr = $("#lr").val()
             var batch_size = $("#batch_size").val()
@@ -1254,13 +1334,13 @@ $(function () {
                 async: true,
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({
-                    "trainfile" : train_file,
+                    "trainfile" : train_file + ".csv",
                     "trainmodel" : train_model,
                     "savedmodel" : saved_model,
                     // "bridge" : train_bridge,
                     "begintime" : new Date(begin_time).format('yyyyMMddHHmmss'),
                     "endtime" : new Date(end_time).format("yyyyMMddHHmmss"),
-                    "trainlabel" : train_label,
+                    "trainlabel" : train_label +".csv",
                     "trainmodeltype" : model_type,
                     "epochs" : epochs,
                     "lr" : lr,
@@ -1417,12 +1497,12 @@ $(function () {
     //     var test_model = $("#test_model_selected").val();
     //     //console.log(saved_model);
     //     if (test_file == null){
-    //         showTransientDialog("请选择预测文件");
+    //         showTransientDialog("请选择识别文件");
     //         //showDialog("请选择训练文件");
     //         return;
     //     }
     //     if(test_model == null){
-    //         showTransientDialog("请选择预测模型");
+    //         showTransientDialog("请选择识别模型");
     //         //showDialog("请选择训练模型");
     //         return;
     //     }
@@ -1445,7 +1525,7 @@ $(function () {
     //         }),
     //         dataType: "json",
     //         beforeSend: function () {
-    //             $("#test_start").text('预测中...');
+    //             $("#test_start").text('识别中...');
     //             $("#test_process").removeAttr("value");
     //             // var content = '' +
     //             //     ' <img alt="loadding" src="/assets/img/loading.gif" /> \
@@ -1462,13 +1542,13 @@ $(function () {
     //                 //showTransientDialog('训练完成!')
     //                 //showModalDialog("提示", "训练完成")
     //                 //showAlertDialog('训练完成')
-    //                 showDialog("预测完成")
+    //                 showDialog("识别完成")
     //             } else {
-    //                 showTransientDialog('预测失败！')
+    //                 showTransientDialog('识别失败！')
     //             }
     //         },
     //         complete:function () {
-    //             $("#test_start").text("开始预测");
+    //             $("#test_start").text("开始识别");
     //             $("#test_process").attr("value", "100");
     //
     //             // if (d != null) {
@@ -1566,11 +1646,11 @@ $(function () {
   //       var test_file = $("#test_file_selected").val();
   //       var test_model = $("#test_model_selected").val();
   //       if(test_file == null){
-  //           showTransientDialog("请选择预测文件");
+  //           showTransientDialog("请选择识别文件");
   //           return;
   //       }
   //       if(test_model == null){
-  //           showTransientDialog("请选择预测模型");
+  //           showTransientDialog("请选择识别模型");
   //           return;
   //       }
   //
@@ -1711,7 +1791,7 @@ $(function () {
     $("#evaluate_start").click(function () {
         var evaluate_file = $("#evaluate_file_selected").val();
         var evaluate_model = $("#evaluate_model_selected").val();
-        var model_type = $("#evaluate_single_model_type_selected").val() >= 0?$("#evaluate_single_model_type_selected option:selected").text():$("#evaluate_multi_model_type_selected option:selected").text();
+        var model_type = $("#evaluate_single_model_type_selected").val() != -1?$("#evaluate_single_model_type_selected option:selected").val():$("#evaluate_multi_model_type_selected option:selected").val();
 
         // var bridge = $("#evaluate_bridge_selected").val();
 
@@ -1749,9 +1829,9 @@ $(function () {
             async: true,
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({
-                "evaluatefile" : evaluate_file,
+                "evaluatefile" : evaluate_file + ".csv",
                 // "bridge" : bridge,
-                "evaluatemodel" : evaluate_model,
+                "evaluatemodel" : evaluate_model + ".h5",
                 "begintime" : new Date(begin_time).format('yyyyMMddHHmmss'),
                 "endtime" : new Date(end_time).format("yyyyMMddHHmmss"),
                 "modelType" : model_type,
@@ -1803,14 +1883,14 @@ $(function () {
             var test_file = $("#test_file_selected").val();
             var test_model = $("#test_model_selected").val();
             var bridge = $("#test_bridge_selected").val();
-            var model_type = $("#test_single_model_type_selected").val() >= 0?$("#test_single_model_type_selected option:selected").text():$("#test_multi_model_type_selected option:selected").text()
+            var model_type = $("#test_single_model_type_selected").val() != 0?$("#test_single_model_type_selected option:selected").val():$("#test_multi_model_type_selected option:selected").val()
 
             if(test_file == null){
-                showTransientDialog("请选择预测文件");
+                showTransientDialog("请选择识别文件");
                 return;
             }
             if(test_model == null){
-                showTransientDialog("请选择预测模型");
+                showTransientDialog("请选择识别模型");
                 //showDialog("请选择训练模型");
                 return;
             }
@@ -1840,16 +1920,16 @@ $(function () {
                 async: true,
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({
-                    "testfile" : test_file,
+                    "testfile" : test_file + ".csv",
                     // "bridge" : bridge,
-                    "testmodel" : test_model,
+                    "testmodel" : test_model + ".h5",
                     "begintime" : new Date(begin_time).format('yyyyMMddHHmmss'),
                     "endtime" : new Date(end_time).format("yyyyMMddHHmmss"),
                     "modelType" : model_type,
                 }),
                 dataType: "json",
                 beforeSend: function () {
-                    $("#test_start").text('预测中...');
+                    $("#test_start").text('识别中...');
                     $("#test_process").removeAttr("value");
                     $("#ov_test_computing").show();
                 },
@@ -1858,16 +1938,16 @@ $(function () {
                     var data = response.data;
                     var result = data['result'];
                     if (result == 'success') {
-                        showTransientDialog("预测完成");
+                        showTransientDialog("识别完成");
                     } else if(result == 'failed'){
-                        showTransientDialog('预测失败！');
+                        showTransientDialog('识别失败！');
                     } else{
                         showTransientDialog('没有符合条件的数据!');
                     }
 
                 },
                 complete:function () {
-                    $("#test_start").text("开始预测");
+                    $("#test_start").text("开始识别");
                     $("#test_process").attr("value", "100");
                 },
                 error: function(response) {
@@ -1879,14 +1959,14 @@ $(function () {
             // var test_bridge = $("#spy_test_bridge_selected").val();
             var test_model = $("#spy_test_model_selected").val();
             var bridge = $("#spy_test_bridge_selected").val();
-            var model_type = $("#spy_test_single_model_type_selected").val() >= 0?$("#spy_test_single_model_type_selected option:selected").text():$("#spy_test_multi_model_type_selected option:selected").text()
+            var model_type = $("#spy_test_single_model_type_selected").val() != -1?$("#spy_test_single_model_type_selected option:selected").val():$("#spy_test_multi_model_type_selected option:selected").val()
 
             // if(test_file == null){
-            //     showTransientDialog("请选择预测文件");
+            //     showTransientDialog("请选择识别文件");
             //     return;
             // }
             if(test_model == null){
-                showTransientDialog("请选择预测模型");
+                showTransientDialog("请选择识别模型");
                 //showDialog("请选择训练模型");
                 return;
             }
@@ -1925,7 +2005,7 @@ $(function () {
                 }),
                 dataType: "json",
                 beforeSend: function () {
-                    $("#test_start").text('预测中...');
+                    $("#test_start").text('识别中...');
                     $("#test_process").removeAttr("value");
                     $("#ov_test_computing").show();
                 },
@@ -1934,16 +2014,16 @@ $(function () {
                     var data = response.data;
                     var result = data['result'];
                     if (result == 'success') {
-                        showTransientDialog("预测完成");
+                        showTransientDialog("识别完成");
                     } else if(result == 'failed'){
-                        showTransientDialog('预测失败！');
+                        showTransientDialog('识别失败！');
                     } else{
                         showTransientDialog('没有符合条件的数据!');
                     }
 
                 },
                 complete:function () {
-                    $("#test_start").text("开始预测");
+                    $("#test_start").text("开始识别");
                     $("#test_process").attr("value", "100");
                 },
                 error: function(response) {
@@ -1963,11 +2043,11 @@ $(function () {
         var end_time = $("#test_end_time").val();
 
         if(test_file == null){
-            showTransientDialog("请选择预测文件");
+            showTransientDialog("请选择识别文件");
             return;
         }
         if(test_model == null){
-            showTransientDialog("请选择预测模型");
+            showTransientDialog("请选择识别模型");
             //showDialog("请选择训练模型");
             return;
         }
@@ -1990,8 +2070,8 @@ $(function () {
         $("#" + figure_id).html("<img style='margin-top:120px;' src='assets/img/loading.gif'/>");
         $(this).button("loading").delay(1000).queue(function () {
             var param ={
-                "testfile" : test_file,
-                "testmodel" : test_model,
+                "testfile" : test_file +".csv",
+                "testmodel" : test_model +".h5",
                 // "bridge" : bridge,
                 "begintime" : new Date(begin_time).format('yyyyMMddHHmmss'),
                 "endtime" : new Date(end_time).format('yyyyMMddHHmmss')

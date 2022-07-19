@@ -569,7 +569,7 @@ function showPredictDDResultChart(figure_id, locationlist, levellist,loc,lv) {
         },
         title: [
             {
-                text: "实际结果",
+                text: "模拟简支梁桥",
                 top: '6%',
                 left: 'center',
                 textStyle: {
@@ -577,7 +577,7 @@ function showPredictDDResultChart(figure_id, locationlist, levellist,loc,lv) {
                 }
             },
             {
-                text: "模型预测结果",
+                text: "损伤识别结果",
                 top: '41%',
                 left: 'center',
                 textStyle: {
@@ -604,6 +604,15 @@ function showPredictDDResultChart(figure_id, locationlist, levellist,loc,lv) {
                 gridIndex: 0,
                 splitArea: {
                     show: true
+                },
+                axisTick: {
+                    show: false
+                },
+                axisLine: {
+                    show: false
+                },
+                axisLabel: {
+                    show: false
                 }
             },
             {
@@ -623,6 +632,15 @@ function showPredictDDResultChart(figure_id, locationlist, levellist,loc,lv) {
                 gridIndex: 0,
                 splitArea: {
                     show: true
+                },
+                axisTick: {
+                    show: false
+                },
+                axisLine: {
+                    show: false
+                },
+                axisLabel: {
+                    show: false
                 }
             },
             {
@@ -656,7 +674,7 @@ function showPredictDDResultChart(figure_id, locationlist, levellist,loc,lv) {
             {
                 name: '实际损伤位置',
                 type: 'heatmap',
-                data: test_data,
+                // data: test_data,
                 xAxisIndex: 0,
                 yAxisIndex: 0,
                 label: {
@@ -833,7 +851,7 @@ function showPredictUDFResultChart_OVERWEIGHT(figure_id, timelist, overweightlis
     var countOverweight = [];
     count.forEach(function (value, key, map) {
         countTime.push(key);
-        countOverweight.push(value);
+        countOverweight.push(parseInt(value / 6));
     })
     console.log(countTime)
     console.log(countOverweight);

@@ -103,7 +103,7 @@ function updateDropdownListAssociationFile(){
     if(response!=null && response.status==0){
         var data = response.data;
         for(var key in data){
-            options = options + "<option>" + key + "</option>";
+            options = options + "<option>" + key.substring(0, key.lastIndexOf(".")) + "</option>";
         }
     }
     $("#association_file_selected").append(options);
@@ -553,7 +553,7 @@ $(function () {
             async: true,
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({
-                "associationfile" : association_file,
+                "associationfile" : association_file + ".csv",
                 "bridge" : association_bridge,
                 "section" : association_section,
                 "watchpoint" : association_watchpoint,
@@ -649,7 +649,7 @@ $(function () {
                 // "bridge" : associatin_bridge,
                 // "section" : association_section,
                 // "watchpoint" : association_watchpoint,
-                "filename" : association_file,
+                "filename" : association_file + ".csv",
                 "begintime" : new Date(begin_time).format('yyyyMMddHHmmss'),
                 "endtime" :  new Date(end_time).format('yyyyMMddHHmmss')
             }

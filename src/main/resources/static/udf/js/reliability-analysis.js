@@ -6,7 +6,7 @@ function updateDropdownListReliabilityFile(){
     if(response!=null && response.status==0){
         var data = response.data;
         for(var key in data){
-            options = options + "<option>" + key + "</option>";
+            options = options + "<option>" + key.substring(0, key.lastIndexOf(".")) + "</option>";
         }
     }
     $("#reliability_file_selected").append(options);
@@ -404,7 +404,7 @@ $(function () {
             async: true,
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({
-                "reliabilityfile" : reliability_file,
+                "reliabilityfile" : reliability_file + ".csv",
                 // "bridge" : reliability_bridge,
                 // "section" : reliability_section,
                 // "watchpoint" : reliability_watchpoint,
@@ -584,7 +584,7 @@ $(function () {
         $("#" + figure_id).html("<img style='margin-top:120px;' src='assets/img/loading.gif'/>");
         $(this).button("loading").delay(1000).queue(function () {
             var param ={
-                "filename" : reliability_file,
+                "filename" : reliability_file + ".csv",
                 // "bridge" : associatin_bridge,
                 // "section" : reliability_section,
                 // "watchpoint" : reliability_watchpoint,

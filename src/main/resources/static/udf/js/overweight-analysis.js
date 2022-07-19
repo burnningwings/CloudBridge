@@ -1320,7 +1320,7 @@ $(function () {
                 },
                 error: function(response) {
                     //showTransientDialog('调用失败！')
-                    alert("提交任务失败");
+                    // alert("提交任务失败");
                 }
 
             });

@@ -535,6 +535,63 @@ public class OverweightAnalysis {
         return response.getHttpResponse();
     }
 
+    @RequestMapping(value = "/overweight-analysis/getExampleCount", method = RequestMethod.GET, produces = "application/json")
+    public JSONObject exampleCount(String type,String filename,String beginTime,String endTime){
+        HttpResponse response = new HttpResponse();
+        JSONObject data = new JSONObject();
+        Long bt = Long.parseLong(beginTime);
+        Long et = Long.parseLong(endTime);
+        String targetPath = "";
+        switch (type){
+            case "trainfile": targetPath = Constants.OVERWEIGHT_UPLOAD_TRAIN_FILE_DIR + "/" + filename; break;
+            case "evaluatefile" : targetPath = Constants.OVERWEIGHT_UPLOAD_EVALUATE_FILE_DIR + "/" + filename; break;
+            case "testfile" : targetPath = Constants.OVERWEIGHT_UPLOAD_TEST_FILE_DIR + "/" + filename; break;
+            default: break;
+        }
+        File dirFile = new File(targetPath);
+//        if (!dirFile.exists()){
+//            response.setStatus(HttpResponse.FAIL_STATUS);
+//            response.setMsg("服务器路径错误！");
+//        }
+        BufferedReader br = null;
+        long begin_time = 0;
+        long end_time = 0;
+
+        try {
+            br = new BufferedReader(new FileReader(targetPath));
+            String line = "";
+            int index = 1;
+            int example_count = 0;
+            while ((line = br.readLine()) != null){
+                String[] item = line.split(",");
+                if ("testfile".equals(type)){
+                    if(!item[16].matches("\\d+")){
+                        continue;
+                    }
+                    long current_time = Long.parseLong(item[16]);
+                    if (current_time <= et && current_time >= bt){
+                        example_count += 1;
+                    }
+                }else if ("trainfile".equals(type) || "evaluatefile".equals(type)){
+                    if(!item[17].matches("\\d+")){
+                        continue;
+                    }
+                    long current_time = Long.parseLong(item[16]);
+                    if (current_time <= et && current_time >= bt){
+                        example_count += 1;
+                    }
+                }
+            }
+            data.put("example_count",example_count);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        response.setData(data);
+        return response.getHttpResponse();
+    }
+
 //    @RequestMapping(value = "/overweight-analysis/evaluate", method = RequestMethod.POST, produces = "application/json")
 ////    public JSONObject evaluate(@RequestBody JSONObject reqMsg){
 ////        HttpResponse response = new HttpResponse();
@@ -718,10 +775,10 @@ public class OverweightAnalysis {
 
                     if (logentity.getExitVal() == 0 || logentity.getExitVal() == 120){
                         data.put("result", "success");
-                        AnalysisMessage.getInstance().update(md5,null,null,Constants.FINISHED,null,logentity.toString());
+                        AnalysisMessage.getInstance().update(md5,null,null,Constants.FINISHED,null,logentity.toString().replace('\"','\''));
                     }else{
                         data.put("result", "failed");
-                        AnalysisMessage.getInstance().update(md5,null,null,Constants.FAILED,null,logentity.toString());
+                        AnalysisMessage.getInstance().update(md5,null,null,Constants.FAILED,null,logentity.toString().replace('\"','\''));
                     }
 
                     //data.put("result", "completed");
@@ -732,10 +789,6 @@ public class OverweightAnalysis {
 //                    response.setData(data);
 //                    return response.getHttpResponse();
                 }
-
-
-
-
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
                 response.setStatus(HttpResponse.FAIL_STATUS);

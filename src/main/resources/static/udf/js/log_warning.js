@@ -53,6 +53,11 @@ function updateWarningLogGrid(sensor_name){
                         },
                         columns: [
                              {
+                                field: "bridge_name",
+                                title: "桥梁名称",
+                                headerAttributes: {style: "text-align:center"},
+                                attributes: {class: "text-center"}
+                             }, {
                                 field: "sensor_number",
                                 title: "传感器编号",
                                 headerAttributes: {style: "text-align:center"},

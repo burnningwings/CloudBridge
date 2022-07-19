@@ -278,11 +278,11 @@ public class LogManager {
         String sql = "";
 
         if (sensorName == null || sensorName.equals("全部"))
-            sql = String.format("select sensor_number, DATE_FORMAT(end_time,\"%%Y-%%m-%%d %%H:%%i:%%s\") as end_time, warning_info from sensor_warning " +
+            sql = String.format("select bridge_name, sensor_number, DATE_FORMAT(end_time,\"%%Y-%%m-%%d %%H:%%i:%%s\") as end_time, warning_info from sensor_warning " +
                             "order by warning_id desc limit %s,%s ",
                     (page - 1) * pageSize, pageSize);
 
-        String[] fields = new String[]{"sensor_number","end_time","warning_info"};
+        String[] fields = new String[]{"bridge_name","sensor_number","end_time","warning_info"};
         JSONArray data = baseDao.queryData(sql, fields);
 
         response.put("data", data);

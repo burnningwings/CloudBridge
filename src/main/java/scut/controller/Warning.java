@@ -73,7 +73,7 @@ public class Warning {
         float threshold = Float.parseFloat(data.getJSONObject(0).getString("YBYZ"));
         //if (threshold == 0)
         //    return;
-        computeThreshold(sensorId, sensor_number, (float)46.3);
+        computeThreshold(sensorId, sensor_number, (float)1.1);
     }
     private void computeThreshold(String sensorId, String sensor_number, float preset)
     {
@@ -130,9 +130,24 @@ public class Warning {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-                String warning = "自 " + naturalStartTime + " 至 " + naturalEndTime + " 幅值为 " + amp + " 超出阈值！";;
-            String sql = String.format("INSERT INTO sensor_warning(sensor_number, begin_time, end_time, warning_info) VALUES ('"
-                                        + sensor_number + "','" + naturalStartTime + "','" + naturalEndTime + "','" + warning + "')");
+            String sql = String.format("select w.name from sensor_info as s, watch_box as w where s.box_id = w.box_id" +
+                    "and s.sensor_id = %s",sensorId);
+            String[] boxFields = new String[]{"name"};
+            JSONArray data = baseDao.queryData(sql, boxFields);
+            String boxName = data.getJSONObject(0).getString("name");
+            sql = String.format("select point.id from sensor_info where sensor_id = %s", sensorId);
+            String[] pointFields = new String[]{"point_id"};
+            data = baseDao.queryData(sql, pointFields);
+            String pointId = data.getJSONObject(0).getString("point_id");
+            sql = String.format("select s.name from section as s, watch_point as w where w.section_id = s.section_id and w.point_id = %s",pointId);
+            String[] sectionFields = new String[]{"name"};
+            data = baseDao.queryData(sql, sectionFields);
+            String sectionName = data.getJSONObject(0).getString("name");
+
+            String warning = "自 " + naturalStartTime + " 至 " + naturalEndTime + " 幅值为 " + amp + " 超出阈值！";;
+            sql = String.format("INSERT INTO sensor_warning(bridge_name, module_name, sensor_number, " +
+                    "section_name ,amplitude, threshold, begin_time, end_time, warning_info) VALUES %s, %s, %s, %s, %s, %s, %s, %s, %s",
+                    "肇庆西江大桥", boxName, sensorId, sectionName, amp, "46.3", naturalStartTime, naturalEndTime, warning);
             baseDao.updateData(sql);
         }
         return;

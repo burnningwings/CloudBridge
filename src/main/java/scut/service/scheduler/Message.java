@@ -70,6 +70,7 @@ public class Message {
                 "ON DUPLICATE KEY UPDATE status='%s',error_log='%s'";
         int ret = 0;
         try {
+            status = "FINISHED";
             if(param==null || param.equals(""))
                 ret = baseDao.Execute(String.format(sqlFormat,id,source,target,status,param,errorLog,status,errorLog));
             else{

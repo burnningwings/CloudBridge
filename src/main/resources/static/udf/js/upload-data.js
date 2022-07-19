@@ -189,6 +189,7 @@ function updateMessageGrid(){
                 field: "status",
                 title: "上传状态",
                 template: '#if(status == "FINISHED") {# ' + '完成'+ '# } else { #' + '失败' + '# } #',
+                // template: '成功',
                 headerAttributes:{ style:"text-align:center"},
                 attributes:{ class:"text-center" }
             },{

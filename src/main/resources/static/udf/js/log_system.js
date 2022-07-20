@@ -94,7 +94,7 @@ $(function(){
                     showTransientDialog("请选择日志！");
         } else {
                 showAlertDialog("确定删除 " + checked_len + " 条日志?", function () {
-                var url = '/log_system/delete';
+                var url = '';
                 var params = {
                     'checkedList': checked_list.join(',')
                 };

@@ -8,6 +8,7 @@ function selectBridgeOnchange(obj){
 function updateBridgeLogGrid(bridge_name){
     var dataSource = new kendo.data.DataSource({
             transport: {
+            transport: {
                 read: {
                     type: "get",
                     url: "/log_bridge/list",
@@ -107,7 +108,7 @@ $(function(){
                     showTransientDialog("请选择日志！");
         } else {
                 showAlertDialog("确定删除 " + checked_len + " 条日志?", function () {
-                var url = '/log_bridge/delete';
+                var url = "";
                 var params = {
                     'checkedList': checked_list.join(',')
                 };

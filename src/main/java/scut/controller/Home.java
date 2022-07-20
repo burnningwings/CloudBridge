@@ -49,6 +49,12 @@ public class Home {
         return "index";
     }
 
+    @RequestMapping("/mindex")
+    public String mindex(Model model) {
+        setUser(model);
+        return "mindex";
+    }
+
     @RequestMapping("/test")
     public String test(Model model) {
         setUser(model);

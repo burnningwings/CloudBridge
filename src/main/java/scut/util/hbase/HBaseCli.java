@@ -25,7 +25,7 @@ public class HBaseCli {
     private Configuration conf = null;
     private HBaseCli(){
         this.conf = HBaseConfiguration.create();
-        this.conf.set("hbase.zookeeper.quorum","cu01,cu03,cu04");   
+        this.conf.set("hbase.zookeeper.quorum","cu01,cu03,cu04");
         this.conf.set("hbase.zookeeper.property.clientPort","2181");
         this.conf.set("hbase.master", "mu01:60000");
         this.conf.set("mapreduce.output.fileoutputformat.outputdir", "/tmp");

@@ -8,7 +8,6 @@ function selectBridgeOnchange(obj){
 function updateBridgeLogGrid(bridge_name){
     var dataSource = new kendo.data.DataSource({
             transport: {
-            transport: {
                 read: {
                     type: "get",
                     url: "/log_bridge/list",
@@ -87,6 +86,7 @@ function updateBridgeLogGrid(bridge_name){
                                 attributes: {class: "text-center"}
                              }]
                         });
+
 }
 //删除日志后需要重新读取并刷新数据
 function refreshData() {

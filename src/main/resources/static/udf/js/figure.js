@@ -859,7 +859,7 @@ function showPredictUDFResultChart_OVERWEIGHT(figure_id, timelist, overweightlis
 
     var option = {
         title : [{
-            text : '预测结果',
+            text : '识别结果',
             left : 'center'
             },
             {
@@ -992,7 +992,7 @@ function showPredictUDFResultChart_OVERWEIGHT(figure_id, timelist, overweightlis
                         var series = opt.series[0].data;
                         var index = opt.xAxis[0].data;
                         var tdHeads = '<td  style="padding: 0 10px">测量时间</td>'
-                            +'<td  style="padding: 0 10px">预测是否超重</td>'; //表头
+                            +'<td  style="padding: 0 10px">识别是否超重</td>'; //表头
                         var table = '<table border="1" style="margin-left:20px;border-collapse:collapse;font-size:14px;text-align:center"><tbody><tr>'+tdHeads+'</tr>';
                         var tdBody = '';
                         for(var i = 0; i < series.length;i++)

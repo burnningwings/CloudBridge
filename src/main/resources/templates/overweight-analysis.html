@@ -47,126 +47,126 @@
 
     <div id="global">
         <div class="container-fluid">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">
-                        超重分析模型训练
-                    </h3>
-                </div>
-                <div class="panel-body" style="padding:0 20px 20px 20px">
-                    <h4 class="control-label " style="display:inline-block">从本地上传训练数据（csv格式，小于50MB）：</h4>
-<!--                    <button id="description_train_dataformat" title="数据格式" data-html="true" data-toggle="popover" data-container="body" type="button" class="btn btn-default"><i class="fa fa-fw fa-eye"></i></button>-->
-                    <button id="description_train_dataformat" title="数据格式" data-toggle="popover" type="button" class="btn btn-default"><i class="fa fa-fw fa-eye"></i></button>
-                    <input id="trainfile_upload" name="trainfile_upload" type="file" class="file file-loading" data-preview-file-type="text"/>
-                </div>
-<!--                <div class="panel-body" style="padding:0 20px 20px 20px">-->
-<!--                    <h4 class="control-label" style="display:inline-block">从本地上传训练模型（py格式，小于50MB）：</h4>-->
-<!--&lt;!&ndash;                    <button id="description_modelformat" title="模型文件格式" data-html="true" data-toggle="popover" data-container="body" type="button" class="btn btn-default"><i class="fa fa-fw fa-eye"></i></button>&ndash;&gt;-->
-<!--                    <input id="trainmodel_upload" name="trainmodel_upload" type="file" class="file file-loading" data-preview-file-type="text"/>-->
+<!--            <div class="panel panel-default">-->
+<!--                <div class="panel-heading">-->
+<!--                    <h3 class="panel-title">-->
+<!--                        超重分析模型训练-->
+<!--                    </h3>-->
 <!--                </div>-->
-                <div class="panel-body" style="padding:0 20px 20px 20px">
-                    <h4 class="control-label" style="display:inline-block">从本地上传训练标签（csv格式，小于50MB）：</h4>
-                    <button id="description_label_format" title="标签文件格式" data-html="true" data-toggle="popover" data-container="body" type="button" class="btn btn-default"><i class="fa fa-fw fa-eye"></i></button>
-                    <input id="trainlabel_upload" name="trainlabel_upload" type="file" class="file file-loading" data-preview-file-type="text"/>
-                </div>
-                <div class="panel-body" style="padding:0 20px 20px 20px">
-                    <div class="form-inline">
-                        <select class="selectpicker" id="train_file_selected" data-width="15%"></select>&nbsp;&nbsp;
-                        <select class="selectpicker" id="train_model_selected" data-width="15%"></select>&nbsp;&nbsp;
-                        <span hidden="hidden"><select class="selectpicker" id="train_bridge_selected" data-width="15%" ></select></span>
-                        <select class="selectpicker" id="train_label_selected" data-width="15%"></select>
-                        <select class="selectpicker" id="train_single_model_type_selected" data-width="15%"></select>
-                        <select class="selectpicker" id="train_multi_model_type_selected" data-width="15%"></select>
-                    </div>
-<!--                    <ul class="nav nav-tabs" id="train-tab">-->
-<!--                        <li class="active"><a href="#simulation_train" data-toggle="tab">模拟数据训练</a></li>-->
-<!--                        <li><a href="#spy_train" data-toggle="tab">监测数据训练</a></li>-->
-<!--                    </ul>-->
-<!--                    <div class="tab-content">-->
-<!--                        <div class="tab-pane fade in active" id="simulation_train" style="margin-top:20px">-->
-<!--                            <div class="form-inline">-->
-<!--                                <select class="selectpicker" id="train_file_selected" data-width="20%"></select>&nbsp;&nbsp;-->
-<!--                                <select class="selectpicker" id="train_model_selected" data-width="20%"></select>&nbsp;&nbsp;-->
-<!--                                <span hidden="hidden"><select class="selectpicker" id="train_bridge_selected" data-width="20%" ></select></span>-->
-<!--                                <select class="selectpicker" id="train_label_selected" data-width="20%"></select>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                        <div class="tab-pane fade" id="spy_train" style="margin-top:20px">-->
-<!--                            <div class="form-inline">-->
-<!--                                <select class="selectpicker" id="spy_train_bridge_selected" data-width="20%"></select>&nbsp;&nbsp;-->
-<!--                                <select class="selectpicker" id="spy_train_model_selected" data-width="20%"></select>-->
-<!--                                <select class="selectpicker" id="spy_train_label_selected" data-width="20%"></select>&nbsp;-->
-<!--                            </div>-->
-<!--                        </div>-->
+<!--                <div class="panel-body" style="padding:0 20px 20px 20px">-->
+<!--                    <h4 class="control-label " style="display:inline-block">从本地上传训练数据（csv格式，小于50MB）：</h4>-->
+<!--&lt;!&ndash;                    <button id="description_train_dataformat" title="数据格式" data-html="true" data-toggle="popover" data-container="body" type="button" class="btn btn-default"><i class="fa fa-fw fa-eye"></i></button>&ndash;&gt;-->
+<!--                    <button id="description_train_dataformat" title="数据格式" data-toggle="popover" type="button" class="btn btn-default"><i class="fa fa-fw fa-eye"></i></button>-->
+<!--                    <input id="trainfile_upload" name="trainfile_upload" type="file" class="file file-loading" data-preview-file-type="text"/>-->
+<!--                </div>-->
+<!--&lt;!&ndash;                <div class="panel-body" style="padding:0 20px 20px 20px">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <h4 class="control-label" style="display:inline-block">从本地上传训练模型（py格式，小于50MB）：</h4>&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                    <button id="description_modelformat" title="模型文件格式" data-html="true" data-toggle="popover" data-container="body" type="button" class="btn btn-default"><i class="fa fa-fw fa-eye"></i></button>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;                    <input id="trainmodel_upload" name="trainmodel_upload" type="file" class="file file-loading" data-preview-file-type="text"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                </div>&ndash;&gt;-->
+<!--                <div class="panel-body" style="padding:0 20px 20px 20px">-->
+<!--                    <h4 class="control-label" style="display:inline-block">从本地上传训练标签（csv格式，小于50MB）：</h4>-->
+<!--                    <button id="description_label_format" title="标签文件格式" data-html="true" data-toggle="popover" data-container="body" type="button" class="btn btn-default"><i class="fa fa-fw fa-eye"></i></button>-->
+<!--                    <input id="trainlabel_upload" name="trainlabel_upload" type="file" class="file file-loading" data-preview-file-type="text"/>-->
+<!--                </div>-->
+<!--                <div class="panel-body" style="padding:0 20px 20px 20px">-->
+<!--                    <div class="form-inline">-->
+<!--                        <select class="selectpicker" id="train_file_selected" data-width="15%"></select>&nbsp;&nbsp;-->
+<!--                        <select class="selectpicker" id="train_model_selected" data-width="15%"></select>&nbsp;&nbsp;-->
+<!--                        <span hidden="hidden"><select class="selectpicker" id="train_bridge_selected" data-width="15%" ></select></span>-->
+<!--                        <select class="selectpicker" id="train_label_selected" data-width="15%"></select>-->
+<!--                        <select class="selectpicker" id="train_single_model_type_selected" data-width="15%"></select>-->
+<!--                        <select class="selectpicker" id="train_multi_model_type_selected" data-width="15%"></select>-->
 <!--                    </div>-->
-                </div>
-<!--                <div class="panel-body" style="padding:0 20px 20px 20px">-->
-<!--                    <select class="selectpicker" id="train_file_selected" data-width="20%"></select>&nbsp;&nbsp;-->
-<!--                    <select class="selectpicker" id="train_model_selected" data-width="20%"></select>&nbsp;&nbsp;-->
-<!--                    <span hidden="hidden"><select class="selectpicker" id="train_bridge_selected" data-width="20%" ></select></span>-->
+<!--&lt;!&ndash;                    <ul class="nav nav-tabs" id="train-tab">&ndash;&gt;-->
+<!--&lt;!&ndash;                        <li class="active"><a href="#simulation_train" data-toggle="tab">模拟数据训练</a></li>&ndash;&gt;-->
+<!--&lt;!&ndash;                        <li><a href="#spy_train" data-toggle="tab">监测数据训练</a></li>&ndash;&gt;-->
+<!--&lt;!&ndash;                    </ul>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <div class="tab-content">&ndash;&gt;-->
+<!--&lt;!&ndash;                        <div class="tab-pane fade in active" id="simulation_train" style="margin-top:20px">&ndash;&gt;-->
+<!--&lt;!&ndash;                            <div class="form-inline">&ndash;&gt;-->
+<!--&lt;!&ndash;                                <select class="selectpicker" id="train_file_selected" data-width="20%"></select>&nbsp;&nbsp;&ndash;&gt;-->
+<!--&lt;!&ndash;                                <select class="selectpicker" id="train_model_selected" data-width="20%"></select>&nbsp;&nbsp;&ndash;&gt;-->
+<!--&lt;!&ndash;                                <span hidden="hidden"><select class="selectpicker" id="train_bridge_selected" data-width="20%" ></select></span>&ndash;&gt;-->
+<!--&lt;!&ndash;                                <select class="selectpicker" id="train_label_selected" data-width="20%"></select>&ndash;&gt;-->
+<!--&lt;!&ndash;                            </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                        </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                        <div class="tab-pane fade" id="spy_train" style="margin-top:20px">&ndash;&gt;-->
+<!--&lt;!&ndash;                            <div class="form-inline">&ndash;&gt;-->
+<!--&lt;!&ndash;                                <select class="selectpicker" id="spy_train_bridge_selected" data-width="20%"></select>&nbsp;&nbsp;&ndash;&gt;-->
+<!--&lt;!&ndash;                                <select class="selectpicker" id="spy_train_model_selected" data-width="20%"></select>&ndash;&gt;-->
+<!--&lt;!&ndash;                                <select class="selectpicker" id="spy_train_label_selected" data-width="20%"></select>&nbsp;&ndash;&gt;-->
+<!--&lt;!&ndash;                            </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                        </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                    </div>&ndash;&gt;-->
 <!--                </div>-->
-                <div class="panel-body" style="padding:0 20px 20px 20px">
-                    <label style="font-weight:normal;font-size:16px;margin-left: 7px">epochs&nbsp;&nbsp;</label>
-                    <input type="text" id="epochs" value="50" style="height:33px">
-                    <label style="font-weight:normal;font-size:16px;margin-left: 7px">lr&nbsp;&nbsp;</label>
-                    <input type="text" id="lr" value="0.0005" style="height:33px">
-                    <label style="font-weight:normal;font-size:16px;margin-left: 7px">batch_size&nbsp;&nbsp;</label>
-                    <input type="text" id="batch_size" value="64" style="height:33px">
-                </div>
-                <div class="panel-body" style="padding:0 20px 20px 20px">
-                    <label style="font-weight:normal;font-size:16px;margin-left: 7px">时段选择&nbsp;&nbsp;</label>
-                    <input size="17" type="text" id="train_begin_time"  class="btn btn-default" value=""  >
-                    <span style="line-height: 30px;">&nbsp;&nbsp;<label class="form-label">至</label>&nbsp;&nbsp;</span>
-                    <input size="17" type="text" id="train_end_time" class="btn btn-default" value="" >
-                    <span style="line-height: 30px;">&nbsp;&nbsp;<label class="form-label" id="train_example_count"></label>&nbsp;&nbsp;</span>
-                </div>
-                <div class="panel-body" style="padding:0 20px 20px 20px">
-                    <label style="font-weight:normal;font-size:16px;margin-left: 7px">保存模型&nbsp;&nbsp;</label>
-                    <input type="text" id="saved_model" placeholder="请输入保存模型名称" style="height:33px">
-                    <span class="text-danger mt5 fl">*</span>
-                </div>
-                <div class="panel-body" style="padding: 0 20px 20px 20px">
-                    <button id="train_start" type="button" data-switch-color="success" class="btn btn-l btn-success" style="width:120px;height:40px;font-size:18px">开始训练</button>
-                    <span id="ov_train_computing" style="display: none">
-                        <label style="font-weight:normal;font-size:16px;margin-left: 50px;">计算中&nbsp;&nbsp;</label>
-                        <progress id="train_process" value="0" max="100"></progress>
-                    </span>
-                </div>
-            </div>
+<!--&lt;!&ndash;                <div class="panel-body" style="padding:0 20px 20px 20px">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <select class="selectpicker" id="train_file_selected" data-width="20%"></select>&nbsp;&nbsp;&ndash;&gt;-->
+<!--&lt;!&ndash;                    <select class="selectpicker" id="train_model_selected" data-width="20%"></select>&nbsp;&nbsp;&ndash;&gt;-->
+<!--&lt;!&ndash;                    <span hidden="hidden"><select class="selectpicker" id="train_bridge_selected" data-width="20%" ></select></span>&ndash;&gt;-->
+<!--&lt;!&ndash;                </div>&ndash;&gt;-->
+<!--                <div class="panel-body" style="padding:0 20px 20px 20px">-->
+<!--                    <label style="font-weight:normal;font-size:16px;margin-left: 7px">epochs&nbsp;&nbsp;</label>-->
+<!--                    <input type="text" id="epochs" value="50" style="height:33px">-->
+<!--                    <label style="font-weight:normal;font-size:16px;margin-left: 7px">lr&nbsp;&nbsp;</label>-->
+<!--                    <input type="text" id="lr" value="0.0005" style="height:33px">-->
+<!--                    <label style="font-weight:normal;font-size:16px;margin-left: 7px">batch_size&nbsp;&nbsp;</label>-->
+<!--                    <input type="text" id="batch_size" value="64" style="height:33px">-->
+<!--                </div>-->
+<!--                <div class="panel-body" style="padding:0 20px 20px 20px">-->
+<!--                    <label style="font-weight:normal;font-size:16px;margin-left: 7px">时段选择&nbsp;&nbsp;</label>-->
+<!--                    <input size="17" type="text" id="train_begin_time"  class="btn btn-default" value=""  >-->
+<!--                    <span style="line-height: 30px;">&nbsp;&nbsp;<label class="form-label">至</label>&nbsp;&nbsp;</span>-->
+<!--                    <input size="17" type="text" id="train_end_time" class="btn btn-default" value="" >-->
+<!--                    <span style="line-height: 30px;">&nbsp;&nbsp;<label class="form-label" id="train_example_count"></label>&nbsp;&nbsp;</span>-->
+<!--                </div>-->
+<!--                <div class="panel-body" style="padding:0 20px 20px 20px">-->
+<!--                    <label style="font-weight:normal;font-size:16px;margin-left: 7px">保存模型&nbsp;&nbsp;</label>-->
+<!--                    <input type="text" id="saved_model" placeholder="请输入保存模型名称" style="height:33px">-->
+<!--                    <span class="text-danger mt5 fl">*</span>-->
+<!--                </div>-->
+<!--                <div class="panel-body" style="padding: 0 20px 20px 20px">-->
+<!--                    <button id="train_start" type="button" data-switch-color="success" class="btn btn-l btn-success" style="width:120px;height:40px;font-size:18px">开始训练</button>-->
+<!--                    <span id="ov_train_computing" style="display: none">-->
+<!--                        <label style="font-weight:normal;font-size:16px;margin-left: 50px;">计算中&nbsp;&nbsp;</label>-->
+<!--                        <progress id="train_process" value="0" max="100"></progress>-->
+<!--                    </span>-->
+<!--                </div>-->
+<!--            </div>-->
 
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">
-                        模型验证
-                    </h3>
-                </div>
-                <div class="panel-body" style="padding:0 20px 20px 20px">
-                    <h4 class="control-label " style="display:inline-block">从本地上验证数据（csv格式，小于50MB）：</h4>
-                    <button id="description_evaluate_dataformat" title="数据格式" data-html="true" data-toggle="popover" data-container="body" type="button" class="btn btn-default"><i class="fa fa-fw fa-eye"></i></button>
-                    <input id="evaluatefile_upload" name="evaluatefile_upload" type="file" class="file file-loading" data-preview-file-type="text"/>
-                </div>
-                <div class="panel-body" style="padding:0 20px 20px 20px">
-                    <select class="selectpicker" id="evaluate_file_selected" data-width="15%"></select>&nbsp;&nbsp;
-                    <select class="selectpicker" id="evaluate_model_selected" data-width="15%"></select>&nbsp;&nbsp;
-                    <span hidden="hidden"><select class="selectpicker" id="evaluate_bridge_selected" data-width="15%" hidden></select></span>&nbsp;&nbsp;
-                    <select class="selectpicker" id="evaluate_single_model_type_selected" data-width="15%"></select>
-                    <select class="selectpicker" id="evaluate_multi_model_type_selected" data-width="15%"></select>
-                </div>
-                <div class="panel-body" style="padding:0 20px 20px 20px">
-                    <label style="font-weight:normal;font-size:16px;margin-left: 7px">时段选择&nbsp;&nbsp;</label>
-                    <input size="17" type="text" id="evaluate_begin_time"  class="btn btn-default" value=""  >
-                    <span style="line-height: 30px;">&nbsp;&nbsp;<label class="form-label">至</label>&nbsp;&nbsp;</span>
-                    <input size="17" type="text" id="evaluate_end_time" class="btn btn-default" value="" >
-                </div>
-                <div class="panel-body" style="padding: 0 20px 20px 20px">
-                    <button id="evaluate_start" type="button" data-switch-color="success" class="btn btn-l btn-success" style="width:120px;height:40px;font-size:18px">验证模型</button>
-                    <span id="ov_evaluate_computing" style="display: none">
-                        <label style="font-weight:normal;font-size:16px;margin-left: 50px;">计算中&nbsp;&nbsp;</label>
-                        <progress id="evaluate_process" value="0" max="100"></progress>
-                    </span>
-                </div>
+<!--            <div class="panel panel-default">-->
+<!--                <div class="panel-heading">-->
+<!--                    <h3 class="panel-title">-->
+<!--                        模型验证-->
+<!--                    </h3>-->
+<!--                </div>-->
+<!--                <div class="panel-body" style="padding:0 20px 20px 20px">-->
+<!--                    <h4 class="control-label " style="display:inline-block">从本地上验证数据（csv格式，小于50MB）：</h4>-->
+<!--                    <button id="description_evaluate_dataformat" title="数据格式" data-html="true" data-toggle="popover" data-container="body" type="button" class="btn btn-default"><i class="fa fa-fw fa-eye"></i></button>-->
+<!--                    <input id="evaluatefile_upload" name="evaluatefile_upload" type="file" class="file file-loading" data-preview-file-type="text"/>-->
+<!--                </div>-->
+<!--                <div class="panel-body" style="padding:0 20px 20px 20px">-->
+<!--                    <select class="selectpicker" id="evaluate_file_selected" data-width="15%"></select>&nbsp;&nbsp;-->
+<!--                    <select class="selectpicker" id="evaluate_model_selected" data-width="15%"></select>&nbsp;&nbsp;-->
+<!--                    <span hidden="hidden"><select class="selectpicker" id="evaluate_bridge_selected" data-width="15%" hidden></select></span>&nbsp;&nbsp;-->
+<!--                    <select class="selectpicker" id="evaluate_single_model_type_selected" data-width="15%"></select>-->
+<!--                    <select class="selectpicker" id="evaluate_multi_model_type_selected" data-width="15%"></select>-->
+<!--                </div>-->
+<!--                <div class="panel-body" style="padding:0 20px 20px 20px">-->
+<!--                    <label style="font-weight:normal;font-size:16px;margin-left: 7px">时段选择&nbsp;&nbsp;</label>-->
+<!--                    <input size="17" type="text" id="evaluate_begin_time"  class="btn btn-default" value=""  >-->
+<!--                    <span style="line-height: 30px;">&nbsp;&nbsp;<label class="form-label">至</label>&nbsp;&nbsp;</span>-->
+<!--                    <input size="17" type="text" id="evaluate_end_time" class="btn btn-default" value="" >-->
+<!--                </div>-->
+<!--                <div class="panel-body" style="padding: 0 20px 20px 20px">-->
+<!--                    <button id="evaluate_start" type="button" data-switch-color="success" class="btn btn-l btn-success" style="width:120px;height:40px;font-size:18px">验证模型</button>-->
+<!--                    <span id="ov_evaluate_computing" style="display: none">-->
+<!--                        <label style="font-weight:normal;font-size:16px;margin-left: 50px;">计算中&nbsp;&nbsp;</label>-->
+<!--                        <progress id="evaluate_process" value="0" max="100"></progress>-->
+<!--                    </span>-->
+<!--                </div>-->
 
-            </div>
+<!--            </div>-->
 
             <div class="panel panel-default">
                 <div class="panel-heading">
@@ -174,12 +174,12 @@
                         超重车识别
                     </h3>
                 </div>
-                <div class="panel-body" style="padding:0 20px 20px 20px">
-                    <h4 class="control-label " style="display:inline-block">从本地上传待识别数据（csv格式，小于50MB）：</h4>
-                    <button id="description_test_dataformat" title="数据格式" data-html="true" data-toggle="popover" data-container="body" type="button" class="btn btn-default"><i class="fa fa-fw fa-eye"></i></button>
-                    <input id="testfile_upload" name="testfile_upload" type="file" class="file file-loading" data-preview-file-type="text"/>
-                </div>
-                <div class="panel-body" style="padding:0 20px 20px 20px">
+<!--                <div class="panel-body" style="padding:0 20px 20px 20px">-->
+<!--                    <h4 class="control-label " style="display:inline-block">从本地上传待识别数据（csv格式，小于50MB）：</h4>-->
+<!--                    <button id="description_test_dataformat" title="数据格式" data-html="true" data-toggle="popover" data-container="body" type="button" class="btn btn-default"><i class="fa fa-fw fa-eye"></i></button>-->
+<!--                    <input id="testfile_upload" name="testfile_upload" type="file" class="file file-loading" data-preview-file-type="text"/>-->
+<!--                </div>-->
+                <div class="panel-body" style="padding:20px 20px 20px 20px">
                     <ul class="nav nav-tabs" id="test-tab">
                         <li class="active"><a href="#simulation_test" data-toggle="tab">模拟数据识别</a></li>
                         <li><a href="#spy_test" data-toggle="tab">监测数据识别</a></li>
@@ -217,13 +217,13 @@
                     <span style="line-height: 30px;">&nbsp;&nbsp;<label class="form-label">至</label>&nbsp;&nbsp;</span>
                     <input size="17" type="text" id="test_end_time" class="btn btn-default" value="" >
                 </div>
-                <div class="panel-body" style="padding: 0 20px 20px 20px">
-                    <button id="test_start" type="button" data-switch-color="success" class="btn btn-l btn-success" style="width:120px;height:40px;font-size:18px">开始识别</button>
-                    <span id="ov_test_computing" style="display: none">
-                        <label style="font-weight:normal;font-size:16px;margin-left: 50px;">计算中&nbsp;&nbsp;</label>
-                        <progress id="test_process" value="0" max="100"></progress>
-                    </span>
-                    <button id="result_overweight" type="button" data-switch-color="yellow" class="btn btn-l btn-yellow" style="width:150px;height:40px;font-size:18px; margin-left:350px">识别结果展示</button>
+                <div class="panel-body" style="padding: 20px 20px 20px 20px">
+<!--                    <button id="test_start" type="button" data-switch-color="success" class="btn btn-l btn-success" style="width:120px;height:40px;font-size:18px">开始识别</button>-->
+<!--                    <span id="ov_test_computing" style="display: none">-->
+<!--                        <label style="font-weight:normal;font-size:16px;margin-left: 50px;">计算中&nbsp;&nbsp;</label>-->
+<!--                        <progress id="test_process" value="0" max="100"></progress>-->
+<!--                    </span>-->
+                    <button id="result_overweight" type="button" data-switch-color="yellow" class="btn btn-l btn-yellow" style="width:150px;height:40px;font-size:18px; margin-left:0px">识别结果展示</button>
                     <div align="center" id="show_result_figure" height="800" data-width="60%" style="position:relative;margin-top:20px; height:800px;">
                 </div>
 

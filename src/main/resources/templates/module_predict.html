@@ -39,19 +39,97 @@
     <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">
-          模型预测
+          超重车模型预测
         </h3>
       </div>
-      <div class="panel-body">
-        <!--select class="selectpicker" id="bridge_menu" onchange="selectBridgeOnchange(this)"></--select>-->
-        <button id="download_module" type="button" style="margin:0em 1em 0em 0em" class="btn btn-l btn-danger">导出</button>
-        <br><br>
-        <div id="system-grid"></div>
-        <div style="float:left;margin: 20px 0px 0px 0px">
+      <div class="panel-body" style="padding:0 20px 20px 20px">
+        <h4 class="control-label " style="display:inline-block">从本地上传待识别数据（csv格式，小于50MB）：</h4>
+        <button id="description_test_dataformat" title="数据格式" data-html="true" data-toggle="popover" data-container="body" type="button" class="btn btn-default"><i class="fa fa-fw fa-eye"></i></button>
+        <input id="testfile_upload" name="testfile_upload" type="file" class="file file-loading" data-preview-file-type="text"/>
+      </div>
+      <div class="panel-body" style="padding:0 20px 20px 20px">
+        <ul class="nav nav-tabs" id="test-tab">
+          <li class="active"><a href="#simulation_test" data-toggle="tab">模拟数据识别</a></li>
+          <li><a href="#spy_test" data-toggle="tab">监测数据识别</a></li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane fade in active" id="simulation_test" style="margin-top:20px">
+            <div class="form-inline">
+              <select class="selectpicker" id="test_file_selected" data-width="15%"></select>&nbsp;&nbsp;
+              <select class="selectpicker" id="test_model_selected" data-width="15%"></select>&nbsp;&nbsp;
+              <span hidden="hidden"><select class="selectpicker" id="test_bridge_selected" data-width="15%" ></select></span>
+              <select class="selectpicker" id="test_single_model_type_selected" data-width="15%"></select>
+              <select class="selectpicker" id="test_multi_model_type_selected" data-width="15%"></select>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="spy_test" style="margin-top:20px">
+            <div class="form-inline">
+              <select class="selectpicker" id="spy_test_bridge_selected" data-width="15%"></select>&nbsp;&nbsp;
+              <select class="selectpicker" id="spy_test_model_selected" data-width="15%"></select>
+              <select class="selectpicker" id="spy_test_single_model_type_selected" data-width="15%"></select>
+              <select class="selectpicker" id="spy_test_multi_model_type_selected" data-width="15%"></select>
+            </div>
+          </div>
         </div>
       </div>
+      <!--                </div>-->
+      <div class="panel-body" style="padding:0 20px 20px 20px">
+        <label style="font-weight:normal;font-size:16px;margin-left: 7px">时段选择&nbsp;&nbsp;</label>
+        <input size="17" type="text" id="test_begin_time"  class="btn btn-default" value=""  >
+        <span style="line-height: 30px;">&nbsp;&nbsp;<label class="form-label">至</label>&nbsp;&nbsp;</span>
+        <input size="17" type="text" id="test_end_time" class="btn btn-default" value="" >
+      </div>
+      <div class="panel-body" style="padding: 0 20px 20px 20px">
+        <button id="test_start" type="button" data-switch-color="success" class="btn btn-l btn-success" style="width:120px;height:40px;font-size:18px">开始识别</button>
+        <span id="ov_test_computing" style="display: none">
+                        <label style="font-weight:normal;font-size:16px;margin-left: 50px;">计算中&nbsp;&nbsp;</label>
+                        <progress id="test_process" value="0" max="100"></progress>
+                    </span>
+        </div>
+
+
+      </div>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">
+          损伤识别模型预测
+        </h3>
+      </div>
+      <div class="panel-body" style="padding:0 20px 20px 20px">
+        <h4 class="control-label " style="display:inline-block">从本地上待识别数据（csv格式，小于50MB）：</h4>
+        <button id="dd_description_test_dataformat" title="数据格式" data-html="true" data-toggle="popover" data-container="body" type="button" class="btn btn-default"><i class="fa fa-fw fa-eye"></i></button>
+        <input id="dd_testfile_upload" name="dd_testfile_upload" type="file" class="file file-loading" data-preview-file-type="text"/>
+      </div>
+      <div class="panel-body" style="padding:0 20px 20px 20px">
+        <ul class="nav nav-tabs" id="dd_test-tab">
+          <li class="active"><a href="#simulation_test" data-toggle="tab">模拟数据识别</a></li>
+          <li><a href="#spy_test" data-toggle="tab">监测数据识别</a></li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane fade in active" id="dd_simulation_test" style="margin-top:20px">
+            <div class="form-inline">
+              <select class="selectpicker" id="dd_test_file_selected" data-width="20%"></select>&nbsp;&nbsp;
+              <select class="selectpicker" id="dd_test_model_selected" data-width="20%"></select>&nbsp;&nbsp;
+              <span hidden="hidden"><select class="selectpicker" id="dd_test_bridge_selected" data-width="20%" ></select></span>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="dd_spy_test" style="margin-top:20px">
+            <div class="form-inline">
+              <select class="selectpicker" id="spy_dd_test_bridge_selected" data-width="20%"></select>&nbsp;&nbsp;
+              <select class="selectpicker" id="spy_dd_test_model_selected" data-width="20%"></select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="panel-body" style="padding: 0 20px 20px 20px">
+        <button id="dd_test_start" type="button" data-switch-color="success" class="btn btn-l btn-success" style="width:120px;height:40px;font-size:18px">开始识别</button>
+        <span id="dd_test_computing" style="display: none">
+                        <label style="font-weight:normal;font-size:16px;margin-left: 50px;">计算中&nbsp;&nbsp;</label>
+                        <progress id="dd_test_process" value="0" max="100"></progress>
+                    </span>
+      </div>
     </div>
-  </div>
+    </div>
 
   <div th:replace="base/footer::footer"></div>
 </div>

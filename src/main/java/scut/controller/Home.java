@@ -43,16 +43,28 @@ public class Home {
         model.addAttribute(Constants.USER_ROLE, sysUser.getRoles().get(0).getName());
     }
 
+//    @RequestMapping("/")
+//    public String index(Model model) {
+//        setUser(model);
+//        return "index";
+//    }
+//
+//    @RequestMapping("/mindex")
+//    public String mindex(Model model) {
+//        setUser(model);
+//        return "mindex";
+//    }
+
     @RequestMapping("/")
     public String index(Model model) {
         setUser(model);
-        return "index";
+        return "mindex";
     }
 
-    @RequestMapping("/mindex")
+    @RequestMapping("/index")
     public String mindex(Model model) {
         setUser(model);
-        return "mindex";
+        return "index";
     }
 
     @RequestMapping("/test")

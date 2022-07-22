@@ -427,6 +427,92 @@ public class AssociationAnalysis {
         return response.getHttpResponse();
     }
 
+    /** 新增关联性分析GET方式的测试接口 */
+    @RequestMapping(value = "/association-analysis/start-analysis-spy-get", method = RequestMethod.GET, produces = "application/json")
+    public JSONObject waveletAnalysis_spy(String sensor_id, String begintime, String endtime){
+        HttpResponse response = new HttpResponse();
+        JSONObject data = new JSONObject();
+
+        JSONArray columnArray = new JSONArray();
+        columnArray.add("CLWD");
+        columnArray.add("XZYB");
+
+        JSONObject CGQData = new JSONObject(true);
+        int index = 0;
+        System.out.println(columnArray);
+        String hbaseTableName = "CloudBridge:" + sensor_id;
+        int sample = -1;
+        int limit = 0;
+        JSONArray rangeData = HBaseCli.getInstance().query(hbaseTableName, begintime, endtime,columnArray,limit,sample);
+        for (int i = 0;i<rangeData.size();i++){
+            JSONObject o = rangeData.getJSONObject(i);
+            if (!CGQData.containsKey(o.getString("CLSJ"))){
+                //创建新的一个时间戳行
+                String newRow = "";
+                newRow += o.getString("CLWD") + "," + o.getString("XZYB");
+                CGQData.put(o.getString("CLSJ"),newRow);
+            }
+        }
+
+        try {
+            File file = new File(Constants.ASSOCIATION_TARGET_DIR);
+            if(!file.exists()){
+                file.createNewFile();
+            }
+            FileOutputStream fo = new FileOutputStream(file);
+            OutputStreamWriter out = new OutputStreamWriter(fo,"UTF-8");
+            BufferedWriter bufferedWriter = new BufferedWriter(out);
+            bufferedWriter.write("date,air_temp,strain\n");
+            int count = 0;
+            for (String key : CGQData.keySet()){
+
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+                Date date= simpleDateFormat.parse(key);
+                Double javaDate = DateUtil.getExcelDate(date);
+                bufferedWriter.write(javaDate + "," + CGQData.getString(key) + "\n");
+                count++;
+            }
+            bufferedWriter.close();
+            out.close();
+            fo.close();
+
+            if(count != 0){
+                String INPUT_FILE = Constants.ASSOCIATION_TARGET_DIR;
+                String WAVELET_PROGRAM = Constants.ASSOCIATION_ANALYSIS_PROGRAM;
+                String outputfileName = sensor_id + "_" + begintime + "_" + endtime + "_result" + ".csv";
+                String OUTPUT_FILE = Constants.ASSOCIATION_ANALYSIS_RESULT_DIR + "/" + outputfileName;
+                String md5 = DigestUtils.md5Hex(sensor_id + begintime + endtime);
+
+                AnalysisMessage.getInstance().update(md5, sensor_id + "_" + begintime + "_" + endtime,outputfileName, Constants.READY, "WAVELET",null);
+                String execStr =  WAVELET_PROGRAM + " " + INPUT_FILE + " " + OUTPUT_FILE;
+                //String execStr = "D:/os_environment/anaconda/python " + WAVELET_PROGRAM + " " + INPUT_FILE + " " + OUTPUT_FILE;
+                //String execStr = "python D:/tmp/a.py";
+                logger.debug(execStr);
+                Executor executor = new CommandLineExecutor(md5, execStr);
+                //Scheduler.getInstance().runExecutor(executor);
+                LogEntity logentity = ((CommandLineExecutor) executor).execute_for_association_relability();
+                if (logentity.getExitVal() == 0 || logentity.getExitVal() == 120){
+                    data.put("result", "success");
+                    AnalysisMessage.getInstance().update(md5,null,null,Constants.FINISHED,null,logentity.toString());
+                }else{
+                    data.put("result", "failed");
+                    AnalysisMessage.getInstance().update(md5,null,null,Constants.FAILED,null,logentity.toString());
+                }
+            }else{
+                data.put("result","nodata");
+            }
+
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+        }
+
+        response.setData(data);
+        return response.getHttpResponse();
+    }
+
 //    @RequestMapping(value = "/association-analysis/start-analysis", method = RequestMethod.POST, produces = "application/json")
 //    public JSONObject trainModel(@RequestBody JSONObject reqMsg){
 //        HttpResponse response = new HttpResponse();

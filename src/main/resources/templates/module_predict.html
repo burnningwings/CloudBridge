@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" >
+<head>
+  <meta charset="utf-8">
+  <meta name="_csrf" th:content="${_csrf.token}"/>
+  <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <link rel="stylesheet" type="text/css" href="assets/css/bootstrap-clearmin.min.css">
+  <link rel="stylesheet" type="text/css" href="assets/css/roboto.css">
+  <link rel="stylesheet" type="text/css" href="assets/css/material-design.css">
+  <link rel="stylesheet" type="text/css" href="assets/css/small-n-flat.css">
+  <link rel="stylesheet" type="text/css" href="assets/css/font-awesome.min.css">
+  <!-- 下拉菜单 -->
+  <link rel="stylesheet" type="text/css" href="ext/bootstrap-select-1.12.4/css/bootstrap-select.min.css">
+  <!-- 支持同步和异步分页 -->
+  <link href="assets/css/kendo.common.min.css" rel="stylesheet" type="text/css" />
+  <link href="assets/css/kendo.default.min.css" rel="stylesheet" type="text/css" />
+  <!-- 滚动条 -->
+  <link rel="stylesheet" type="text/css" href="ext/mCustomScrollbar-3.0.9/css/jquery.mCustomScrollbar.css">
+  <!-- 时间选择器 -->
+  <link rel="stylesheet" href="ext/jquery-ui-1.12.1/css/jquery-ui.min.css">
+  <link rel="stylesheet" href="ext/jQuery-Timepicker-Addon-1.6.3/css/jquery-ui-timepicker-addon.min.css">
+  <!-- 对话框 -->
+  <link rel="stylesheet" type="text/css" href="ext/artDialog-6.0.4/css/ui-dialog.css">
+  <link rel="stylesheet" type="text/css" href="ext/artDialog-6.0.4/css/custom.css">
+  <!-- 文件上传插件 -->
+  <link rel="stylesheet" type="text/css" href="ext/bootstrap-fileinput-4.4.8/css/fileinput.min.css">
+  <title>桥梁长期健康监测及智能分析系统</title>
+  <link rel="icon" type="image/x-icon" th:href="@{images/favicon.ico}"/>
+</head>
+<body class="cm-no-transition cm-1-navbar">
+
+<div id="cm-menu" th:include="base/menu::menu (one,two_1,two_2,three_1,three_2,three_3,four_1,four_2,four_3,four_4,five_1,five_2,six_1,six_2,six_3,seven_1,seven_2,seven_3,seven_4,eight_1,eight_2,eight_3,eight_4,active)"></div>
+
+<div th:replace="base/header::header"></div>
+
+<div id="global">
+  <div class="container-fluid">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">
+          模型预测
+        </h3>
+      </div>
+      <div class="panel-body">
+        <!--select class="selectpicker" id="bridge_menu" onchange="selectBridgeOnchange(this)"></--select>-->
+        <button id="download_module" type="button" style="margin:0em 1em 0em 0em" class="btn btn-l btn-danger">导出</button>
+        <br><br>
+        <div id="system-grid"></div>
+        <div style="float:left;margin: 20px 0px 0px 0px">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div th:replace="base/footer::footer"></div>
+</div>
+<script src="assets/js/lib/jquery-2.1.3.min.js"></script>
+<script src="assets/js/jquery.mousewheel.min.js"></script>
+<script src="assets/js/jquery.cookie.min.js"></script>
+<script src="assets/js/fastclick.min.js"></script>
+
+
+<script src="assets/js/clearmin.min.js"></script>
+<script src="assets/js/demo/home.js"></script>
+<!-- common.js -->
+<script src="udf/js/common.js"></script>
+<!-- 下拉菜单 -->
+<script src="ext/bootstrap-select-1.12.4/js/bootstrap-select.min.js"></script>
+<script src="ext/bootstrap-select-1.12.4/js/i18n/defaults-zh_CN.min.js"></script>
+<!-- 对话框 -->
+<script src="ext/artDialog-6.0.4/js/dialog-plus-min.js"></script>
+<!-- 滚动条 -->
+<script src="ext/mCustomScrollbar-3.0.9/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<!-- table相关 -->
+<script src="assets/js/kendo.web.min.js"></script>
+<script src="udf/js/common.js"></script>
+<!-- 画图 -->
+<script src="ext/echarts/echarts.min.js"></script>
+<script src="udf/js/figure.js"></script>
+<!-- 时间选择器 -->
+<script src="ext/jquery-ui-1.12.1/js/jquery-ui.min.js"></script>
+<script src="ext/jQuery-Timepicker-Addon-1.6.3/js/jquery-ui-timepicker-addon.min.js"></script>
+<script src="ext/jQuery-Timepicker-Addon-1.6.3/js/i18n/jquery-ui-timepicker-zh-CN.js"></script>
+<script src="ext/jQuery-Timepicker-Addon-1.6.3/js/i18n/jquery-ui-timepicker-addon-i18n.min.js"></script>
+<!-- 主脚本 -->
+<script src="udf/js/module_predict.js"></script>
+<!-- bootstrap脚本必须放在jquery-ui之后，否则某些操作会冲突 -->
+<script src="assets/js/bootstrap.min.js"></script>
+<!-- JSzip 导出excel需要-->
+<script src="ext/Jszip/jszip.js"></script>
+<script src="ext/Exportcsv/kendo.grid.csv.download.js"></script>
+<!-- 文件上传插件 -->
+<script src="ext/bootstrap-fileinput-4.4.8/js/fileinput.min.js"></script>
+<script src="ext/bootstrap-fileinput-4.4.8/js/locales/zh.js"></script>
+</body>
+</html>

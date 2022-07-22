@@ -239,6 +239,18 @@ public class Home {
         return "module_download";
     }
 
+    @RequestMapping("/module_train")
+    public String module_train(Model model){
+        setUser(model);
+        return "module_train";
+    }
+
+    @RequestMapping("/module_predict")
+    public String module_predict(Model model){
+        setUser(model);
+        return "module_predict";
+    }
+
     @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping("/module_delete")
     public String module_delete(Model model){

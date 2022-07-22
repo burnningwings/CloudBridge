@@ -3,7 +3,7 @@
        xmlns:th="http://www.thymeleaf.org"
        xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
-<div th:fragment="menu (one,two_1,two_2,three_1,three_2,three_3,four_1,four_2,four_3,four_4,five_1,five_2,six_1,six_2,six_3,seven_1,seven_2,seven_3,seven_4,eight_1,eight_2,eight_3)"
+<div th:fragment="menu (one,two_1,two_2,three_1,three_2,three_3,four_1,four_2,four_3,four_4,five_1,five_2,six_1,six_2,six_3,seven_1,seven_2,seven_3,seven_4,eight_1,eight_2,eight_3,eight_4,eight_5)"
      id="cm-menu">
     <nav class="cm-navbar cm-navbar-primary">
         <div class="cm-flex"><a href="/" class="cm-logo"></a></div>
@@ -62,12 +62,14 @@
                                 th:class="${seven_2}"><a href="/log_option.html">日志选项</a></li>
                         </ul>
                     </li>
-                    <li class="cm-submenu" th:classappend="${eight_1=='active' or eight_2=='active' or eight_3=='active'}? pre-open : ''">
+                    <li class="cm-submenu" th:classappend="${eight_1=='active' or eight_2=='active' or eight_3=='active' or eight_4=='active' or eight_5=='active'}? pre-open : ''">
                         <a class="sf-wrench">模型管理<span class="caret"></span></a>
                         <ul>
                             <li th:class="${eight_1}"><a href="/module_upload.html">模型上传</a></li>
                             <li th:class="${eight_2}"><a href="/module_download.html">模型导出</a></li>
                             <li th:class="${eight_3}"><a href="/module_delete">模型删除</a></li>
+                            <li th:class="${eight_4}"><a href="/module_train">模型训练</a></li>
+                            <li th:class="${eight_5}"><a href="/module_predict">模型预测</a></li>
 
                         </ul>
                     </li>

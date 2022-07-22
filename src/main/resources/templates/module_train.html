@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <meta charset="utf-8">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <link rel="stylesheet" type="text/css" href="assets/css/bootstrap-clearmin.min.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/roboto.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/material-design.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/small-n-flat.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/font-awesome.min.css">
+    <!-- 下拉菜单 -->
+    <link rel="stylesheet" type="text/css" href="ext/bootstrap-select-1.12.4/css/bootstrap-select.min.css">
+    <!-- 支持同步和异步分页 -->
+    <link href="assets/css/kendo.common.min.css" rel="stylesheet" type="text/css" />
+    <link href="assets/css/kendo.default.min.css" rel="stylesheet" type="text/css" />
+    <!-- 滚动条 -->
+    <link rel="stylesheet" type="text/css" href="ext/mCustomScrollbar-3.0.9/css/jquery.mCustomScrollbar.css">
+    <!-- 时间选择器 -->
+    <link rel="stylesheet" href="ext/jquery-ui-1.12.1/css/jquery-ui.min.css">
+    <link rel="stylesheet" href="ext/jQuery-Timepicker-Addon-1.6.3/css/jquery-ui-timepicker-addon.min.css">
+    <!-- 对话框 -->
+    <link rel="stylesheet" type="text/css" href="ext/artDialog-6.0.4/css/ui-dialog.css">
+    <link rel="stylesheet" type="text/css" href="ext/artDialog-6.0.4/css/custom.css">
+    <!-- 文件上传插件 -->
+    <link rel="stylesheet" type="text/css" href="ext/bootstrap-fileinput-4.4.8/css/fileinput.min.css">
+    <title>桥梁长期健康监测及智能分析系统</title>
+    <link rel="icon" type="image/x-icon" th:href="@{images/favicon.ico}"/>
+</head>
+<body class="cm-no-transition cm-1-navbar">
+
+<div id="cm-menu" th:include="base/menu::menu (one,two_1,two_2,three_1,three_2,three_3,four_1,four_2,four_3,four_4,five_1,five_2,six_1,six_2,six_3,seven_1,seven_2,seven_3,seven_4,eight_1,eight_2,eight_3,active,eight_5)"></div>
+
+<div th:replace="base/header::header"></div>
+
+<div id="global">
+    <div class="container-fluid">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    超重分析模型训练
+                </h3>
+            </div>
+            <div class="panel-body" style="padding:0 20px 20px 20px">
+                <h4 class="control-label " style="display:inline-block">从本地上传训练数据（csv格式，小于50MB）：</h4>
+                <button id="description_train_dataformat" title="数据格式" data-toggle="popover" type="button" class="btn btn-default"><i class="fa fa-fw fa-eye"></i></button>
+                <input id="trainfile_upload" name="trainfile_upload" type="file" class="file file-loading" data-preview-file-type="text"/>
+            </div>
+            <div class="panel-body" style="padding:0 20px 20px 20px">
+                <h4 class="control-label" style="display:inline-block">从本地上传训练标签（csv格式，小于50MB）：</h4>
+                <button id="description_label_format" title="标签文件格式" data-html="true" data-toggle="popover" data-container="body" type="button" class="btn btn-default"><i class="fa fa-fw fa-eye"></i></button>
+                <input id="trainlabel_upload" name="trainlabel_upload" type="file" class="file file-loading" data-preview-file-type="text"/>
+            </div>
+            <div class="panel-body" style="padding:0 20px 20px 20px">
+                <div class="form-inline">
+                    <select class="selectpicker" id="train_file_selected" data-width="15%"></select>&nbsp;&nbsp;
+                    <select class="selectpicker" id="train_model_selected" data-width="15%"></select>&nbsp;&nbsp;
+                    <span hidden="hidden"><select class="selectpicker" id="train_bridge_selected" data-width="15%" ></select></span>
+                    <select class="selectpicker" id="train_label_selected" data-width="15%"></select>
+                    <select class="selectpicker" id="train_single_model_type_selected" data-width="15%"></select>
+                    <select class="selectpicker" id="train_multi_model_type_selected" data-width="15%"></select>
+                </div>
+            </div>
+            <div class="panel-body" style="padding:0 20px 20px 20px">
+                <label style="font-weight:normal;font-size:16px;margin-left: 7px">epochs&nbsp;&nbsp;</label>
+                <input type="text" id="epochs" value="50" style="height:33px">
+                <label style="font-weight:normal;font-size:16px;margin-left: 7px">lr&nbsp;&nbsp;</label>
+                <input type="text" id="lr" value="0.0005" style="height:33px">
+                <label style="font-weight:normal;font-size:16px;margin-left: 7px">batch_size&nbsp;&nbsp;</label>
+                <input type="text" id="batch_size" value="64" style="height:33px">
+            </div>
+            <div class="panel-body" style="padding:0 20px 20px 20px">
+                <label style="font-weight:normal;font-size:16px;margin-left: 7px">时段选择&nbsp;&nbsp;</label>
+                <input size="17" type="text" id="train_begin_time"  class="btn btn-default" value=""  >
+                <span style="line-height: 30px;">&nbsp;&nbsp;<label class="form-label">至</label>&nbsp;&nbsp;</span>
+                <input size="17" type="text" id="train_end_time" class="btn btn-default" value="" >
+                <span style="line-height: 30px;">&nbsp;&nbsp;<label class="form-label" id="train_example_count"></label>&nbsp;&nbsp;</span>
+            </div>
+            <div class="panel-body" style="padding:0 20px 20px 20px">
+                <label style="font-weight:normal;font-size:16px;margin-left: 7px">保存模型&nbsp;&nbsp;</label>
+                <input type="text" id="saved_model" placeholder="请输入保存模型名称" style="height:33px">
+                <span class="text-danger mt5 fl">*</span>
+            </div>
+            <div class="panel-body" style="padding: 0 20px 20px 20px">
+                <button id="train_start" type="button" data-switch-color="success" class="btn btn-l btn-success" style="width:120px;height:40px;font-size:18px">开始训练</button>
+                <span id="ov_train_computing" style="display: none">
+                        <label style="font-weight:normal;font-size:16px;margin-left: 50px;">计算中&nbsp;&nbsp;</label>
+                        <progress id="train_process" value="0" max="100"></progress>
+                    </span>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    损伤识别模型训练
+                </h3>
+            </div>
+            <div class="panel-body" style="padding:0 20px 20px 20px">
+                <h4 class="control-label " style="display:inline-block">从本地上传训练数据（csv格式，小于5GB）：</h4>
+                <button id="dd_description_train_dataformat" title="数据格式" data-html="true" data-toggle="popover" data-container="body" type="button" class="btn btn-default"><i class="fa fa-fw fa-eye"></i></button>
+                <input id="dd_trainfile_upload" name="dd_trainfile_upload" type="file" class="file file-loading" data-preview-file-type="text"/>
+            </div>
+            <div class="panel-body" style="padding:0 20px 20px 20px">
+                <select class="selectpicker" id="dd_train_file_selected" data-width="20%"></select>&nbsp;&nbsp;
+                <select class="selectpicker" id="dd_train_model_selected" data-width="20%"></select>&nbsp;&nbsp;
+                <span hidden="hidden"><select class="selectpicker" id="dd_train_bridge_selected" data-width="20%"></select></span>&nbsp;&nbsp;
+                <!--                    <select class="selectpicker" id="dd_train_label_selected" data-width="20%"></select>&nbsp;&nbsp;-->
+                <select class="selectpicker" id="dd_train_modeltype_selected" data-width="20%"></select>
+            </div>
+            <div class="panel-body" style="padding:0 20px 20px 20px">
+                <label style="font-weight:normal;font-size:16px;margin-left: 7px">epochs&nbsp;&nbsp;</label>
+                <input type="text" id="dd_epochs" value="200" style="height:33px">
+                <label style="font-weight:normal;font-size:16px;margin-left: 7px">batch_size&nbsp;&nbsp;</label>
+                <input type="text" id="dd_batch_size" value="64" style="height:33px">
+                <label style="font-weight:normal;font-size:16px;margin-left: 7px">sample&nbsp;&nbsp;</label>
+                <input type="text" id="dd_sample" value="50" style="height:33px">
+            </div>
+            <div class="panel-body" style="padding:0 20px 20px 20px">
+                <label style="font-weight:normal;font-size:16px;margin-left: 7px">保存模型&nbsp;&nbsp;</label>
+                <input type="text" id="dd_saved_model" placeholder="请输入保存模型名称" style="height:33px">
+                <span class="text-danger mt5 fl">*</span>
+            </div>
+            <div class="panel-body" style="padding: 0 20px 20px 20px">
+                <button id="dd_train_start" type="button" data-switch-color="success" class="btn btn-l btn-success" style="width:120px;height:40px;font-size:18px">开始训练</button>
+                <span id="dd_train_computing" style="display: none">
+                        <label style="font-weight:normal;font-size:16px;margin-left: 50px;">计算中&nbsp;&nbsp;</label>
+                        <progress id="dd_train_process" value="0" max="100"></progress>
+                    </span>
+            </div>
+        </div>
+        <div th:replace="base/footer::footer"></div>
+    </div>
+</div>
+<script src="assets/js/lib/jquery-2.1.3.min.js"></script>
+<script src="assets/js/jquery.mousewheel.min.js"></script>
+<script src="assets/js/jquery.cookie.min.js"></script>
+<script src="assets/js/fastclick.min.js"></script>
+
+
+<script src="assets/js/clearmin.min.js"></script>
+<script src="assets/js/demo/home.js"></script>
+<!-- common.js -->
+<script src="udf/js/common.js"></script>
+<!-- 下拉菜单 -->
+<script src="ext/bootstrap-select-1.12.4/js/bootstrap-select.min.js"></script>
+<script src="ext/bootstrap-select-1.12.4/js/i18n/defaults-zh_CN.min.js"></script>
+<!-- 对话框 -->
+<script src="ext/artDialog-6.0.4/js/dialog-plus-min.js"></script>
+<!-- 滚动条 -->
+<script src="ext/mCustomScrollbar-3.0.9/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<!-- table相关 -->
+<script src="assets/js/kendo.web.min.js"></script>
+<script src="udf/js/common.js"></script>
+<!-- 画图 -->
+<script src="ext/echarts/echarts.min.js"></script>
+<script src="udf/js/figure.js"></script>
+<!-- 时间选择器 -->
+<script src="ext/jquery-ui-1.12.1/js/jquery-ui.min.js"></script>
+<script src="ext/jQuery-Timepicker-Addon-1.6.3/js/jquery-ui-timepicker-addon.min.js"></script>
+<script src="ext/jQuery-Timepicker-Addon-1.6.3/js/i18n/jquery-ui-timepicker-zh-CN.js"></script>
+<script src="ext/jQuery-Timepicker-Addon-1.6.3/js/i18n/jquery-ui-timepicker-addon-i18n.min.js"></script>
+<!-- 主脚本 -->
+<script src="udf/js/module_train.js"></script>
+<!-- bootstrap脚本必须放在jquery-ui之后，否则某些操作会冲突 -->
+<script src="assets/js/bootstrap.min.js"></script>
+<!-- JSzip 导出excel需要-->
+<script src="ext/Jszip/jszip.js"></script>
+<script src="ext/Exportcsv/kendo.grid.csv.download.js"></script>
+<!-- 文件上传插件 -->
+<script src="ext/bootstrap-fileinput-4.4.8/js/fileinput.min.js"></script>
+<script src="ext/bootstrap-fileinput-4.4.8/js/locales/zh.js"></script>
+</body>
+</html>

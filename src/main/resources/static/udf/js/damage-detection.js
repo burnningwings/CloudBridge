@@ -47,7 +47,7 @@
 //     webRequest(url, "GET", true, params,successCaller);
 // }
 
-    function  getAndshowPredictResult(figure_id, current_dialog, params) {
+function  getAndshowPredictResult(figure_id, current_dialog, params) {
 
     function successCaller(message) {
         console.log(message);

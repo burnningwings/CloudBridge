@@ -15,6 +15,15 @@
     </parent>
 
     <dependencies>
+             
+        <dependency>
+	   <groupId>jdk.tools</groupId>
+	   <artifactId>jdk.tools</artifactId>
+	   <version>18.0.2</version>
+	   <scope>system</scope>
+	   <systemPath>${JAVA_HOME}/lib/jrt-fs.jar</systemPath>
+        </dependency>
+             
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>

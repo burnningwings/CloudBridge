@@ -30,7 +30,7 @@ jobs:
 #     - name: Build with Maven
 #       run: mvn -B package --file pom.xml
     - name: mvn install jdk-tools
-      run: mvn install:install-file -DgroupId=jdk.tools -DartifactId=jdk.tools -Dpackaging=jar -Dversion=1.6 -Dfile=/home/runner/work/CloudBridge/CloudBridge/tools.jar -DgeneratePom=true
+      run: mvn install:install-file -DgroupId=jdk.tools -DartifactId=jdk.tools -Dpackaging=jar -Dversion=1.6 -Dfile=tools.jar -DgeneratePom=true
     - name: mvn package
       run: mvn clean && mvn package
     - run: mkdir staging && cp target/*.jar staging

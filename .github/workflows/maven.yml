@@ -32,7 +32,7 @@ jobs:
 #     - name: mvn install jdk-tools
 #       run: mvn install:install-file -DgroupId=jdk.tools -DartifactId=jdk.tools -Dpackaging=jar -Dversion=1.6 -Dfile=/opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/16.0.2-7/x64/lib/tools.jar -DgeneratePom=true
     - name: show dir
-      run: ls /opt/hostedtoolcache/Java_Corretto_jdk/18.0.2.9.1/X64/lib/
+      run: ls /opt/hostedtoolcache/Java_Corretto_jdk/18.0.2.9.1/x64/lib/
     - name: mvn package
       run: mvn clean && mvn package
     - run: mkdir staging && cp target/*.jar staging

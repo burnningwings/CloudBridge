@@ -29,8 +29,8 @@ jobs:
         cache: maven
 #     - name: Build with Maven
 #       run: mvn -B package --file pom.xml
-#     - name: mvn install jdk-tools
-#       run: mvn install:install-file -DgroupId=jdk.tools -DartifactId=jdk.tools -Dpackaging=jar -Dversion=1.6 -Dfile=/opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/16.0.2-7/x64/../lib/tools.jar -DgeneratePom=true
+    - name: mvn install jdk-tools
+      run: mvn install:install-file -DgroupId=jdk.tools -DartifactId=jdk.tools -Dpackaging=jar -Dversion=1.6 -Dfile=/opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/16.0.2-7/x64/lib/tools.jar -DgeneratePom=true
     - name: show dir
       run: ls /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/16.0.2-7/x64/lib/
     - name: mvn package
